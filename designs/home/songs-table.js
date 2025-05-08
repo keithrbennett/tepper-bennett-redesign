@@ -27,8 +27,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const icon = header.querySelector('.sort-icon');
             if (header.dataset.sort === column) {
                 icon.textContent = currentSort.direction === 'asc' ? '↑' : '↓';
+                // Add Bootstrap sorted header class
+                header.classList.add('bg-primary');
+                header.classList.add('text-white');
             } else {
                 icon.textContent = '';
+                // Remove Bootstrap sorted header class
+                header.classList.remove('bg-primary');
+                header.classList.remove('text-white');
             }
         });
         
@@ -75,10 +81,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 performer.includes(searchTerm) || 
                 admin.includes(searchTerm)) {
                 row.style.display = '';
+                // Bootstrap transition animation
+                row.classList.remove('fade');
             } else {
                 row.style.display = 'none';
+                // Bootstrap transition animation
+                row.classList.add('fade');
             }
         });
+        
+        // Show search results message
+        const visibleRows = tableRows.filter(row => row.style.display !== 'none').length;
+        updateSearchResults(visibleRows, tableRows.length);
+    }
+    
+    // Function to update search results message
+    function updateSearchResults(visible, total) {
+        // Find the container or create one if it doesn't exist
+        let resultsContainer = document.getElementById('search-results-info');
+        if (!resultsContainer) {
+            resultsContainer = document.createElement('div');
+            resultsContainer.id = 'search-results-info';
+            resultsContainer.className = 'text-muted small text-center mb-3';
+            const tableContainer = document.querySelector('.table-responsive');
+            tableContainer.parentNode.insertBefore(resultsContainer, tableContainer);
+        }
+        
+        if (visible === total || searchInput.value.trim() === '') {
+            resultsContainer.textContent = '';
+        } else {
+            resultsContainer.textContent = `Showing ${visible} of ${total} songs`;
+        }
     }
     
     // Add event listeners
