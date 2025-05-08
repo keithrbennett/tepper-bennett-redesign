@@ -892,4 +892,14 @@ footer {
         display: inline-block;
         margin-bottom: var(--spacing-xs);
     }
+}
+
+/* Les styles pour la section de photo à droite */
+.photo-panel {
+    background-image: url('images/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: var(--color-primary);
+    height: 100%;
 } 
