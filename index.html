@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tepper & Bennett - Masters of American Song</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'navy': '#1A305E',
+              'gold': '#B8860B',
+              'light-blue': 'rgba(70, 130, 180, 0.5)'
+            },
+            fontFamily: {
+              'sans': ['Montserrat', 'sans-serif'],
+              'serif': ['Playfair Display', 'serif'],
+            },
+          },
+        }
+      }
+    </script>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="flex flex-col md:flex-row h-full md:h-screen w-full">
+        <!-- Left Navigation Panel -->
+        <div class="w-full md:w-1/3 bg-navy flex flex-col p-8">
+            <!-- Main Title -->
+            <div class="mb-8 md:mb-12">
+                <h1 class="font-serif text-4xl md:text-5xl font-bold text-gold leading-tight mb-2">Tepper & Bennett</h1>
+                <h2 class="font-serif text-xl md:text-2xl font-normal text-white">Masters of American Song</h2>
+            </div>
+            
+            <!-- Main Navigation -->
+            <nav class="mb-8">
+                <ul class="list-none">
+                    <li class="mb-4 md:mb-7">
+                        <a href="#songs" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Songs</a>
+                    </li>
+                    <li class="mb-4 md:mb-7">
+                        <a href="#genres" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Genres</a>
+                    </li>
+                    <li class="mb-4 md:mb-7">
+                        <a href="#elvis" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Elvis</a>
+                    </li>
+                    <li class="mb-4 md:mb-7">
+                        <a href="#resources" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Resources</a>
+                    </li>
+                    <li class="mb-4 md:mb-7">
+                        <a href="#reports" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Reports</a>
+                    </li>
+                    <li class="mb-4 md:mb-7">
+                        <a href="#inquiries" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Inquiries</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- Stats Cards -->
+            <div class="mt-auto mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-md shadow-md p-4">
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold">200+</div>
+                        <div class="font-serif text-base md:text-lg text-gray-800">Songs</div>
+                    </div>
+                    
+                    <div class="bg-white rounded-md shadow-md p-4">
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold">50+</div>
+                        <div class="font-serif text-base md:text-lg text-gray-800">Elvis Songs</div>
+                    </div>
+                    
+                    <div class="bg-white rounded-md shadow-md p-4">
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold">100+</div>
+                        <div class="font-serif text-base md:text-lg text-gray-800">Artists</div>
+                    </div>
+                    
+                    <div class="bg-white rounded-md shadow-md p-4">
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold">30+</div>
+                        <div class="font-serif text-base md:text-lg text-gray-800">Movies</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Photo Section -->
+        <div class="w-full md:w-2/3 h-64 md:h-screen bg-center bg-cover bg-no-repeat relative">
+            <img src="designs/home/images/hero-bg.jpg" alt="Roy C. Bennett & Sid Tepper" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x600/1A305E/FFFFFF?text=Tepper+%26+Bennett'" />
+            <div class="absolute top-4 right-4 text-white text-lg font-serif">
+                Roy C. Bennett & Sid Tepper
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-16 px-8 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8">The Legacy</h2>
+            <div class="space-y-6 text-lg">
+                <p>Sid and Roy were Brooklyn born and bred, and lived across the street from each other through the Great Depression. They often found themselves with barely two nickels to rub together, but their friendship didn't require material goods to pass the time. Just paper and pencil. They began their writing career at the ripe old age of 11, and really began in earnest, turning avocation into vocation, at age 24.</p>
+                <p>World War II interrupted their partnership, when Sid was stationed with the U.S. Cavalry at Fort Riley, Kansas, where he produced shows and sang with the base band. Roy spent three years in the China-Burma-India theatre with the U.S. Army Air Forces. In addition to his duties in Intelligence, the Army eventually capitalized on his talents and he set to work entertaining the forces.</p>
+                <p>After returning home, they found their way to the iconic Brill Building, the epicenter of the songwriting world in Midtown Manhattan, and peddled their songs. They'd start at the top floor and work their way down until they hit a publisher who'd make a deal. Their confidence grew; it only stands to reason when one of their very first songs was the megahit, "Red Roses for a Blue Lady," what the industry calls an "evergreen".</p>
+                <p>Sid and Roy were enormously successful, as many hits followed, including "The Naughty Lady of Shady Lane" , "Kiss of Fire" , and "The Young Ones" , not to mention an astonishing 42 songs recorded by Elvis Presley. It's hard to believe that there's another team who had their songs recorded by such an extraordinary array of artists, from Duke Ellington to Louis Armstrong and Ray Charles, to Frank Sinatra, Elvis, and The Beatles.</p>
+                <p>Sid and Roy passed away mere months apart in 2015, but their music lives on to entertain the world.</p>
+                <p>Come look inside and give a listen to many of their songs, which The New York Times characterized as "catchy melodies and lyrics of easygoing cleverness"...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Songs Section -->
+    <section id="songs" class="py-16 px-8 bg-gray-100">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Songs</h2>
+            <p class="text-lg mb-8">Explore the complete collection of songs written by Tepper & Bennett. Filter by artist, year, or genre to discover their extensive catalog.</p>
+            
+            <div class="mb-8">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <input type="text" id="songs-search" placeholder="Search songs, performers, or administrators..." class="flex-grow p-3 border border-gray-300 rounded-md">
+                    <button id="search-button" class="bg-navy text-white px-6 py-3 rounded-md hover:bg-opacity-90">Search</button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto shadow-md rounded-lg">
+                <table id="songs-table" class="min-w-full bg-white">
+                    <thead class="bg-navy text-white">
+                        <tr>
+                            <th class="py-3 px-4 text-left">Title</th>
+                            <th class="py-3 px-4 text-left">Performer(s)</th>
+                            <th class="py-3 px-4 text-left">Rights Administrator</th>
+                            <th class="py-3 px-4 text-center">YouTube</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">Red Roses for a Blue Lady</a></td>
+                            <td class="py-3 px-4">Vaughn Monroe, Wayne Newton, Vic Dana</td>
+                            <td class="py-3 px-4">Universal Music Publishing Group</td>
+                            <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=2bQZ6l_cq5Y" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                        </tr>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">The Naughty Lady of Shady Lane</a></td>
+                            <td class="py-3 px-4">The Ames Brothers, Dean Martin</td>
+                            <td class="py-3 px-4">Warner Chappell Music</td>
+                            <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=rEMrl7HgrpA" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                        </tr>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">Kiss of Fire</a></td>
+                            <td class="py-3 px-4">Georgia Gibbs, Louis Armstrong</td>
+                            <td class="py-3 px-4">Warner Chappell Music</td>
+                            <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=68oyEZDl1T4" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                        </tr>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">The Young Ones</a></td>
+                            <td class="py-3 px-4">Cliff Richard</td>
+                            <td class="py-3 px-4">Sony Music Publishing</td>
+                            <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=Juw_Vt8Y1A8" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                        </tr>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">G.I. Blues</a></td>
+                            <td class="py-3 px-4">Elvis Presley</td>
+                            <td class="py-3 px-4">Universal Music Publishing Group</td>
+                            <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=QMUHt5cATmk" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Genres Section -->
+    <section id="genres" class="py-16 px-8 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Genres</h2>
+            <div class="space-y-10">
+                <div>
+                    <h3 class="font-serif text-2xl font-bold text-navy mb-4">The Many Genres</h3>
+                    <p class="text-lg">
+                        Sid and Roy's discography ran the gamut of genres, and were sung by a vast constellation of stars. They were equally
+                        at home with love songs, children's and holiday songs, and just plain fun songs. With over 300 published songs, the
+                        duo covered many genres, but regardless of type, their songs, as <cite>The New York Times</cite> put it, were distinguished
+                        by a wholly enjoyable combination of catchy melody and clever lyrics.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-serif text-2xl font-bold text-navy mb-4">Love Songs</h3>
+                    <p class="text-lg">
+                        Sid and Roy often wrote about love, and came up with a number of memorable songs that approached it from a variety of
+                        angles. Among those that still resonate deeply with audiences are
+                        <a href="https://www.youtube.com/watch?v=yeMFw9tBrGo" target="_blank" class="text-navy underline hover:text-gold">"Red Roses for a Blue Lady"</a>
+                        and
+                        <a href="https://www.youtube.com/watch?v=gVxwN3Eaf_U" target="_blank" class="text-navy underline hover:text-gold">"Kiss of Fire"</a>.
+
+                        Others focused on budding passions, like the wonderfully playful duet by Elvis and Ann-Margret,
+                        <a href="https://www.youtube.com/watch?v=_fTiGRljqDk" target="_blank" class="text-navy underline hover:text-gold">"The Lady Loves Me"</a>.
+
+                        They also wrote about the flip side of love, heartbreak, in Nancy
+                        Wilson's <a href="https://www.youtube.com/watch?v=QlzCpTEhhQM" target="_blank" class="text-navy underline hover:text-gold">"Don't Come Running Back to Me"</a>.
+
+                        And they even wrote a love song to their hometown, Connie Francis' silky smooth
+                        <a href="https://www.youtube.com/watch?v=0_Gycn0UJ9M" target="_blank" class="text-navy underline hover:text-gold">"I've Got a Crush on New York Town"</a>.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-serif text-2xl font-bold text-navy mb-4">Rock 'n' Roll Songs</h3>
+                    <p class="text-lg">
+                        Ushering in the birth of Rock 'n' Roll, Sid and Roy's songs were recorded by the likes of The Beatles
+                        (<a href="https://www.youtube.com/watch?v=ghag_1WCEuQ" target="_blank" class="text-navy underline hover:text-gold">"Glad All Over"</a>),
+                        Elvis (<a href="https://www.youtube.com/watch?v=GkyjCJvHLsA" target="_blank" class="text-navy underline hover:text-gold">"GI Blues"</a>),
+                        Jay and the Americans (<a href="https://www.youtube.com/watch?v=BWyneW_A4_8" target="_blank" class="text-navy underline hover:text-gold">"Goodbye Boys, Goodbye"</a>),
+                        <a href="https://www.youtube.com/watch?v=OP0JNb6jfqU" target="_blank" class="text-navy underline hover:text-gold">Jeff Beck</a>,
+                        and even
+                        <a href="https://www.youtube.com/watch?v=O3ZhSMmEFFU" target="_blank" class="text-navy underline hover:text-gold">Plain White T's</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Elvis Section -->
+    <section id="elvis" class="py-16 px-8 bg-gray-100">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Elvis Presley Songs</h2>
+            <p class="text-lg mb-8">Tepper & Bennett wrote 42 songs for Elvis Presley, many of which appeared in his movies. Explore this special collection that highlights their contribution to The King's legacy.</p>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/2">
+                    <img src="designs/home/images/elvis-chante-tepper-bennett.jpg" alt="Elvis Presley performing a Tepper and Bennett song" class="w-full h-auto rounded-lg shadow-md object-cover" onerror="this.src='https://placehold.co/600x400/1A305E/FFFFFF?text=Elvis+Presley'" />
+                </div>
+                <div class="md:w-1/2 space-y-4">
+                    <p class="text-lg">Sid Tepper and Roy C. Bennett wrote an impressive 42 songs that were recorded by Elvis Presley. Many of these songs were featured in Elvis's movies, helping to define the soundtrack of his film career in the 1960s.</p>
+                    <p class="text-lg">Their collaborations with Elvis include memorable tracks like "G.I. Blues," "Hawaiian Sunset," "New Orleans," and "Song of the Shrimp." While some of these songs may not be among Elvis's most well-known hits, they showcase the versatility and prolific nature of Tepper and Bennett's songwriting abilities.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="py-16 px-8 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Resources</h2>
+            <p class="text-lg mb-6">Find interviews, articles, and media about Tepper & Bennett's contributions to music history.</p>
+        </div>
+    </section>
+
+    <!-- Reports Section -->
+    <section id="reports" class="py-16 px-8 bg-gray-100">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Reports</h2>
+            <p class="text-lg mb-6">Access licensing reports and usage statistics for Tepper & Bennett's catalog.</p>
+        </div>
+    </section>
+
+    <!-- Inquiries Section -->
+    <section id="inquiries" class="py-16 px-8 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Inquiries</h2>
+            <p class="text-lg mb-6">Contact information for licensing, media requests, and general inquiries about Tepper & Bennett's work.</p>
+        </div>
+    </section>
+
+    <!-- Script for Songs Table -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('songs-search');
+        const searchButton = document.getElementById('search-button');
+        
+        searchButton.addEventListener('click', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+            console.log('Searching for:', searchTerm);
+            // Add search functionality here
+        });
+    });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,15 @@
+{
+  "name": "tepper-bennett",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tailwindcss -i ./src/input.css -o ./home.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Tepper & Bennett - Masters of American Song website",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

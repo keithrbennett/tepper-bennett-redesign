@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .stat-number {
+    @apply font-serif text-5xl font-bold text-gold leading-none;
+  }
+  
+  .stat-label {
+    @apply font-serif text-xl text-gray-800 mt-1;
+  }
+  
+  .stat-card {
+    @apply bg-white rounded shadow-md p-6 w-full max-w-xs mb-8;
+  }
+} 
