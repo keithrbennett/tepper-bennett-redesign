@@ -344,6 +344,36 @@ footer {
     font-size: 1.2rem;
 }
 
+/* Inquiries Content Styles */
+.inquiries-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.inquiries-content h3 {
+    color: var(--color-primary);
+    font-family: var(--font-heading), serif;
+    font-size: 1.8rem;
+    margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+}
+
+.inquiries-content p {
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+}
+
+.inquiries-content a {
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--transition-fast);
+}
+
+.inquiries-content a:hover {
+    border-bottom-color: var(--color-secondary);
+    color: var(--color-secondary);
+}
+
 /* Responsive adjustments for content sections */
 @media (max-width: 768px) {
     .content-section {
