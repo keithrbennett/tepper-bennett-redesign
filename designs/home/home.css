@@ -363,15 +363,87 @@ footer {
 }
 
 .inquiries-content a {
-    color: var(--color-primary);
+    color: var(--color-secondary);
     text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--transition-fast);
+    border-bottom: 1px solid var(--color-secondary);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .inquiries-content a:hover {
-    border-bottom-color: var(--color-secondary);
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+}
+
+/* Resources Content Styles */
+.resources-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.resources-content section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.resources-content h3 {
+    color: var(--color-primary);
+    font-family: var(--font-heading), serif;
+    font-size: 1.8rem;
+    margin-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--spacing-xs);
+}
+
+.resources-content ul {
+    list-style-type: disc;
+    margin-left: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.resources-content li {
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.6;
+}
+
+.resources-content a {
     color: var(--color-secondary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-secondary);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.resources-content a:hover {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+}
+
+.resources-content cite {
+    font-style: italic;
+}
+
+/* Global link styles for content sections */
+.section-container a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-secondary);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.section-container a:hover {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+}
+
+/* Style for links in content paragraphs */
+.about-content a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-secondary);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.about-content a:hover {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
 }
 
 /* Responsive adjustments for content sections */
