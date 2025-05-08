@@ -103,7 +103,8 @@
 }
 
 .stat-card {
-    background: white;
+    /* Using a slightly more noticeable light grey */
+    background: #F0F0F0;
     padding: var(--spacing-md);
     border-radius: var(--radius-sm);
     min-width: 120px;
@@ -112,7 +113,7 @@
     align-items: center;
     text-align: center;
     transition: transform var(--transition-normal);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15); /* Adjusted shadow for this bg */
 }
 
 .stat-card:hover {
@@ -122,13 +123,13 @@
 .stat-number {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--color-secondary);
+    color: var(--color-secondary); /* Gold color for numbers */
 }
 
 .stat-label {
     font-size: 0.9rem;
     margin-top: var(--spacing-xs);
-    color: var(--color-text);
+    color: var(--color-text); /* Dark grey for labels, good contrast on light bg */
 }
 
 /* Featured Songs Section */
@@ -171,7 +172,7 @@
 footer {
     background: var(--color-text);
     color: white;
-    padding: var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-md); /* Adjusted bottom padding */
 }
 
 .footer-content {
@@ -180,6 +181,7 @@ footer {
     gap: var(--spacing-xl);
     max-width: 1200px;
     margin: 0 auto;
+    margin-bottom: var(--spacing-lg);
 }
 
 .footer-section h3 {
@@ -204,6 +206,19 @@ footer {
 
 .footer-section a:hover {
     color: var(--color-secondary);
+}
+
+/* Copyright in Footer */
+.copyright-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: var(--spacing-md);
+    text-align: center;
+}
+
+.copyright-text {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5); /* Less prominent text color */
+    margin: 0;
 }
 
 /* Responsive Design */
