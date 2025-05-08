@@ -43,7 +43,7 @@
 
 /* Navigation & Logo in Top-Left */
 .nav-logo {
-    font-family: var(--font-heading);
+    font-family: var(--font-heading), serif;
     font-size: 2.8rem;
     font-weight: 700;
     color: white;
@@ -466,5 +466,46 @@ footer {
     
     .placeholder-content {
         height: 200px;
+    }
+}
+
+/* Elvis Section Styles */
+.elvis-content {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-xl);
+    align-items: flex-start;
+    margin: var(--spacing-lg) 0;
+}
+
+.elvis-image {
+    max-width: 50%;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.elvis-image:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-lg);
+}
+
+.elvis-text {
+    flex: 1;
+}
+
+.elvis-text p {
+    margin-bottom: var(--spacing-md);
+}
+
+/* Add responsive styles for the Elvis section */
+@media (max-width: 768px) {
+    .elvis-content {
+        flex-direction: column;
+    }
+    
+    .elvis-image {
+        max-width: 100%;
+        margin-bottom: var(--spacing-md);
     }
 } 
