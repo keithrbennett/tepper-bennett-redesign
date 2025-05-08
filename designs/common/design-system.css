@@ -1,7 +1,7 @@
 :root {
   /* Colors */
   --color-primary: #1A365D;
-  --color-secondary: #D4AF37;
+  --color-secondary: #B8860B; /* Darkened gold color (DarkGoldenRod) for better visibility */
   --color-accent: #C53030;
   --color-background: #FFFFFF;
   --color-text: #1A202C;
