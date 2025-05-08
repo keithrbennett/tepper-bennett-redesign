@@ -69,8 +69,85 @@
             <div class="section-container">
                 <h2>Songs</h2>
                 <p>Explore the complete collection of songs written by Tepper & Bennett. Filter by artist, year, or genre to discover their extensive catalog.</p>
-                <div class="placeholder-content">
-                    <!-- Content will be populated with song listings and filters -->
+                
+                <div class="songs-search-container">
+                    <input type="text" id="songs-search" placeholder="Search songs, performers, or administrators...">
+                    <button id="search-button">Search</button>
+                </div>
+                
+                <div class="songs-table-container">
+                    <table id="songs-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="title">Title <span class="sort-icon">↓</span></th>
+                                <th class="sortable" data-sort="performer">Performer(s) <span class="sort-icon"></span></th>
+                                <th class="sortable" data-sort="admin">Rights Administrator <span class="sort-icon"></span></th>
+                                <th>YouTube</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><a href="#song-detail">Red Roses for a Blue Lady</a></td>
+                                <td>Vaughn Monroe, Wayne Newton, Vic Dana</td>
+                                <td>Universal Music Publishing Group</td>
+                                <td><a href="https://www.youtube.com/watch?v=2bQZ6l_cq5Y" target="_blank" class="youtube-link"><i class="youtube-icon">▶</i></a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#song-detail">The Naughty Lady of Shady Lane</a></td>
+                                <td>The Ames Brothers, Dean Martin</td>
+                                <td>Warner Chappell Music</td>
+                                <td><a href="https://www.youtube.com/watch?v=rEMrl7HgrpA" target="_blank" class="youtube-link"><i class="youtube-icon">▶</i></a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#song-detail">Kiss of Fire</a></td>
+                                <td>Georgia Gibbs, Louis Armstrong</td>
+                                <td>Warner Chappell Music</td>
+                                <td><a href="https://www.youtube.com/watch?v=68oyEZDl1T4" target="_blank" class="youtube-link"><i class="youtube-icon">▶</i></a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#song-detail">The Young Ones</a></td>
+                                <td>Cliff Richard</td>
+                                <td>Sony Music Publishing</td>
+                                <td><a href="https://www.youtube.com/watch?v=Juw_Vt8Y1A8" target="_blank" class="youtube-link"><i class="youtube-icon">▶</i></a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#song-detail">G.I. Blues</a></td>
+                                <td>Elvis Presley</td>
+                                <td>Universal Music Publishing Group</td>
+                                <td><a href="https://www.youtube.com/watch?v=QMUHt5cATmk" target="_blank" class="youtube-link"><i class="youtube-icon">▶</i></a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#song-detail">Hawaiian Sunset</a></td>
+                                <td>Elvis Presley</td>
+                                <td>Universal Music Publishing Group</td>
+                                <td><a href="https://www.youtube.com/watch?v=j8EYzRoYa8I" target="_blank" class="youtube-link"><i class="youtube-icon">▶</i></a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#song-detail">New Orleans</a></td>
+                                <td>Elvis Presley</td>
+                                <td>Warner Chappell Music</td>
+                                <td><a href="https://www.youtube.com/watch?v=3A3oMHWO9j4" target="_blank" class="youtube-link"><i class="youtube-icon">▶</i></a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#song-detail">Song of the Shrimp</a></td>
+                                <td>Elvis Presley</td>
+                                <td>Sony Music Publishing</td>
+                                <td><a href="https://www.youtube.com/watch?v=rXORDIr2eUs" target="_blank" class="youtube-link"><i class="youtube-icon">▶</i></a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#song-detail">Twenty Tiny Fingers</a></td>
+                                <td>Alma Cogan, Bill Haley</td>
+                                <td>Warner Chappell Music</td>
+                                <td><a href="https://www.youtube.com/watch?v=d1szEGoTCM0" target="_blank" class="youtube-link"><i class="youtube-icon">▶</i></a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#song-detail">Nuthin' for Christmas</a></td>
+                                <td>Barry Gordon, Eartha Kitt</td>
+                                <td>Universal Music Publishing Group</td>
+                                <td><a href="https://www.youtube.com/watch?v=TwFkoGzoYm8" target="_blank" class="youtube-link"><i class="youtube-icon">▶</i></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
@@ -196,5 +273,6 @@
             <p class="copyright-text">© Bennett Business Solutions, Inc., 2025</p>
         </div>
     </footer>
+    <script src="songs-table.js"></script>
 </body>
 </html> 

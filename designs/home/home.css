@@ -508,4 +508,138 @@ footer {
         max-width: 100%;
         margin-bottom: var(--spacing-md);
     }
+}
+
+/* Songs Table Styles */
+.songs-search-container {
+    display: flex;
+    margin-bottom: var(--spacing-lg);
+    max-width: 600px;
+}
+
+#songs-search {
+    flex: 1;
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    font-family: var(--font-body), sans-serif;
+    font-size: 1rem;
+}
+
+#search-button {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    cursor: pointer;
+    font-family: var(--font-body), sans-serif;
+    font-weight: 500;
+    transition: background-color var(--transition-fast);
+}
+
+#search-button:hover {
+    background-color: var(--color-accent);
+}
+
+.songs-table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: var(--spacing-xl);
+}
+
+#songs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+#songs-table th {
+    background-color: var(--color-primary);
+    color: white;
+    padding: var(--spacing-md);
+    text-align: left;
+    position: sticky;
+    top: 0;
+}
+
+#songs-table th.sortable {
+    cursor: pointer;
+}
+
+#songs-table th.sortable:hover {
+    background-color: #2a4a7d;
+}
+
+.sort-icon {
+    display: inline-block;
+    margin-left: var(--spacing-xs);
+    font-size: 0.8rem;
+}
+
+#songs-table td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+#songs-table tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+#songs-table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+#songs-table a {
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+#songs-table a:hover {
+    color: var(--color-secondary);
+    border-bottom-color: var(--color-secondary);
+}
+
+.youtube-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #FF0000;
+    color: white;
+    text-align: center;
+    border: none !important;
+}
+
+.youtube-link:hover {
+    background-color: #CC0000;
+    transform: scale(1.1);
+}
+
+.youtube-icon {
+    font-style: normal;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .songs-search-container {
+        flex-direction: column;
+    }
+    
+    #songs-search {
+        border-radius: var(--radius-sm);
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    #search-button {
+        border-radius: var(--radius-sm);
+    }
+    
+    #songs-table th, #songs-table td {
+        padding: var(--spacing-sm);
+    }
 } 

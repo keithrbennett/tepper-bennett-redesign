@@ -59,6 +59,11 @@ We are looking for a new UI design that:
 
 The Songs and Elvis panels contain tables for viewing the song titles, performers, rights administrators, and links to YouTube videos. Table features include:
 
+* The table columns are:
+  * Title
+  * Performer(s)
+  * Rights Administrator
+  * Link to YouTube video (uses YouTube icon)
 * The table column headings can be clicked to sort the table by that column.
 * There is a search bar to search the table data (titles, performers, and administrators) for the specified string.
 * The titles double as hyperlinks to a song page displaying the known information about that song.
