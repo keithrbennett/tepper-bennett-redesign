@@ -638,4 +638,55 @@ footer {
     #songs-table th, #songs-table td {
         padding: var(--spacing-sm);
     }
+}
+
+/* Genres Section Styles */
+.genres-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.genres-content section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.genres-content h3 {
+    color: var(--color-primary);
+    font-family: var(--font-heading), serif;
+    font-size: 1.8rem;
+    margin-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--spacing-xs);
+}
+
+.text-justify {
+    text-align: justify;
+    line-height: 1.7;
+    margin-bottom: var(--spacing-md);
+}
+
+.genres-content a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-secondary);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.genres-content a:hover {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+}
+
+.genres-content cite {
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .genres-content h3 {
+        font-size: 1.5rem;
+    }
+    
+    .text-justify {
+        text-align: left; /* Justified text can look odd on small screens */
+    }
 } 
