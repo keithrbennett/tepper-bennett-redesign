@@ -606,23 +606,19 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: #FF0000;
-    color: white;
     text-align: center;
     border: none !important;
+    transition: transform var(--transition-fast);
 }
 
 .youtube-link:hover {
-    background-color: #CC0000;
     transform: scale(1.1);
 }
 
 .youtube-icon {
-    font-style: normal;
-    font-size: 0.9rem;
+    width: 24px;
+    height: 24px;
+    display: block;
 }
 
 @media (max-width: 768px) {
