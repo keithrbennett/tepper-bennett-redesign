@@ -1,4 +1,4 @@
-# Soliciation for Design Ideas for Tepper-Bennett Songwriters Website
+# Solicitation for Design Ideas for Tepper-Bennett Songwriters Website
 
 This prompt relates to the web site at https://www.tepper-bennett.com. Roy C. Bennett and Sid Tepper wrote songs together from the 1940's through 1970's that were sung my many famous singers of the day, including dozens of songs sung by Elvis Presley in his movies.
 
