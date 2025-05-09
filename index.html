@@ -95,7 +95,7 @@
           margin: 0;
         }
         
-        .mobile-song-list-item {
+        .song-list-entry {
           background-color: white;
           border-bottom: 1px solid #e2e8f0;
           padding: 8px 4px;
@@ -103,7 +103,7 @@
           font-size: 0.8rem;
         }
         
-        .mobile-song-list-item:nth-child(even) {
+        .song-list-entry:nth-child(even) {
           background-color: #f7fafc;
         }
         
@@ -315,7 +315,9 @@
                 
                 <div class="mb-8 search-container">
                     <div class="flex flex-col md:flex-row gap-4">
-                        <input type="text" id="songs-search" placeholder="Search songs, performers, or administrators..." class="flex-grow p-3 border border-gray-300 rounded-md">
+                        <input type="text" id="songs-search" placeholder="Search songs, performers, or administrators..." 
+                               class="flex-grow p-3 border border-gray-300 rounded-md"
+                               aria-label="Search songs">
                         <button id="search-button" class="bg-navy text-white px-6 py-3 rounded-md hover:bg-opacity-90">Search</button>
                     </div>
                 </div>
@@ -594,9 +596,18 @@
         
         // Individual toggle functionality
         toggles.forEach(toggle => {
+            // Ensure aria-expanded is a string
+            if (toggle.getAttribute('aria-expanded') === 'true') {
+                toggle.querySelector('.toggle-icon').textContent = '−';
+                toggle.nextElementSibling.classList.add('open');
+            } else {
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.querySelector('.toggle-icon').textContent = '+';
+            }
+            
             toggle.addEventListener('click', function() {
-                const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-                toggle.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                this.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
                 
                 // Update the toggle icon
                 const icon = this.querySelector('.toggle-icon');
@@ -724,7 +735,7 @@
             
             pageData.forEach(song => {
                 const listItem = document.createElement('li');
-                listItem.className = 'mobile-song-list-item';
+                listItem.className = 'song-list-entry';
                 
                 // Truncate long text for mobile
                 const truncateText = (text, maxLength = 20) => {
