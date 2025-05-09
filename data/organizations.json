@@ -1,0 +1,34 @@
+[
+  {
+    "code": "emi-uk",
+    "name": "EMI (United Kingdom)"
+  },
+  {
+    "code": "emi-us",
+    "name": "EMI (United States)"
+  },
+  {
+    "code": "kobalt",
+    "name": "Kobalt Music Group"
+  },
+  {
+    "code": "mem-lane",
+    "name": "Memory Lane"
+  },
+  {
+    "code": "raleigh",
+    "name": "Peter Raleigh Music"
+  },
+  {
+    "code": "sony",
+    "name": "Sony ATV Music"
+  },
+  {
+    "code": "universal",
+    "name": "Universal Music"
+  },
+  {
+    "code": "warner",
+    "name": "Chappell & Co., Inc."
+  }
+]
