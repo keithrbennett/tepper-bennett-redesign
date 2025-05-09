@@ -47,30 +47,28 @@
         position: relative;
         padding-right: 40px; /* Space for the + symbol */
         text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       
-      .collapsible-toggle:after {
-        content: '+';
+      .toggle-icon {
         position: absolute;
         right: 10px; /* Fixed right positioning */
-        top: 50%;
-        transform: translateY(-50%);
+        width: 24px; /* Fixed width for consistency */
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: bold;
         font-size: 1.5rem;
-        transition: transform 0.3s ease;
-        width: 24px; /* Fixed width for consistency */
-        text-align: center;
-      }
-      
-      .collapsible-toggle.open:after {
-        content: '−';
+        transition: transform 0.2s ease;
       }
       
       /* Ensure consistent width for containers */
       .section-container {
         position: relative;
         width: 100%;
-        max-width: 4xl; /* Standard max width for all sections */
       }
     </style>
 </head>
@@ -163,8 +161,15 @@
     <!-- About Section -->
     <section class="py-16 px-8 bg-white">
         <div class="max-w-4xl mx-auto section-container">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">The Legacy</h2>
-            <div class="collapsible-content open">
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center" 
+               aria-expanded="true" 
+               role="button" 
+               tabindex="0"
+               aria-controls="legacy-content">
+                The Legacy
+                <span class="toggle-icon" aria-hidden="true">−</span>
+            </h2>
+            <div id="legacy-content" class="collapsible-content open" role="region" aria-labelledby="legacy-heading">
                 <div class="space-y-6 text-lg">
                     <p>Sid and Roy were Brooklyn born and bred, and lived across the street from each other through the Great Depression. They often found themselves with barely two nickels to rub together, but their friendship didn't require material goods to pass the time. Just paper and pencil. They began their writing career at the ripe old age of 11, and really began in earnest, turning avocation into vocation, at age 24.</p>
                     <p>World War II interrupted their partnership, when Sid was stationed with the U.S. Cavalry at Fort Riley, Kansas, where he produced shows and sang with the base band. Roy spent three years in the China-Burma-India theatre with the U.S. Army Air Forces. In addition to his duties in Intelligence, the Army eventually capitalized on his talents and he set to work entertaining the forces.</p>
@@ -180,8 +185,15 @@
     <!-- Songs Section -->
     <section id="songs" class="py-16 px-8 bg-gray-100">
         <div class="max-w-4xl mx-auto section-container">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Songs</h2>
-            <div class="collapsible-content">
+            <h2 id="songs-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
+               aria-expanded="false" 
+               role="button" 
+               tabindex="0"
+               aria-controls="songs-content">
+                Songs
+                <span class="toggle-icon" aria-hidden="true">+</span>
+            </h2>
+            <div id="songs-content" class="collapsible-content" role="region" aria-labelledby="songs-heading">
                 <p class="text-lg mb-8">Explore the complete collection of songs written by Tepper & Bennett. Filter by artist, year, or genre to discover their extensive catalog.</p>
                 
                 <div class="mb-8">
@@ -242,8 +254,15 @@
     <!-- Genres Section -->
     <section id="genres" class="py-16 px-8 bg-white">
         <div class="max-w-4xl mx-auto section-container">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Genres</h2>
-            <div class="collapsible-content">
+            <h2 id="genres-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
+               aria-expanded="false" 
+               role="button" 
+               tabindex="0"
+               aria-controls="genres-content">
+                Genres
+                <span class="toggle-icon" aria-hidden="true">+</span>
+            </h2>
+            <div id="genres-content" class="collapsible-content" role="region" aria-labelledby="genres-heading">
                 <div class="space-y-10">
                     <div>
                         <h3 class="font-serif text-2xl font-bold text-navy mb-4">The Many Genres</h3>
@@ -295,8 +314,15 @@
     <!-- Elvis Section -->
     <section id="elvis" class="py-16 px-8 bg-gray-100">
         <div class="max-w-4xl mx-auto section-container">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Elvis Presley Songs</h2>
-            <div class="collapsible-content">
+            <h2 id="elvis-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
+               aria-expanded="false" 
+               role="button" 
+               tabindex="0"
+               aria-controls="elvis-content">
+                Elvis Presley Songs
+                <span class="toggle-icon" aria-hidden="true">+</span>
+            </h2>
+            <div id="elvis-content" class="collapsible-content" role="region" aria-labelledby="elvis-heading">
                 <p class="text-lg mb-8">Tepper & Bennett wrote 42 songs for Elvis Presley, many of which appeared in his movies. Explore this special collection that highlights their contribution to The King's legacy.</p>
                 
                 <div class="flex flex-col md:flex-row gap-8">
@@ -315,8 +341,15 @@
     <!-- Resources Section -->
     <section id="resources" class="py-16 px-8 bg-white">
         <div class="max-w-4xl mx-auto section-container">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Resources</h2>
-            <div class="collapsible-content">
+            <h2 id="resources-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
+               aria-expanded="false" 
+               role="button" 
+               tabindex="0"
+               aria-controls="resources-content">
+                Resources
+                <span class="toggle-icon" aria-hidden="true">+</span>
+            </h2>
+            <div id="resources-content" class="collapsible-content" role="region" aria-labelledby="resources-heading">
                 <div class="space-y-8">
                     <section>
                         <h3 class="font-serif text-2xl font-bold text-navy mb-4">Discography</h3>
@@ -365,8 +398,15 @@
     <!-- Reports Section -->
     <section id="reports" class="py-16 px-8 bg-gray-100">
         <div class="max-w-4xl mx-auto section-container">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Reports</h2>
-            <div class="collapsible-content">
+            <h2 id="reports-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
+               aria-expanded="false" 
+               role="button" 
+               tabindex="0"
+               aria-controls="reports-content">
+                Reports
+                <span class="toggle-icon" aria-hidden="true">+</span>
+            </h2>
+            <div id="reports-content" class="collapsible-content" role="region" aria-labelledby="reports-heading">
                 <p class="text-lg mb-6">Coming soon...</p>
             </div>
         </div>
@@ -375,8 +415,15 @@
     <!-- Inquiries Section -->
     <section id="inquiries" class="py-16 px-8 bg-white">
         <div class="max-w-4xl mx-auto section-container">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Inquiries</h2>
-            <div class="collapsible-content">
+            <h2 id="inquiries-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
+               aria-expanded="false" 
+               role="button" 
+               tabindex="0"
+               aria-controls="inquiries-content">
+                Inquiries
+                <span class="toggle-icon" aria-hidden="true">+</span>
+            </h2>
+            <div id="inquiries-content" class="collapsible-content" role="region" aria-labelledby="inquiries-heading">
                 <div class="space-y-6 text-lg">
                     <p>If you are interested in incorporating any of Sid and Roy's songs into your production, please contact the appropriate rights administrator(s). The name of the rights administrator organization can be found in a column of the <a href="#songs" class="text-navy underline hover:text-gold">Songs table</a>. This information is not yet complete; we are still in the process of obtaining some of it.</p>
                     
@@ -418,17 +465,36 @@
         // Individual toggle functionality
         toggles.forEach(toggle => {
             toggle.addEventListener('click', function() {
-                this.classList.toggle('open');
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                this.setAttribute('aria-expanded', !isExpanded);
+                
+                // Update the toggle icon
+                const icon = this.querySelector('.toggle-icon');
+                icon.textContent = isExpanded ? '+' : '−';
+                
+                // Toggle the content
                 const content = this.nextElementSibling;
                 content.classList.toggle('open');
+                
                 updateButtonStates();
+            });
+            
+            // Add keyboard support
+            toggle.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
             });
         });
         
         // Expand all sections
         expandAllButton.addEventListener('click', function() {
             if (!this.disabled) {
-                toggles.forEach(toggle => toggle.classList.add('open'));
+                toggles.forEach(toggle => {
+                    toggle.setAttribute('aria-expanded', 'true');
+                    toggle.querySelector('.toggle-icon').textContent = '−';
+                });
                 contents.forEach(content => content.classList.add('open'));
                 updateButtonStates();
             }
@@ -437,7 +503,10 @@
         // Collapse all sections
         collapseAllButton.addEventListener('click', function() {
             if (!this.disabled) {
-                toggles.forEach(toggle => toggle.classList.remove('open'));
+                toggles.forEach(toggle => {
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.querySelector('.toggle-icon').textContent = '+';
+                });
                 contents.forEach(content => content.classList.remove('open'));
                 updateButtonStates();
             }
