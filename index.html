@@ -25,6 +25,42 @@
         }
       }
     </script>
+    <style>
+      /* Styles for collapsible panels */
+      .collapsible-panel {
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+      }
+      
+      .collapsible-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+      }
+      
+      .collapsible-content.open {
+        max-height: 2000px; /* A sufficiently large value */
+      }
+      
+      .collapsible-toggle {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .collapsible-toggle:after {
+        content: '+';
+        font-weight: bold;
+        font-size: 1.5rem;
+        transition: transform 0.3s ease;
+      }
+      
+      .collapsible-toggle.open:after {
+        content: '−';
+        transform: rotate(0deg);
+      }
+    </style>
 </head>
 <body>
     <!-- Construction Notice -->
@@ -108,14 +144,16 @@
     <!-- About Section -->
     <section class="py-16 px-8 bg-white">
         <div class="max-w-4xl mx-auto">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8">The Legacy</h2>
-            <div class="space-y-6 text-lg">
-                <p>Sid and Roy were Brooklyn born and bred, and lived across the street from each other through the Great Depression. They often found themselves with barely two nickels to rub together, but their friendship didn't require material goods to pass the time. Just paper and pencil. They began their writing career at the ripe old age of 11, and really began in earnest, turning avocation into vocation, at age 24.</p>
-                <p>World War II interrupted their partnership, when Sid was stationed with the U.S. Cavalry at Fort Riley, Kansas, where he produced shows and sang with the base band. Roy spent three years in the China-Burma-India theatre with the U.S. Army Air Forces. In addition to his duties in Intelligence, the Army eventually capitalized on his talents and he set to work entertaining the forces.</p>
-                <p>After returning home, they found their way to the iconic Brill Building, the epicenter of the songwriting world in Midtown Manhattan, and peddled their songs. They'd start at the top floor and work their way down until they hit a publisher who'd make a deal. Their confidence grew; it only stands to reason when one of their very first songs was the megahit, "Red Roses for a Blue Lady," what the industry calls an "evergreen".</p>
-                <p>Sid and Roy were enormously successful, as many hits followed, including "The Naughty Lady of Shady Lane" , "Kiss of Fire" , and "The Young Ones" , not to mention an astonishing 42 songs recorded by Elvis Presley. It's hard to believe that there's another team who had their songs recorded by such an extraordinary array of artists, from Duke Ellington to Louis Armstrong and Ray Charles, to Frank Sinatra, Elvis, and The Beatles.</p>
-                <p>Sid and Roy passed away mere months apart in 2015, but their music lives on to entertain the world.</p>
-                <p>Come look inside and give a listen to many of their songs, which The New York Times characterized as "catchy melodies and lyrics of easygoing cleverness"...</p>
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle">The Legacy</h2>
+            <div class="collapsible-content open">
+                <div class="space-y-6 text-lg">
+                    <p>Sid and Roy were Brooklyn born and bred, and lived across the street from each other through the Great Depression. They often found themselves with barely two nickels to rub together, but their friendship didn't require material goods to pass the time. Just paper and pencil. They began their writing career at the ripe old age of 11, and really began in earnest, turning avocation into vocation, at age 24.</p>
+                    <p>World War II interrupted their partnership, when Sid was stationed with the U.S. Cavalry at Fort Riley, Kansas, where he produced shows and sang with the base band. Roy spent three years in the China-Burma-India theatre with the U.S. Army Air Forces. In addition to his duties in Intelligence, the Army eventually capitalized on his talents and he set to work entertaining the forces.</p>
+                    <p>After returning home, they found their way to the iconic Brill Building, the epicenter of the songwriting world in Midtown Manhattan, and peddled their songs. They'd start at the top floor and work their way down until they hit a publisher who'd make a deal. Their confidence grew; it only stands to reason when one of their very first songs was the megahit, "Red Roses for a Blue Lady," what the industry calls an "evergreen".</p>
+                    <p>Sid and Roy were enormously successful, as many hits followed, including "The Naughty Lady of Shady Lane" , "Kiss of Fire" , and "The Young Ones" , not to mention an astonishing 42 songs recorded by Elvis Presley. It's hard to believe that there's another team who had their songs recorded by such an extraordinary array of artists, from Duke Ellington to Louis Armstrong and Ray Charles, to Frank Sinatra, Elvis, and The Beatles.</p>
+                    <p>Sid and Roy passed away mere months apart in 2015, but their music lives on to entertain the world.</p>
+                    <p>Come look inside and give a listen to many of their songs, which The New York Times characterized as "catchy melodies and lyrics of easygoing cleverness"...</p>
+                </div>
             </div>
         </div>
     </section>
@@ -123,59 +161,61 @@
     <!-- Songs Section -->
     <section id="songs" class="py-16 px-8 bg-gray-100">
         <div class="max-w-6xl mx-auto">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Songs</h2>
-            <p class="text-lg mb-8">Explore the complete collection of songs written by Tepper & Bennett. Filter by artist, year, or genre to discover their extensive catalog.</p>
-            
-            <div class="mb-8">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <input type="text" id="songs-search" placeholder="Search songs, performers, or administrators..." class="flex-grow p-3 border border-gray-300 rounded-md">
-                    <button id="search-button" class="bg-navy text-white px-6 py-3 rounded-md hover:bg-opacity-90">Search</button>
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle">Songs</h2>
+            <div class="collapsible-content">
+                <p class="text-lg mb-8">Explore the complete collection of songs written by Tepper & Bennett. Filter by artist, year, or genre to discover their extensive catalog.</p>
+                
+                <div class="mb-8">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <input type="text" id="songs-search" placeholder="Search songs, performers, or administrators..." class="flex-grow p-3 border border-gray-300 rounded-md">
+                        <button id="search-button" class="bg-navy text-white px-6 py-3 rounded-md hover:bg-opacity-90">Search</button>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="overflow-x-auto shadow-md rounded-lg">
-                <table id="songs-table" class="min-w-full bg-white">
-                    <thead class="bg-navy text-white">
-                        <tr>
-                            <th class="py-3 px-4 text-left">Title</th>
-                            <th class="py-3 px-4 text-left">Performer(s)</th>
-                            <th class="py-3 px-4 text-left">Rights Administrator</th>
-                            <th class="py-3 px-4 text-center">YouTube</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">Red Roses for a Blue Lady</a></td>
-                            <td class="py-3 px-4">Vaughn Monroe, Wayne Newton, Vic Dana</td>
-                            <td class="py-3 px-4">Universal Music Publishing Group</td>
-                            <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=2bQZ6l_cq5Y" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
-                        </tr>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">The Naughty Lady of Shady Lane</a></td>
-                            <td class="py-3 px-4">The Ames Brothers, Dean Martin</td>
-                            <td class="py-3 px-4">Warner Chappell Music</td>
-                            <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=rEMrl7HgrpA" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
-                        </tr>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">Kiss of Fire</a></td>
-                            <td class="py-3 px-4">Georgia Gibbs, Louis Armstrong</td>
-                            <td class="py-3 px-4">Warner Chappell Music</td>
-                            <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=68oyEZDl1T4" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
-                        </tr>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">The Young Ones</a></td>
-                            <td class="py-3 px-4">Cliff Richard</td>
-                            <td class="py-3 px-4">Sony Music Publishing</td>
-                            <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=Juw_Vt8Y1A8" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
-                        </tr>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">G.I. Blues</a></td>
-                            <td class="py-3 px-4">Elvis Presley</td>
-                            <td class="py-3 px-4">Universal Music Publishing Group</td>
-                            <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=QMUHt5cATmk" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
-                        </tr>
-                    </tbody>
-                </table>
+                
+                <div class="overflow-x-auto shadow-md rounded-lg">
+                    <table id="songs-table" class="min-w-full bg-white">
+                        <thead class="bg-navy text-white">
+                            <tr>
+                                <th class="py-3 px-4 text-left">Title</th>
+                                <th class="py-3 px-4 text-left">Performer(s)</th>
+                                <th class="py-3 px-4 text-left">Rights Administrator</th>
+                                <th class="py-3 px-4 text-center">YouTube</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">Red Roses for a Blue Lady</a></td>
+                                <td class="py-3 px-4">Vaughn Monroe, Wayne Newton, Vic Dana</td>
+                                <td class="py-3 px-4">Universal Music Publishing Group</td>
+                                <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=2bQZ6l_cq5Y" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">The Naughty Lady of Shady Lane</a></td>
+                                <td class="py-3 px-4">The Ames Brothers, Dean Martin</td>
+                                <td class="py-3 px-4">Warner Chappell Music</td>
+                                <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=rEMrl7HgrpA" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">Kiss of Fire</a></td>
+                                <td class="py-3 px-4">Georgia Gibbs, Louis Armstrong</td>
+                                <td class="py-3 px-4">Warner Chappell Music</td>
+                                <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=68oyEZDl1T4" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">The Young Ones</a></td>
+                                <td class="py-3 px-4">Cliff Richard</td>
+                                <td class="py-3 px-4">Sony Music Publishing</td>
+                                <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=Juw_Vt8Y1A8" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">G.I. Blues</a></td>
+                                <td class="py-3 px-4">Elvis Presley</td>
+                                <td class="py-3 px-4">Universal Music Publishing Group</td>
+                                <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=QMUHt5cATmk" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </section>
@@ -183,49 +223,51 @@
     <!-- Genres Section -->
     <section id="genres" class="py-16 px-8 bg-white">
         <div class="max-w-4xl mx-auto">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Genres</h2>
-            <div class="space-y-10">
-                <div>
-                    <h3 class="font-serif text-2xl font-bold text-navy mb-4">The Many Genres</h3>
-                    <p class="text-lg">
-                        Sid and Roy's discography ran the gamut of genres, and were sung by a vast constellation of stars. They were equally
-                        at home with love songs, children's and holiday songs, and just plain fun songs. With over 300 published songs, the
-                        duo covered many genres, but regardless of type, their songs, as <cite>The New York Times</cite> put it, were distinguished
-                        by a wholly enjoyable combination of catchy melody and clever lyrics.
-                    </p>
-                </div>
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle">Genres</h2>
+            <div class="collapsible-content">
+                <div class="space-y-10">
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">The Many Genres</h3>
+                        <p class="text-lg">
+                            Sid and Roy's discography ran the gamut of genres, and were sung by a vast constellation of stars. They were equally
+                            at home with love songs, children's and holiday songs, and just plain fun songs. With over 300 published songs, the
+                            duo covered many genres, but regardless of type, their songs, as <cite>The New York Times</cite> put it, were distinguished
+                            by a wholly enjoyable combination of catchy melody and clever lyrics.
+                        </p>
+                    </div>
 
-                <div>
-                    <h3 class="font-serif text-2xl font-bold text-navy mb-4">Love Songs</h3>
-                    <p class="text-lg">
-                        Sid and Roy often wrote about love, and came up with a number of memorable songs that approached it from a variety of
-                        angles. Among those that still resonate deeply with audiences are
-                        <a href="https://www.youtube.com/watch?v=yeMFw9tBrGo" target="_blank" class="text-navy underline hover:text-gold">"Red Roses for a Blue Lady"</a>
-                        and
-                        <a href="https://www.youtube.com/watch?v=gVxwN3Eaf_U" target="_blank" class="text-navy underline hover:text-gold">"Kiss of Fire"</a>.
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Love Songs</h3>
+                        <p class="text-lg">
+                            Sid and Roy often wrote about love, and came up with a number of memorable songs that approached it from a variety of
+                            angles. Among those that still resonate deeply with audiences are
+                            <a href="https://www.youtube.com/watch?v=yeMFw9tBrGo" target="_blank" class="text-navy underline hover:text-gold">"Red Roses for a Blue Lady"</a>
+                            and
+                            <a href="https://www.youtube.com/watch?v=gVxwN3Eaf_U" target="_blank" class="text-navy underline hover:text-gold">"Kiss of Fire"</a>.
 
-                        Others focused on budding passions, like the wonderfully playful duet by Elvis and Ann-Margret,
-                        <a href="https://www.youtube.com/watch?v=_fTiGRljqDk" target="_blank" class="text-navy underline hover:text-gold">"The Lady Loves Me"</a>.
+                            Others focused on budding passions, like the wonderfully playful duet by Elvis and Ann-Margret,
+                            <a href="https://www.youtube.com/watch?v=_fTiGRljqDk" target="_blank" class="text-navy underline hover:text-gold">"The Lady Loves Me"</a>.
 
-                        They also wrote about the flip side of love, heartbreak, in Nancy
-                        Wilson's <a href="https://www.youtube.com/watch?v=QlzCpTEhhQM" target="_blank" class="text-navy underline hover:text-gold">"Don't Come Running Back to Me"</a>.
+                            They also wrote about the flip side of love, heartbreak, in Nancy
+                            Wilson's <a href="https://www.youtube.com/watch?v=QlzCpTEhhQM" target="_blank" class="text-navy underline hover:text-gold">"Don't Come Running Back to Me"</a>.
 
-                        And they even wrote a love song to their hometown, Connie Francis' silky smooth
-                        <a href="https://www.youtube.com/watch?v=0_Gycn0UJ9M" target="_blank" class="text-navy underline hover:text-gold">"I've Got a Crush on New York Town"</a>.
-                    </p>
-                </div>
+                            And they even wrote a love song to their hometown, Connie Francis' silky smooth
+                            <a href="https://www.youtube.com/watch?v=0_Gycn0UJ9M" target="_blank" class="text-navy underline hover:text-gold">"I've Got a Crush on New York Town"</a>.
+                        </p>
+                    </div>
 
-                <div>
-                    <h3 class="font-serif text-2xl font-bold text-navy mb-4">Rock 'n' Roll Songs</h3>
-                    <p class="text-lg">
-                        Ushering in the birth of Rock 'n' Roll, Sid and Roy's songs were recorded by the likes of The Beatles
-                        (<a href="https://www.youtube.com/watch?v=ghag_1WCEuQ" target="_blank" class="text-navy underline hover:text-gold">"Glad All Over"</a>),
-                        Elvis (<a href="https://www.youtube.com/watch?v=GkyjCJvHLsA" target="_blank" class="text-navy underline hover:text-gold">"GI Blues"</a>),
-                        Jay and the Americans (<a href="https://www.youtube.com/watch?v=BWyneW_A4_8" target="_blank" class="text-navy underline hover:text-gold">"Goodbye Boys, Goodbye"</a>),
-                        <a href="https://www.youtube.com/watch?v=OP0JNb6jfqU" target="_blank" class="text-navy underline hover:text-gold">Jeff Beck</a>,
-                        and even
-                        <a href="https://www.youtube.com/watch?v=O3ZhSMmEFFU" target="_blank" class="text-navy underline hover:text-gold">Plain White T's</a>.
-                    </p>
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Rock 'n' Roll Songs</h3>
+                        <p class="text-lg">
+                            Ushering in the birth of Rock 'n' Roll, Sid and Roy's songs were recorded by the likes of The Beatles
+                            (<a href="https://www.youtube.com/watch?v=ghag_1WCEuQ" target="_blank" class="text-navy underline hover:text-gold">"Glad All Over"</a>),
+                            Elvis (<a href="https://www.youtube.com/watch?v=GkyjCJvHLsA" target="_blank" class="text-navy underline hover:text-gold">"GI Blues"</a>),
+                            Jay and the Americans (<a href="https://www.youtube.com/watch?v=BWyneW_A4_8" target="_blank" class="text-navy underline hover:text-gold">"Goodbye Boys, Goodbye"</a>),
+                            <a href="https://www.youtube.com/watch?v=OP0JNb6jfqU" target="_blank" class="text-navy underline hover:text-gold">Jeff Beck</a>,
+                            and even
+                            <a href="https://www.youtube.com/watch?v=O3ZhSMmEFFU" target="_blank" class="text-navy underline hover:text-gold">Plain White T's</a>.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -234,16 +276,18 @@
     <!-- Elvis Section -->
     <section id="elvis" class="py-16 px-8 bg-gray-100">
         <div class="max-w-5xl mx-auto">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Elvis Presley Songs</h2>
-            <p class="text-lg mb-8">Tepper & Bennett wrote 42 songs for Elvis Presley, many of which appeared in his movies. Explore this special collection that highlights their contribution to The King's legacy.</p>
-            
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-1/2">
-                    <img src="images/elvis-chante-tepper-bennett.jpg" alt="Elvis Presley performing a Tepper and Bennett song" class="w-full h-auto rounded-lg shadow-md object-cover" onerror="this.src='https://placehold.co/600x400/1A305E/FFFFFF?text=Elvis+Presley'" />
-                </div>
-                <div class="md:w-1/2 space-y-4">
-                    <p class="text-lg">Sid Tepper and Roy C. Bennett wrote an impressive 42 songs that were recorded by Elvis Presley. Many of these songs were featured in Elvis's movies, helping to define the soundtrack of his film career in the 1960s.</p>
-                    <p class="text-lg">Their collaborations with Elvis include memorable tracks like "G.I. Blues," "Hawaiian Sunset," "New Orleans," and "Song of the Shrimp." While some of these songs may not be among Elvis's most well-known hits, they showcase the versatility and prolific nature of Tepper and Bennett's songwriting abilities.</p>
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle">Elvis Presley Songs</h2>
+            <div class="collapsible-content">
+                <p class="text-lg mb-8">Tepper & Bennett wrote 42 songs for Elvis Presley, many of which appeared in his movies. Explore this special collection that highlights their contribution to The King's legacy.</p>
+                
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="md:w-1/2">
+                        <img src="images/elvis-chante-tepper-bennett.jpg" alt="Elvis Presley performing a Tepper and Bennett song" class="w-full h-auto rounded-lg shadow-md object-cover" onerror="this.src='https://placehold.co/600x400/1A305E/FFFFFF?text=Elvis+Presley'" />
+                    </div>
+                    <div class="md:w-1/2 space-y-4">
+                        <p class="text-lg">Sid Tepper and Roy C. Bennett wrote an impressive 42 songs that were recorded by Elvis Presley. Many of these songs were featured in Elvis's movies, helping to define the soundtrack of his film career in the 1960s.</p>
+                        <p class="text-lg">Their collaborations with Elvis include memorable tracks like "G.I. Blues," "Hawaiian Sunset," "New Orleans," and "Song of the Shrimp." While some of these songs may not be among Elvis's most well-known hits, they showcase the versatility and prolific nature of Tepper and Bennett's songwriting abilities.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -252,47 +296,49 @@
     <!-- Resources Section -->
     <section id="resources" class="py-16 px-8 bg-white">
         <div class="max-w-4xl mx-auto">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Resources</h2>
-            <div class="space-y-8">
-                <section>
-                    <h3 class="font-serif text-2xl font-bold text-navy mb-4">Discography</h3>
-                    <ul class="list-disc pl-5 space-y-2">
-                        <li><a href="https://www.discogs.com/search/?q=tepper+bennett&type=all" target="_blank" class="text-navy underline hover:text-gold">Tepper and Bennett Discography (discogs.com)</a></li>
-                    </ul>
-                </section>
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle">Resources</h2>
+            <div class="collapsible-content">
+                <div class="space-y-8">
+                    <section>
+                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Discography</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li><a href="https://www.discogs.com/search/?q=tepper+bennett&type=all" target="_blank" class="text-navy underline hover:text-gold">Tepper and Bennett Discography (discogs.com)</a></li>
+                        </ul>
+                    </section>
 
-                <section>
-                    <h3 class="font-serif text-2xl font-bold text-navy mb-4">Wikipedia</h3>
-                    <ul class="list-disc pl-5 space-y-2">
-                        <li><a href="https://en.wikipedia.org/wiki/Sid_Tepper" target="_blank" class="text-navy underline hover:text-gold">Sid Tepper Wikipedia Article</a></li>
-                        <li><a href="https://en.wikipedia.org/wiki/Roy_C._Bennett" target="_blank" class="text-navy underline hover:text-gold">Roy C. Bennett Wikipedia Article</a></li>
-                    </ul>
-                </section>
+                    <section>
+                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Wikipedia</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li><a href="https://en.wikipedia.org/wiki/Sid_Tepper" target="_blank" class="text-navy underline hover:text-gold">Sid Tepper Wikipedia Article</a></li>
+                            <li><a href="https://en.wikipedia.org/wiki/Roy_C._Bennett" target="_blank" class="text-navy underline hover:text-gold">Roy C. Bennett Wikipedia Article</a></li>
+                        </ul>
+                    </section>
 
-                <section>
-                    <h3 class="font-serif text-2xl font-bold text-navy mb-4">Off the Beaten Path</h3>
-                    <ul class="list-disc pl-5 space-y-2">
-                        <li><a href="https://www.youtube.com/watch?v=8-kRyR9c0uc" target="_blank" class="text-navy underline hover:text-gold">Red Roses for a Blue Lady - Moscow City Jazz Band</a></li>
-                        <li><a href="https://www.youtube.com/watch?v=me8aPqsQ620" target="_blank" class="text-navy underline hover:text-gold">Red Roses for a Blue Lady - Victoria Junior College Choir (Singapore) Choreographed Production, 2019</a></li>
-                        <li><a href="https://www.youtube.com/watch?v=CrfwRBEEt_U" target="_blank" class="text-navy underline hover:text-gold">Einsamer Cowboy - German rendition of Lonesome Cowboy</a></li>
-                        <li><a href="https://www.youtube.com/watch?v=lGv1srhfOVw" target="_blank" class="text-navy underline hover:text-gold">Song of the Shrimp - sung as a dirge by Naysayer</a></li>
-                        <li><a href="https://www.youtube.com/watch?v=8tdJg3oB5DM" target="_blank" class="text-navy underline hover:text-gold">Twenty Tiny Fingers - a punk rock version by Kilburn and the High Roads</a></li>
-                        <li><a href="https://www.youtube.com/watch?v=7ELtGuCKPao" target="_blank" class="text-navy underline hover:text-gold">Kiss of Meyer - Mickey Katz sings a satire of Kiss of Fire with some Yiddish lyrics and Klezmer interludes</a></li>
-                        <li><a href="https://www.youtube.com/watch?v=5rvEWG3zz4w" target="_blank" class="text-navy underline hover:text-gold">Kiss of Myer - Allan Sherman of Hello Muddah, Hello Faddah fame sings his own satire of Kiss of Fire</a></li>
-                        <li><a href="https://www.youtube.com/watch?v=AJuuOHkiY8A" target="_blank" class="text-navy underline hover:text-gold">Li'l Ole Kiss of Fire - a Bluegrass version of Kiss of Fire with modified lyrics and key</a></li>
-                        <li><a href="https://www.youtube.com/watch?v=TwFkoGzoYm8" target="_blank" class="text-navy underline hover:text-gold">Nothin' for Christmas (Eartha Kitt) - a lyric rewrite with an interesting twist</a></li>
-                    </ul>
-                </section>
+                    <section>
+                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Off the Beaten Path</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li><a href="https://www.youtube.com/watch?v=8-kRyR9c0uc" target="_blank" class="text-navy underline hover:text-gold">Red Roses for a Blue Lady - Moscow City Jazz Band</a></li>
+                            <li><a href="https://www.youtube.com/watch?v=me8aPqsQ620" target="_blank" class="text-navy underline hover:text-gold">Red Roses for a Blue Lady - Victoria Junior College Choir (Singapore) Choreographed Production, 2019</a></li>
+                            <li><a href="https://www.youtube.com/watch?v=CrfwRBEEt_U" target="_blank" class="text-navy underline hover:text-gold">Einsamer Cowboy - German rendition of Lonesome Cowboy</a></li>
+                            <li><a href="https://www.youtube.com/watch?v=lGv1srhfOVw" target="_blank" class="text-navy underline hover:text-gold">Song of the Shrimp - sung as a dirge by Naysayer</a></li>
+                            <li><a href="https://www.youtube.com/watch?v=8tdJg3oB5DM" target="_blank" class="text-navy underline hover:text-gold">Twenty Tiny Fingers - a punk rock version by Kilburn and the High Roads</a></li>
+                            <li><a href="https://www.youtube.com/watch?v=7ELtGuCKPao" target="_blank" class="text-navy underline hover:text-gold">Kiss of Meyer - Mickey Katz sings a satire of Kiss of Fire with some Yiddish lyrics and Klezmer interludes</a></li>
+                            <li><a href="https://www.youtube.com/watch?v=5rvEWG3zz4w" target="_blank" class="text-navy underline hover:text-gold">Kiss of Myer - Allan Sherman of Hello Muddah, Hello Faddah fame sings his own satire of Kiss of Fire</a></li>
+                            <li><a href="https://www.youtube.com/watch?v=AJuuOHkiY8A" target="_blank" class="text-navy underline hover:text-gold">Li'l Ole Kiss of Fire - a Bluegrass version of Kiss of Fire with modified lyrics and key</a></li>
+                            <li><a href="https://www.youtube.com/watch?v=TwFkoGzoYm8" target="_blank" class="text-navy underline hover:text-gold">Nothin' for Christmas (Eartha Kitt) - a lyric rewrite with an interesting twist</a></li>
+                        </ul>
+                    </section>
 
-                <section>
-                    <h3 class="font-serif text-2xl font-bold text-navy mb-4">Obituaries</h3>
-                    <ul class="list-disc pl-5 space-y-2">
-                        <li><a href="https://www.nytimes.com/2015/04/30/arts/sid-tepper-dies-at-96-delivered-red-roses-for-a-blue-lady-and-other-songs.html" target="_blank" class="text-navy underline hover:text-gold">Sid Tepper Obituary in <cite>The New York Times</cite></a></li>
-                        <li><a href="https://www.nytimes.com/2015/07/14/arts/music/roy-c-bennett-dies-at-96-writer-of-popular-songs.html" target="_blank" class="text-navy underline hover:text-gold">Roy C. Bennett Obituary in <cite>The New York Times</cite></a></li>
-                        <li><a href="https://variety.com/2015/music/news/sid-tepper-dead-dies-wrote-songs-for-sinatra-elvis-the-beatles-1201480032/" target="_blank" class="text-navy underline hover:text-gold">Sid Tepper Obituary in <cite>Variety</cite></a></li>
-                        <li><a href="https://variety.com/2015/music/people-news/roy-c-bennett-dies-at-97-wrote-songs-for-sinatra-elvis-the-beatles-1201537186/" target="_blank" class="text-navy underline hover:text-gold">Roy C. Bennett Obituary in <cite>Variety</cite></a></li>
-                    </ul>
-                </section>
+                    <section>
+                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Obituaries</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li><a href="https://www.nytimes.com/2015/04/30/arts/sid-tepper-dies-at-96-delivered-red-roses-for-a-blue-lady-and-other-songs.html" target="_blank" class="text-navy underline hover:text-gold">Sid Tepper Obituary in <cite>The New York Times</cite></a></li>
+                            <li><a href="https://www.nytimes.com/2015/07/14/arts/music/roy-c-bennett-dies-at-96-writer-of-popular-songs.html" target="_blank" class="text-navy underline hover:text-gold">Roy C. Bennett Obituary in <cite>The New York Times</cite></a></li>
+                            <li><a href="https://variety.com/2015/music/news/sid-tepper-dead-dies-wrote-songs-for-sinatra-elvis-the-beatles-1201480032/" target="_blank" class="text-navy underline hover:text-gold">Sid Tepper Obituary in <cite>Variety</cite></a></li>
+                            <li><a href="https://variety.com/2015/music/people-news/roy-c-bennett-dies-at-97-wrote-songs-for-sinatra-elvis-the-beatles-1201537186/" target="_blank" class="text-navy underline hover:text-gold">Roy C. Bennett Obituary in <cite>Variety</cite></a></li>
+                        </ul>
+                    </section>
+                </div>
             </div>
         </div>
     </section>
@@ -300,34 +346,50 @@
     <!-- Reports Section -->
     <section id="reports" class="py-16 px-8 bg-gray-100">
         <div class="max-w-4xl mx-auto">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Reports</h2>
-            <p class="text-lg mb-6">Coming soon...</p>
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle">Reports</h2>
+            <div class="collapsible-content">
+                <p class="text-lg mb-6">Coming soon...</p>
+            </div>
         </div>
     </section>
 
     <!-- Inquiries Section -->
     <section id="inquiries" class="py-16 px-8 bg-white">
         <div class="max-w-4xl mx-auto">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8">Inquiries</h2>
-            <div class="space-y-6 text-lg">
-                <p>If you are interested in incorporating any of Sid and Roy's songs into your production, please contact the appropriate rights administrator(s). The name of the rights administrator organization can be found in a column of the <a href="#songs" class="text-navy underline hover:text-gold">Songs table</a>. This information is not yet complete; we are still in the process of obtaining some of it.</p>
-                
-                <p>For licensing songs administered by Chappell & Co., Inc. (Warner Chappell Music), please contact <a href="mailto:filmtvlicensing@warnerchappell.com" class="text-navy underline hover:text-gold">filmtvlicensing@warnerchappell.com</a>.</p>
-                
-                <p>For licensing songs administered by Universal Music Publishing Group (UMPG), please visit <a href="http://www.umusicpub.com/us/license-request" class="text-navy underline hover:text-gold">http://www.umusicpub.com/us/license-request</a>.</p>
-                
-                <p>For other questions or comments, feel free to contact us at <a href="mailto:info@tepper-bennett.com" class="text-navy underline hover:text-gold">info@tepper-bennett.com</a>.</p>
-                
-                <h3 class="font-serif text-2xl font-bold text-navy mb-4 mt-8">Disclaimer</h3>
-                
-                <p>This web site is a non-monetized site intended to showcase the Tepper and Bennett musical legacy, and to <em>assist</em> music supervisors in the selection of songs and acquiring contact information of the appropriate rights administrators. All information posted here is done so in good faith, but there may be errors and omissions. If you are looking to license a song, please be aware that in some cases there is more than one rights administrator, and it is possible there are rights administrators for a given song that are not listed on this site.</p>
+            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle">Inquiries</h2>
+            <div class="collapsible-content">
+                <div class="space-y-6 text-lg">
+                    <p>If you are interested in incorporating any of Sid and Roy's songs into your production, please contact the appropriate rights administrator(s). The name of the rights administrator organization can be found in a column of the <a href="#songs" class="text-navy underline hover:text-gold">Songs table</a>. This information is not yet complete; we are still in the process of obtaining some of it.</p>
+                    
+                    <p>For licensing songs administered by Chappell & Co., Inc. (Warner Chappell Music), please contact <a href="mailto:filmtvlicensing@warnerchappell.com" class="text-navy underline hover:text-gold">filmtvlicensing@warnerchappell.com</a>.</p>
+                    
+                    <p>For licensing songs administered by Universal Music Publishing Group (UMPG), please visit <a href="http://www.umusicpub.com/us/license-request" class="text-navy underline hover:text-gold">http://www.umusicpub.com/us/license-request</a>.</p>
+                    
+                    <p>For other questions or comments, feel free to contact us at <a href="mailto:info@tepper-bennett.com" class="text-navy underline hover:text-gold">info@tepper-bennett.com</a>.</p>
+                    
+                    <h3 class="font-serif text-2xl font-bold text-navy mb-4 mt-8">Disclaimer</h3>
+                    
+                    <p>This web site is a non-monetized site intended to showcase the Tepper and Bennett musical legacy, and to <em>assist</em> music supervisors in the selection of songs and acquiring contact information of the appropriate rights administrators. All information posted here is done so in good faith, but there may be errors and omissions. If you are looking to license a song, please be aware that in some cases there is more than one rights administrator, and it is possible there are rights administrators for a given song that are not listed on this site.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Script for Songs Table -->
+    <!-- Script for collapsible panels -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Script for collapsible panels
+        const toggles = document.querySelectorAll('.collapsible-toggle');
+        
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('open');
+                const content = this.nextElementSibling;
+                content.classList.toggle('open');
+            });
+        });
+        
+        // Original script for song search
         const searchInput = document.getElementById('songs-search');
         const searchButton = document.getElementById('search-button');
         
