@@ -80,8 +80,8 @@
     <!-- Global Controls for Sections -->
     <div class="bg-navy text-white py-3 px-4 sticky top-0 z-10 shadow-md flex justify-center items-center space-x-4">
         <span class="font-serif text-lg">Sections:</span>
-        <button id="expand-all" class="bg-gold text-white px-3 py-1 rounded hover:bg-opacity-80 transition-all">Expand All</button>
-        <button id="collapse-all" class="bg-gold text-white px-3 py-1 rounded hover:bg-opacity-80 transition-all">Collapse All</button>
+        <button id="expand-all" class="bg-gold text-white px-3 py-1 rounded hover:bg-opacity-80 transition-all disabled:opacity-50 disabled:cursor-not-allowed">Expand All</button>
+        <button id="collapse-all" class="bg-gold text-white px-3 py-1 rounded hover:bg-opacity-80 transition-all disabled:opacity-50 disabled:cursor-not-allowed">Collapse All</button>
     </div>
     
     <!-- Hero Section -->
@@ -393,25 +393,44 @@
         const expandAllButton = document.getElementById('expand-all');
         const collapseAllButton = document.getElementById('collapse-all');
         
+        // Function to update button states
+        function updateButtonStates() {
+            const allExpanded = Array.from(contents).every(content => content.classList.contains('open'));
+            const allCollapsed = Array.from(contents).every(content => !content.classList.contains('open'));
+            
+            expandAllButton.disabled = allExpanded;
+            collapseAllButton.disabled = allCollapsed;
+        }
+        
+        // Initial button state
+        updateButtonStates();
+        
         // Individual toggle functionality
         toggles.forEach(toggle => {
             toggle.addEventListener('click', function() {
                 this.classList.toggle('open');
                 const content = this.nextElementSibling;
                 content.classList.toggle('open');
+                updateButtonStates();
             });
         });
         
         // Expand all sections
         expandAllButton.addEventListener('click', function() {
-            toggles.forEach(toggle => toggle.classList.add('open'));
-            contents.forEach(content => content.classList.add('open'));
+            if (!this.disabled) {
+                toggles.forEach(toggle => toggle.classList.add('open'));
+                contents.forEach(content => content.classList.add('open'));
+                updateButtonStates();
+            }
         });
         
         // Collapse all sections
         collapseAllButton.addEventListener('click', function() {
-            toggles.forEach(toggle => toggle.classList.remove('open'));
-            contents.forEach(content => content.classList.remove('open'));
+            if (!this.disabled) {
+                toggles.forEach(toggle => toggle.classList.remove('open'));
+                contents.forEach(content => content.classList.remove('open'));
+                updateButtonStates();
+            }
         });
         
         // Original script for song search
