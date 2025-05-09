@@ -46,21 +46,31 @@
         cursor: pointer;
         position: relative;
         padding-right: 40px; /* Space for the + symbol */
+        text-align: center;
       }
       
       .collapsible-toggle:after {
         content: '+';
         position: absolute;
-        right: 0;
+        right: 10px; /* Fixed right positioning */
         top: 50%;
         transform: translateY(-50%);
         font-weight: bold;
         font-size: 1.5rem;
         transition: transform 0.3s ease;
+        width: 24px; /* Fixed width for consistency */
+        text-align: center;
       }
       
       .collapsible-toggle.open:after {
         content: '−';
+      }
+      
+      /* Ensure consistent width for containers */
+      .section-container {
+        position: relative;
+        width: 100%;
+        max-width: 4xl; /* Standard max width for all sections */
       }
     </style>
 </head>
@@ -152,7 +162,7 @@
 
     <!-- About Section -->
     <section class="py-16 px-8 bg-white">
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-4xl mx-auto section-container">
             <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">The Legacy</h2>
             <div class="collapsible-content open">
                 <div class="space-y-6 text-lg">
@@ -169,7 +179,7 @@
 
     <!-- Songs Section -->
     <section id="songs" class="py-16 px-8 bg-gray-100">
-        <div class="max-w-6xl mx-auto">
+        <div class="max-w-4xl mx-auto section-container">
             <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Songs</h2>
             <div class="collapsible-content">
                 <p class="text-lg mb-8">Explore the complete collection of songs written by Tepper & Bennett. Filter by artist, year, or genre to discover their extensive catalog.</p>
@@ -231,7 +241,7 @@
 
     <!-- Genres Section -->
     <section id="genres" class="py-16 px-8 bg-white">
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-4xl mx-auto section-container">
             <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Genres</h2>
             <div class="collapsible-content">
                 <div class="space-y-10">
@@ -284,7 +294,7 @@
 
     <!-- Elvis Section -->
     <section id="elvis" class="py-16 px-8 bg-gray-100">
-        <div class="max-w-5xl mx-auto">
+        <div class="max-w-4xl mx-auto section-container">
             <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Elvis Presley Songs</h2>
             <div class="collapsible-content">
                 <p class="text-lg mb-8">Tepper & Bennett wrote 42 songs for Elvis Presley, many of which appeared in his movies. Explore this special collection that highlights their contribution to The King's legacy.</p>
@@ -304,7 +314,7 @@
 
     <!-- Resources Section -->
     <section id="resources" class="py-16 px-8 bg-white">
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-4xl mx-auto section-container">
             <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Resources</h2>
             <div class="collapsible-content">
                 <div class="space-y-8">
@@ -354,7 +364,7 @@
 
     <!-- Reports Section -->
     <section id="reports" class="py-16 px-8 bg-gray-100">
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-4xl mx-auto section-container">
             <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Reports</h2>
             <div class="collapsible-content">
                 <p class="text-lg mb-6">Coming soon...</p>
@@ -364,7 +374,7 @@
 
     <!-- Inquiries Section -->
     <section id="inquiries" class="py-16 px-8 bg-white">
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-4xl mx-auto section-container">
             <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center">Inquiries</h2>
             <div class="collapsible-content">
                 <div class="space-y-6 text-lg">
