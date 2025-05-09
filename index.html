@@ -77,6 +77,13 @@
         </p>
     </div>
     
+    <!-- Global Controls for Sections -->
+    <div class="bg-navy text-white py-3 px-4 sticky top-0 z-10 shadow-md flex justify-center items-center space-x-4">
+        <span class="font-serif text-lg">Sections:</span>
+        <button id="expand-all" class="bg-gold text-white px-3 py-1 rounded hover:bg-opacity-80 transition-all">Expand All</button>
+        <button id="collapse-all" class="bg-gold text-white px-3 py-1 rounded hover:bg-opacity-80 transition-all">Collapse All</button>
+    </div>
+    
     <!-- Hero Section -->
     <section class="flex flex-col md:flex-row h-full md:h-screen w-full">
         <!-- Left Navigation Panel -->
@@ -382,13 +389,29 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Script for collapsible panels
         const toggles = document.querySelectorAll('.collapsible-toggle');
+        const contents = document.querySelectorAll('.collapsible-content');
+        const expandAllButton = document.getElementById('expand-all');
+        const collapseAllButton = document.getElementById('collapse-all');
         
+        // Individual toggle functionality
         toggles.forEach(toggle => {
             toggle.addEventListener('click', function() {
                 this.classList.toggle('open');
                 const content = this.nextElementSibling;
                 content.classList.toggle('open');
             });
+        });
+        
+        // Expand all sections
+        expandAllButton.addEventListener('click', function() {
+            toggles.forEach(toggle => toggle.classList.add('open'));
+            contents.forEach(content => content.classList.add('open'));
+        });
+        
+        // Collapse all sections
+        collapseAllButton.addEventListener('click', function() {
+            toggles.forEach(toggle => toggle.classList.remove('open'));
+            contents.forEach(content => content.classList.remove('open'));
         });
         
         // Original script for song search
