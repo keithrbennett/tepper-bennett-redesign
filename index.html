@@ -29,11 +29,6 @@
     </script>
     <style>
       /* Styles for collapsible panels */
-      .collapsible-panel {
-        overflow: hidden;
-        transition: max-height 0.3s ease-out;
-      }
-      
       .collapsible-content {
         max-height: 0;
         overflow: hidden;
@@ -100,7 +95,7 @@
           margin: 0;
         }
         
-        .mobile-song-item {
+        .mobile-song-list-item {
           background-color: white;
           border-bottom: 1px solid #e2e8f0;
           padding: 8px 4px;
@@ -108,7 +103,7 @@
           font-size: 0.8rem;
         }
         
-        .mobile-song-item:nth-child(even) {
+        .mobile-song-list-item:nth-child(even) {
           background-color: #f7fafc;
         }
         
@@ -283,7 +278,7 @@
     <!-- About Section -->
     <section class="py-16 px-8 bg-white">
         <div class="max-w-4xl mx-auto section-container">
-            <h2 class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center" 
+            <h2 id="legacy-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center" 
                aria-expanded="true" 
                role="button" 
                tabindex="0"
@@ -350,31 +345,31 @@
                         </thead>
                         <tbody>
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">Red Roses for a Blue Lady</a></td>
+                                <td class="py-3 px-4"><a href="#songs" class="text-navy hover:text-gold">Red Roses for a Blue Lady</a></td>
                                 <td class="py-3 px-4">Vaughn Monroe, Wayne Newton, Vic Dana</td>
                                 <td class="py-3 px-4">Universal Music Publishing Group</td>
                                 <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=2bQZ6l_cq5Y" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
                             </tr>
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">The Naughty Lady of Shady Lane</a></td>
+                                <td class="py-3 px-4"><a href="#songs" class="text-navy hover:text-gold">The Naughty Lady of Shady Lane</a></td>
                                 <td class="py-3 px-4">The Ames Brothers, Dean Martin</td>
                                 <td class="py-3 px-4">Warner Chappell Music</td>
                                 <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=rEMrl7HgrpA" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
                             </tr>
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">Kiss of Fire</a></td>
+                                <td class="py-3 px-4"><a href="#songs" class="text-navy hover:text-gold">Kiss of Fire</a></td>
                                 <td class="py-3 px-4">Georgia Gibbs, Louis Armstrong</td>
                                 <td class="py-3 px-4">Warner Chappell Music</td>
                                 <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=68oyEZDl1T4" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
                             </tr>
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">The Young Ones</a></td>
+                                <td class="py-3 px-4"><a href="#songs" class="text-navy hover:text-gold">The Young Ones</a></td>
                                 <td class="py-3 px-4">Cliff Richard</td>
                                 <td class="py-3 px-4">Sony Music Publishing</td>
                                 <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=Juw_Vt8Y1A8" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
                             </tr>
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">G.I. Blues</a></td>
+                                <td class="py-3 px-4"><a href="#songs" class="text-navy hover:text-gold">G.I. Blues</a></td>
                                 <td class="py-3 px-4">Elvis Presley</td>
                                 <td class="py-3 px-4">Universal Music Publishing Group</td>
                                 <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=QMUHt5cATmk" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
@@ -600,8 +595,8 @@
         // Individual toggle functionality
         toggles.forEach(toggle => {
             toggle.addEventListener('click', function() {
-                const isExpanded = this.getAttribute('aria-expanded') === 'true';
-                this.setAttribute('aria-expanded', !isExpanded);
+                const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+                toggle.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
                 
                 // Update the toggle icon
                 const icon = this.querySelector('.toggle-icon');
@@ -729,7 +724,7 @@
             
             pageData.forEach(song => {
                 const listItem = document.createElement('li');
-                listItem.className = 'mobile-song-item';
+                listItem.className = 'mobile-song-list-item';
                 
                 // Truncate long text for mobile
                 const truncateText = (text, maxLength = 20) => {
@@ -742,7 +737,7 @@
                 const admin = song.administrator ? truncateText(song.administrator, 20) : '';
                 
                 listItem.innerHTML = `
-                    <div class="mobile-song-title"><a href="#song-detail">${title}</a></div>
+                    <div class="mobile-song-title"><a href="#songs">${title}</a></div>
                     <div class="mobile-song-performers">${performers}</div>
                     <div class="mobile-song-details">
                         <div class="mobile-song-admin">${admin}</div>
@@ -797,11 +792,12 @@
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch ${url}: ${response.status}`);
+                    console.error(`Failed to fetch ${url}: ${response.status}`);
+                    return [];
                 }
                 return await response.json();
             } catch (error) {
-                console.error(error);
+                console.error(`Error fetching ${url}:`, error);
                 return [];
             }
         }
@@ -961,7 +957,7 @@
             row.className = 'border-b hover:bg-gray-50';
             
             row.innerHTML = `
-                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">${song.title}</a></td>
+                <td class="py-3 px-4"><a href="#songs" class="text-navy hover:text-gold">${song.title}</a></td>
                 <td class="py-3 px-4">${song.performers}</td>
                 <td class="py-3 px-4">${song.administrator || ''}</td>
                 <td class="py-3 px-4 text-center">
