@@ -252,22 +252,22 @@
             <div class="mt-auto mb-8">
                 <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4">
                     <div class="bg-white rounded-md shadow-md p-4">
-                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold">200+</div>
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number songs">200+</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Songs</div>
                     </div>
                     
                     <div class="bg-white rounded-md shadow-md p-4">
-                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold">50+</div>
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number elvis">50+</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Elvis Songs</div>
                     </div>
                     
                     <div class="bg-white rounded-md shadow-md p-4">
-                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold">100+</div>
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number artists">100+</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Artists</div>
                     </div>
                     
                     <div class="bg-white rounded-md shadow-md p-4">
-                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold">30+</div>
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number movies">30+</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Movies</div>
                     </div>
                 </div>
@@ -787,6 +787,191 @@
             }
         });
     });
+    </script>
+
+    <!-- Script for data loading and page stats -->
+    <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Function to fetch JSON data
+        async function fetchData(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch ${url}: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(error);
+                return [];
+            }
+        }
+        
+        // Fetch all data files
+        const elvisSongs = await fetchData('data/elvis-songs.json');
+        const nonElvisSongs = await fetchData('data/non-elvis-songs.json');
+        const performers = await fetchData('data/performers.json');
+        const movies = await fetchData('data/movies.json');
+        const organizations = await fetchData('data/organizations.json');
+        const songPlays = await fetchData('data/song-plays.json');
+        const universalSongCodes = await fetchData('data/universal-song-codes.json');
+        const warnerSongCodes = await fetchData('data/warner-song-codes.json');
+        
+        // Update stats cards
+        updateStats(elvisSongs, nonElvisSongs, performers, movies);
+        
+        // Process song data for the table
+        processSongData(elvisSongs, nonElvisSongs, performers, organizations, songPlays, universalSongCodes, warnerSongCodes);
+    });
+    
+    function updateStats(elvisSongs, nonElvisSongs, performers, movies) {
+        // Calculate stats
+        const totalSongs = elvisSongs.length + nonElvisSongs.length;
+        const elvisSongsCount = elvisSongs.length;
+        
+        // Get unique performers (excluding Elvis)
+        const uniquePerformers = new Set();
+        performers.forEach(performer => {
+            if (performer.code !== 'elvis') {
+                uniquePerformers.add(performer.code);
+            }
+        });
+        
+        // Count unique movies
+        const uniqueMovies = new Set(movies.map(movie => movie.code));
+        
+        // Update DOM elements
+        document.querySelector('.stat-number.songs').textContent = totalSongs;
+        document.querySelector('.stat-number.elvis').textContent = elvisSongsCount;
+        document.querySelector('.stat-number.artists').textContent = uniquePerformers.size;
+        document.querySelector('.stat-number.movies').textContent = uniqueMovies.size;
+    }
+    
+    function processSongData(elvisSongs, nonElvisSongs, performers, organizations, songPlays, universalSongCodes, warnerSongCodes) {
+        // Create a map of performers by code for faster lookup
+        const performersMap = {};
+        performers.forEach(performer => {
+            performersMap[performer.code] = performer.name;
+        });
+        
+        // Create a map of organizations by code
+        const organizationsMap = {};
+        organizations.forEach(org => {
+            organizationsMap[org.code] = org.name;
+        });
+        
+        // Create a songPlays lookup map
+        const songPlaysMap = {};
+        songPlays.forEach(play => {
+            if (!songPlaysMap[play.song_code]) {
+                songPlaysMap[play.song_code] = [];
+            }
+            songPlaysMap[play.song_code].push(play);
+        });
+        
+        // Process song data for the table display
+        const processedSongs = [];
+        
+        // Process Elvis songs
+        elvisSongs.forEach(song => {
+            // Get YouTube link
+            let youtubeUrl = '';
+            if (songPlaysMap[song.code] && songPlaysMap[song.code].length > 0) {
+                const ytKey = songPlaysMap[song.code][0].youtube_key;
+                youtubeUrl = `https://www.youtube.com/watch?v=${ytKey}`;
+            }
+            
+            // Determine rights administrator
+            let admin = '';
+            if (universalSongCodes.includes(song.code)) {
+                admin = 'Universal Music';
+            } else if (warnerSongCodes.includes(song.code)) {
+                admin = 'Chappell & Co., Inc.';
+            }
+            
+            processedSongs.push({
+                title: song.name,
+                performers: 'Elvis Presley',
+                administrator: admin,
+                youtubeUrl: youtubeUrl
+            });
+        });
+        
+        // Process non-Elvis songs
+        nonElvisSongs.forEach(song => {
+            // Get performers
+            let performersText = '';
+            if (song.performers) {
+                const performerNames = [];
+                if (Array.isArray(song.performers)) {
+                    song.performers.forEach(code => {
+                        if (performersMap[code]) {
+                            performerNames.push(performersMap[code]);
+                        }
+                    });
+                } else {
+                    if (performersMap[song.performers]) {
+                        performerNames.push(performersMap[song.performers]);
+                    }
+                }
+                performersText = performerNames.join(', ');
+            }
+            
+            // Get YouTube link
+            let youtubeUrl = '';
+            if (songPlaysMap[song.code] && songPlaysMap[song.code].length > 0) {
+                const ytKey = songPlaysMap[song.code][0].youtube_key;
+                youtubeUrl = `https://www.youtube.com/watch?v=${ytKey}`;
+            }
+            
+            // Determine rights administrator
+            let admin = '';
+            if (universalSongCodes.includes(song.code)) {
+                admin = 'Universal Music';
+            } else if (warnerSongCodes.includes(song.code)) {
+                admin = 'Chappell & Co., Inc.';
+            }
+            
+            processedSongs.push({
+                title: song.name,
+                performers: performersText,
+                administrator: admin,
+                youtubeUrl: youtubeUrl
+            });
+        });
+        
+        // Update global songData with processed songs
+        window.songData = processedSongs;
+        
+        // Update the tables
+        updateDesktopTable(processedSongs);
+        renderMobileList();
+    }
+    
+    function updateDesktopTable(songs) {
+        const tbody = document.querySelector('#songs-table tbody');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        
+        // Display first 10 songs in desktop table
+        const displaySongs = songs.slice(0, 10);
+        
+        displaySongs.forEach(song => {
+            const row = document.createElement('tr');
+            row.className = 'border-b hover:bg-gray-50';
+            
+            row.innerHTML = `
+                <td class="py-3 px-4"><a href="#song-detail" class="text-navy hover:text-gold">${song.title}</a></td>
+                <td class="py-3 px-4">${song.performers}</td>
+                <td class="py-3 px-4">${song.administrator || ''}</td>
+                <td class="py-3 px-4 text-center">
+                    ${song.youtubeUrl ? `<a href="${song.youtubeUrl}" target="_blank" class="text-red-600 hover:text-red-800">▶</a>` : ''}
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        });
+    }
     </script>
 </body>
 </html> 
