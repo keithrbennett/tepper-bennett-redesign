@@ -1,0 +1,45 @@
+/* Styles principaux pour Tepper & Bennett */
+
+/* Styles pour les panneaux pliables */
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.collapsible-content.open {
+  max-height: 2000px; /* Une valeur suffisamment grande */
+}
+
+.collapsible-toggle {
+  cursor: pointer;
+  position: relative;
+  padding-right: 55px; /* Espace accru pour le symbole + */
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-icon {
+  position: absolute;
+  right: 10px; /* Positionnement fixe à droite */
+  width: 32px; /* Largeur accrue */
+  height: 32px; /* Hauteur accrue */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.8rem; /* Taille de police plus grande */
+  transition: all 0.2s ease;
+  background-color: #B8860B; /* Fond doré */
+  color: white; /* Texte blanc */
+  border-radius: 50%; /* Forme circulaire */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Ombre subtile */
+}
+
+/* Assurer une largeur cohérente pour les conteneurs */
+.section-container {
+  position: relative;
+  width: 100%;
+} 
