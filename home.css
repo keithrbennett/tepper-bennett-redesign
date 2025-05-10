@@ -153,7 +153,7 @@ html,
   /* 2 */
   -moz-tab-size: 4;
   /* 3 */
-  /* -o-tab-size est un préfixe vendeur pour Opera, l'avertissement peut être ignoré */
+  /* -o-tab-size is a vendor prefix for Opera, the warning can be ignored */
   -o-tab-size: 4;
      tab-size: 4;
   /* 3 */
@@ -199,7 +199,7 @@ Add the correct text decoration in Chrome, Edge, and Safari.
 */
 
 abbr:where([title]) {
-  /* -webkit-text-decoration est un préfixe vendeur pour WebKit, l'avertissement peut être ignoré */
+  /* -webkit-text-decoration is a vendor prefix for WebKit, the warning can be ignored */
   -webkit-text-decoration: underline dotted;
           text-decoration: underline dotted;
 }
@@ -961,7 +961,7 @@ video {
 }
 
 .transition {
-  /* Ces redéfinitions de transition-property sont intentionnelles pour la compatibilité des navigateurs */
+  /* These transition-property redefinitions are intentional for browser compatibility */
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
