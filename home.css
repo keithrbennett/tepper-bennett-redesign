@@ -28,6 +28,7 @@
   --tw-ring-shadow: 0 0 #0000;
   --tw-shadow: 0 0 #0000;
   --tw-shadow-colored: 0 0 #0000;
+  --tw-shadow-color: transparent;
   --tw-blur:  ;
   --tw-brightness:  ;
   --tw-contrast:  ;
@@ -82,6 +83,7 @@
   --tw-ring-shadow: 0 0 #0000;
   --tw-shadow: 0 0 #0000;
   --tw-shadow-colored: 0 0 #0000;
+  --tw-shadow-color: transparent;
   --tw-blur:  ;
   --tw-brightness:  ;
   --tw-contrast:  ;
@@ -151,6 +153,7 @@ html,
   /* 2 */
   -moz-tab-size: 4;
   /* 3 */
+  /* -o-tab-size est un préfixe vendeur pour Opera, l'avertissement peut être ignoré */
   -o-tab-size: 4;
      tab-size: 4;
   /* 3 */
@@ -196,6 +199,7 @@ Add the correct text decoration in Chrome, Edge, and Safari.
 */
 
 abbr:where([title]) {
+  /* -webkit-text-decoration est un préfixe vendeur pour WebKit, l'avertissement peut être ignoré */
   -webkit-text-decoration: underline dotted;
           text-decoration: underline dotted;
 }
@@ -952,11 +956,12 @@ video {
 
 .shadow-md {
   --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  --tw-shadow-colored: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .transition {
+  /* Ces redéfinitions de transition-property sont intentionnelles pour la compatibilité des navigateurs */
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
