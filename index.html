@@ -249,22 +249,22 @@
             <div class="mt-auto mb-8">
                 <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4">
                     <div class="bg-white rounded-md shadow-md p-4">
-                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number songs">200+</div>
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number songs">71</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Songs</div>
                     </div>
                     
                     <div class="bg-white rounded-md shadow-md p-4">
-                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number elvis">50+</div>
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number elvis">42</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Elvis Songs</div>
                     </div>
                     
                     <div class="bg-white rounded-md shadow-md p-4">
-                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number artists">100+</div>
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number artists">45</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Artists</div>
                     </div>
                     
                     <div class="bg-white rounded-md shadow-md p-4">
-                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number movies">30+</div>
+                        <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number movies">22</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Movies</div>
                     </div>
                 </div>
@@ -825,35 +825,9 @@
         const universalSongCodes = await fetchData('data/universal-song-codes.json');
         const warnerSongCodes = await fetchData('data/warner-song-codes.json');
         
-        // Update stats cards
-        updateStats(elvisSongs, nonElvisSongs, performers, movies);
-        
-        // Process song data for the table
+        // Process song data for the table display
         processSongData(elvisSongs, nonElvisSongs, performers, organizations, songPlays, universalSongCodes, warnerSongCodes);
     });
-    
-    function updateStats(elvisSongs, nonElvisSongs, performers, movies) {
-        // Calculate stats
-        const totalSongs = elvisSongs.length + nonElvisSongs.length;
-        const elvisSongsCount = elvisSongs.length;
-        
-        // Get unique performers (excluding Elvis)
-        const uniquePerformers = new Set();
-        performers.forEach(performer => {
-            if (performer.code !== 'elvis') {
-                uniquePerformers.add(performer.code);
-            }
-        });
-        
-        // Count unique movies
-        const uniqueMovies = new Set(movies.map(movie => movie.code));
-        
-        // Update DOM elements
-        document.querySelector('.stat-number.songs').textContent = totalSongs;
-        document.querySelector('.stat-number.elvis').textContent = elvisSongsCount;
-        document.querySelector('.stat-number.artists').textContent = uniquePerformers.size;
-        document.querySelector('.stat-number.movies').textContent = uniqueMovies.size;
-    }
     
     function processSongData(elvisSongs, nonElvisSongs, performers, organizations, songPlays, universalSongCodes, warnerSongCodes) {
         // Create a map of performers by code for faster lookup
