@@ -105,7 +105,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (targetToggle) {
             targetToggle.setAttribute('aria-expanded', 'true');
             targetToggle.querySelector('.toggle-icon').textContent = '−';
-            targetToggle.nextElementSibling.classList.add('open');
+            const content = targetToggle.nextElementSibling;
+            content.classList.add('open');
+            content.classList.remove('section-initially-closed');
             // Always remove from closed sections when explicitly expanded
             removeFromClosedSections(sectionId);
             updateButtonStates();
@@ -126,32 +128,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check if this section is targeted by URL hash
         const isTargetedByHash = window.location.hash === `#${sectionId}`;
 
-        // Set initial state based on preferences, all-expanded state, or URL hash
+        // Initial state is now handled by the inline script, only handle URL hash overrides
         if (isTargetedByHash) {
             // URL hash takes precedence - section should be open
             toggle.setAttribute('aria-expanded', 'true');
             toggle.querySelector('.toggle-icon').textContent = '−';
             content.classList.add('open');
+            content.classList.remove('section-initially-closed');
             // Remove from closed sections
             removeFromClosedSections(sectionId);
-        } else if (isAllExpanded()) {
-            // All sections were expanded - open this section
-            toggle.setAttribute('aria-expanded', 'true');
-            toggle.querySelector('.toggle-icon').textContent = '−';
-            content.classList.add('open');
-        } else if (isSectionClosed(sectionId)) {
-            // User explicitly closed this before
-            toggle.setAttribute('aria-expanded', 'false');
-            toggle.querySelector('.toggle-icon').textContent = '+';
-            content.classList.remove('open');
-        } else if (toggle.getAttribute('aria-expanded') === 'true') {
-            // Default open in HTML
-            toggle.querySelector('.toggle-icon').textContent = '−';
-            content.classList.add('open');
-        } else {
-            // Default closed in HTML
-            toggle.setAttribute('aria-expanded', 'false');
-            toggle.querySelector('.toggle-icon').textContent = '+';
         }
         
         // Toggle on click
@@ -163,6 +148,9 @@ document.addEventListener('DOMContentLoaded', function() {
             this.setAttribute('aria-expanded', willBeExpanded);
             this.querySelector('.toggle-icon').textContent = willBeExpanded ? '−' : '+';
             content.classList.toggle('open', willBeExpanded);
+            if (willBeExpanded) {
+                content.classList.remove('section-initially-closed');
+            }
 
             // Remember user preference
             if (willBeExpanded) {
@@ -213,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
             toggle.setAttribute('aria-expanded', 'true');
             toggle.querySelector('.toggle-icon').textContent = '−';
             content.classList.add('open');
+            content.classList.remove('section-initially-closed');
 
             removeFromClosedSections(sectionId);
         });
@@ -268,7 +257,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Expand the section if it's closed
                     targetToggle.setAttribute('aria-expanded', 'true');
                     targetToggle.querySelector('.toggle-icon').textContent = '−';
-                    targetToggle.nextElementSibling.classList.add('open');
+                    const content = targetToggle.nextElementSibling;
+                    content.classList.add('open');
+                    content.classList.remove('section-initially-closed');
 
                     // Always remove from closed sections when accessed via anchor
                     removeFromClosedSections(targetId);

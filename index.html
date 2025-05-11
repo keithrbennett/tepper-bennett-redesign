@@ -30,6 +30,59 @@
     <!-- External stylesheets -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/mobile.css">
+    
+    <!-- Initial state script to prevent content flash -->
+    <script>
+      // Initialize sections' open/closed state before page renders
+      (function() {
+        try {
+          // Get closed sections from localStorage
+          var closedSections = JSON.parse(localStorage.getItem('tepperBennettClosedSections') || '[]');
+          
+          // Add a class to hide content until DOM is fully loaded
+          document.documentElement.classList.add('js-loading');
+          
+          // Add inline style to prevent content flash
+          var style = document.createElement('style');
+          style.textContent = `
+            .js-loading .collapsible-content:not(.force-open) {
+              max-height: 0 !important;
+              overflow: hidden !important;
+            }
+            .js-loading .section-initially-closed {
+              max-height: 0 !important;
+              overflow: hidden !important;
+            }
+          `;
+          document.head.appendChild(style);
+          
+          // When DOM is loaded, mark sections that should be closed
+          document.addEventListener('DOMContentLoaded', function() {
+            closedSections.forEach(function(sectionId) {
+              var content = document.getElementById(sectionId + '-content');
+              if (content) {
+                content.classList.add('section-initially-closed');
+                content.classList.remove('open');
+                
+                var heading = document.getElementById(sectionId + '-heading');
+                if (heading) {
+                  heading.setAttribute('aria-expanded', 'false');
+                  var icon = heading.querySelector('.toggle-icon');
+                  if (icon) icon.textContent = '+';
+                }
+              }
+            });
+            
+            // Remove loading class after a short delay to let JS initialize
+            setTimeout(function() {
+              document.documentElement.classList.remove('js-loading');
+            }, 50);
+          });
+        } catch(e) {
+          console.error('Error in initial state script:', e);
+        }
+      })();
+    </script>
 </head>
 <body>
     <!-- Construction Notice -->
