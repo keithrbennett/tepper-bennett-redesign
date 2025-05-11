@@ -47,4 +47,14 @@
 /* Scroll margin for sections linked with anchors */
 .scroll-mt-16 {
   scroll-margin-top: 6rem; /* Increased to 6rem (96px) to prevent content from being hidden under the top of the screen */
+}
+
+/* Standard link styling */
+.site-link {
+  color: #1A305E; /* text-navy */
+  text-decoration: underline;
+}
+
+.site-link:hover {
+  color: #B8860B; /* text-gold */
 } 
