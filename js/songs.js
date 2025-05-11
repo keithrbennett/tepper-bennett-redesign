@@ -1,20 +1,20 @@
 /**
- * Gestion des chansons et de la pagination mobile pour Tepper & Bennett
+ * Song management and mobile pagination for Tepper & Bennett
  */
 document.addEventListener('DOMContentLoaded', function() {
-    // Recherche de chansons
+    // Song search
     const searchInput = document.getElementById('songs-search');
     const searchButton = document.getElementById('search-button');
     
     if (searchButton && searchInput) {
         searchButton.addEventListener('click', function() {
             const searchTerm = searchInput.value.toLowerCase();
-            console.log('Recherche de :', searchTerm);
-            // Ajouter ici la fonctionnalité de recherche
+            console.log('Searching for:', searchTerm);
+            // Add search functionality here
         });
     }
     
-    // Données des chansons pour les tableaux
+    // Song data for tables
     window.songData = [
         {
             title: "Red Roses for a Blue Lady",
@@ -64,10 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
             administrator: "Universal Music",
             youtubeUrl: "https://www.youtube.com/watch?v=example3"
         }
-        // Ajouter d'autres chansons ici quand elles seront disponibles
+        // Add more songs here when they become available
     ];
     
-    // Pagination du tableau mobile
+    // Mobile table pagination
     const ROWS_PER_PAGE = 10;
     let currentPage = 0;
     
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevButton = document.getElementById('mobile-prev-page');
     const nextButton = document.getElementById('mobile-next-page');
     
-    // Fonction pour rendre la liste mobile
+    // Function to render the mobile list
     window.renderMobileList = function() {
         if (!mobileList) return;
         
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const listItem = document.createElement('li');
             listItem.className = 'song-list-entry';
             
-            // Tronquer les textes longs pour mobile
+            // Truncate long texts for mobile
             const truncateText = (text, maxLength = 20) => {
                 if (text.length <= maxLength) return text;
                 return text.substring(0, maxLength - 3) + '...';
@@ -111,14 +111,14 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileList.appendChild(listItem);
         });
         
-        // Mettre à jour les boutons de pagination
+        // Update pagination buttons
         if (prevButton && nextButton) {
             prevButton.disabled = currentPage === 0;
             nextButton.disabled = (currentPage + 1) * ROWS_PER_PAGE >= window.songData.length;
         }
     };
     
-    // Ajouter des écouteurs d'événements pour la pagination
+    // Add event listeners for pagination
     if (prevButton && nextButton) {
         prevButton.addEventListener('click', () => {
             if (currentPage > 0) {
@@ -135,12 +135,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Initialiser le tableau mobile si sur mobile
+    // Initialize mobile table if on mobile
     if (window.innerWidth < 768 && mobileList) {
         window.renderMobileList();
     }
     
-    // Réinitialiser lors du redimensionnement de la fenêtre
+    // Reset on window resize
     window.addEventListener('resize', () => {
         if (window.innerWidth < 768 && mobileList) {
             window.renderMobileList();

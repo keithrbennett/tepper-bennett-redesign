@@ -1,14 +1,14 @@
-/* Styles pour appareils mobiles - Tepper & Bennett */
+/* Mobile device styles - Tepper & Bennett */
 
-/* Styles de table responsive pour mobile */
+/* Responsive table styles for mobile */
 @media (max-width: 767px) {
-  /* Réduire le padding global des sections sur mobile */
+  /* Reduce global section padding on mobile */
   section {
     padding-left: 4px !important;
     padding-right: 4px !important;
   }
   
-  /* Conteneur de contenu pleine largeur */
+  /* Full-width content container */
   .songs-section-content {
     margin: 0;
     padding: 0;
@@ -16,7 +16,7 @@
     overflow-x: hidden;
   }
   
-  /* Vue en liste basée sur des cartes au lieu d'un tableau */
+  /* Card-based list view instead of a table */
   .mobile-song-list {
     list-style: none;
     padding: 0;
@@ -71,17 +71,17 @@
     font-size: 0.7rem;
   }
   
-  /* Masquer le tableau desktop */
+  /* Hide desktop table */
   .desktop-only {
     display: none;
   }
   
-  /* Améliorations responsives du champ de recherche */
+  /* Responsive search field improvements */
   .search-container {
     padding: 0;
   }
   
-  /* Contrôles de pagination */
+  /* Pagination controls */
   .pagination {
     display: flex;
     justify-content: center;
@@ -105,7 +105,7 @@
   }
 }
 
-/* Styles desktop */
+/* Desktop styles */
 @media (min-width: 768px) {
   .mobile-only {
     display: none;

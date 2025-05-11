@@ -1,6 +1,6 @@
-/* Styles principaux pour Tepper & Bennett */
+/* Main styles for Tepper & Bennett */
 
-/* Styles pour les panneaux pliables */
+/* Styles for collapsible panels */
 .collapsible-content {
   max-height: 0;
   overflow: hidden;
@@ -8,13 +8,13 @@
 }
 
 .collapsible-content.open {
-  max-height: 2000px; /* Une valeur suffisamment grande */
+  max-height: 2000px; /* A sufficiently large value */
 }
 
 .collapsible-toggle {
   cursor: pointer;
   position: relative;
-  padding-right: 55px; /* Espace accru pour le symbole + */
+  padding-right: 55px; /* Increased space for the + symbol */
   text-align: center;
   display: flex;
   align-items: center;
@@ -23,28 +23,28 @@
 
 .toggle-icon {
   position: absolute;
-  right: 10px; /* Positionnement fixe à droite */
-  width: 32px; /* Largeur accrue */
-  height: 32px; /* Hauteur accrue */
+  right: 10px; /* Fixed positioning on the right */
+  width: 32px; /* Increased width */
+  height: 32px; /* Increased height */
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 1.8rem; /* Taille de police plus grande */
+  font-size: 1.8rem; /* Larger font size */
   transition: all 0.2s ease;
-  background-color: #B8860B; /* Fond doré */
-  color: white; /* Texte blanc */
-  border-radius: 50%; /* Forme circulaire */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Ombre subtile */
+  background-color: #B8860B; /* Gold background */
+  color: white; /* White text */
+  border-radius: 50%; /* Circular shape */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Subtle shadow */
 }
 
-/* Assurer une largeur cohérente pour les conteneurs */
+/* Ensure consistent width for containers */
 .section-container {
   position: relative;
   width: 100%;
 }
 
-/* Marge de défilement pour les sections liées avec des ancres */
+/* Scroll margin for sections linked with anchors */
 .scroll-mt-16 {
-  scroll-margin-top: 6rem; /* Augmenté à 6rem (96px) pour éviter que le contenu ne soit caché sous le haut de l'écran */
+  scroll-margin-top: 6rem; /* Increased to 6rem (96px) to prevent content from being hidden under the top of the screen */
 } 
