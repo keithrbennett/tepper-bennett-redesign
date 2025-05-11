@@ -47,20 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function isSectionClosed(sectionId) {
-        return getClosedSections().includes(sectionId);
-    }
-
     // Helper functions for all-expanded state
-    function isAllExpanded() {
-        try {
-            return localStorage.getItem(ALL_EXPANDED_KEY) === 'true';
-        } catch (e) {
-            console.error('Error reading all-expanded state:', e);
-            return false;
-        }
-    }
-
     function setAllExpanded(expanded) {
         try {
             localStorage.setItem(ALL_EXPANDED_KEY, expanded);
