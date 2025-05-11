@@ -258,10 +258,10 @@ document.addEventListener('DOMContentLoaded', function() {
         anchor.addEventListener('click', function() {
             const targetId = this.getAttribute('href').substring(1);
             if (!targetId) return;
-            
+
             const targetToggle = document.getElementById(`${targetId}-heading`);
             const targetElement = document.getElementById(targetId);
-            
+
             // Always expand the section when clicked directly
             if (targetToggle) {
                 if (targetToggle.getAttribute('aria-expanded') === 'false') {
@@ -269,20 +269,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     targetToggle.setAttribute('aria-expanded', 'true');
                     targetToggle.querySelector('.toggle-icon').textContent = '−';
                     targetToggle.nextElementSibling.classList.add('open');
-                    
+
                     // Always remove from closed sections when accessed via anchor
                     removeFromClosedSections(targetId);
                     updateButtonStates();
                 }
-                
+
                 // Always update the URL
                 updateUrlHash(targetId, true);
             }
-            
+
             // Scroll to the section
             if (targetElement) {
                 setTimeout(() => {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                    // Scroll with a vertical offset to ensure the element isn't hidden by fixed elements
+                    const yOffset = -100; // Negative value to scroll element below the top edge
+                    const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    window.scrollTo({top: y, behavior: 'smooth'});
                 }, 100);
             }
         });
@@ -293,11 +296,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const targetId = window.location.hash.substring(1);
         if (targetId) {
             const targetElement = document.getElementById(targetId);
-            
+
             // Initial state is handled in the toggle setup, just scroll to section
             if (targetElement) {
                 setTimeout(() => {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                    // Scroll with a vertical offset to ensure the element isn't hidden by fixed elements
+                    const yOffset = -100; // Negative value to scroll element below the top edge
+                    const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    window.scrollTo({top: y, behavior: 'smooth'});
                 }, 100);
             }
         }
@@ -310,11 +316,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (targetId) {
                 // Expand the section and scroll to it
                 expandSection(targetId);
-                
+
                 const targetElement = document.getElementById(targetId);
                 if (targetElement) {
                     setTimeout(() => {
-                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                        // Scroll with a vertical offset to ensure the element isn't hidden by fixed elements
+                        const yOffset = -100; // Negative value to scroll element below the top edge
+                        const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                        window.scrollTo({top: y, behavior: 'smooth'});
                     }, 100);
                 }
             }
@@ -323,4 +332,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize button states
     updateButtonStates();
+
+    // Fix scroll position when page is refreshed with a hash in the URL
+    window.addEventListener('load', function() {
+        if (window.location.hash) {
+            const targetId = window.location.hash.substring(1);
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                // Use requestAnimationFrame to ensure the browser has finished any pending layout work
+                requestAnimationFrame(() => {
+                    // Add a more significant offset to push the section further down
+                    const yOffset = -120;
+                    const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    window.scrollTo({top: y, behavior: 'auto'});
+
+                    // Sometimes a single scroll adjustment isn't enough, try again after a short delay
+                    setTimeout(() => {
+                        const updatedY = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                        window.scrollTo({top: updatedY, behavior: 'auto'});
+                    }, 100);
+                });
+            }
+        }
+    });
 });

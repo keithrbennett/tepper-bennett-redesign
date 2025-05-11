@@ -42,4 +42,9 @@
 .section-container {
   position: relative;
   width: 100%;
+}
+
+/* Marge de défilement pour les sections liées avec des ancres */
+.scroll-mt-16 {
+  scroll-margin-top: 6rem; /* Augmenté à 6rem (96px) pour éviter que le contenu ne soit caché sous le haut de l'écran */
 } 
