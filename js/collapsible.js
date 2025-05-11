@@ -15,36 +15,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper functions for closed sections storage
     function getClosedSections() {
         try {
-            return JSON.parse(localStorage.getItem(CLOSED_SECTIONS_KEY) || '[]');
+            const array = JSON.parse(localStorage.getItem(CLOSED_SECTIONS_KEY) || '[]');
+            return new Set(array);
         } catch (e) {
-            console.error('Error reading closed sections:', e);
-            return [];
+            console.error('Error reading closed sections into Set:', e);
+            return new Set();
         }
     }
     
-    function saveClosedSections(closedSections) {
+    function saveClosedSections(closedSectionsSet) {
         try {
-            localStorage.setItem(CLOSED_SECTIONS_KEY, JSON.stringify(closedSections));
+            localStorage.setItem(CLOSED_SECTIONS_KEY, JSON.stringify(Array.from(closedSectionsSet)));
         } catch (e) {
-            console.error('Error saving closed sections:', e);
+            console.error('Error saving closed sections from Set:', e);
         }
     }
     
     function addToClosedSections(sectionId) {
-        const closedSections = getClosedSections();
-        if (!closedSections.includes(sectionId)) {
-            closedSections.push(sectionId);
-            saveClosedSections(closedSections);
-        }
+        const closedSectionsSet = getClosedSections();
+        closedSectionsSet.add(sectionId);
+        saveClosedSections(closedSectionsSet);
     }
     
     function removeFromClosedSections(sectionId) {
-        const closedSections = getClosedSections();
-        const index = closedSections.indexOf(sectionId);
-        if (index !== -1) {
-            closedSections.splice(index, 1);
-            saveClosedSections(closedSections);
-        }
+        const closedSectionsSet = getClosedSections();
+        closedSectionsSet.delete(sectionId);
+        saveClosedSections(closedSectionsSet);
     }
     
     // Helper functions for all-expanded state
