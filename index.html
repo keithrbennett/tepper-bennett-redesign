@@ -102,8 +102,8 @@
     <div class="bg-navy text-white py-2 px-4 fixed top-2 right-2 z-20 shadow-md rounded-md flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 opacity-90 hover:opacity-100 transition-opacity">
         <span class="font-serif text-sm">Sections:</span>
         <div class="flex space-x-2">
-            <button id="expand-all" class="bg-gold text-white px-2 py-1 rounded hover:bg-opacity-80 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm">Expand All</button>
-            <button id="collapse-all" class="bg-gold text-white px-2 py-1 rounded hover:bg-opacity-80 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm">Collapse All</button>
+            <button id="expand-all" class="btn btn-gold btn-sm">Expand All</button>
+            <button id="collapse-all" class="btn btn-gold btn-sm">Collapse All</button>
         </div>
     </div>
     
@@ -121,25 +121,25 @@
             <nav class="mb-8">
                 <ul class="list-none">
                     <li class="mb-4 md:mb-7">
-                        <a href="#legacy-heading" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">The Legacy</a>
+                        <a href="#legacy-heading" class="nav-link">The Legacy</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#songs" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Songs</a>
+                        <a href="#songs" class="nav-link">Songs</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#genres" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Genres</a>
+                        <a href="#genres" class="nav-link">Genres</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#elvis" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Elvis</a>
+                        <a href="#elvis" class="nav-link">Elvis</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#resources" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Resources</a>
+                        <a href="#resources" class="nav-link">Resources</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#reports" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Reports</a>
+                        <a href="#reports" class="nav-link">Reports</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#inquiries" class="font-serif text-2xl md:text-3xl text-white hover:text-gold block">Inquiries</a>
+                        <a href="#inquiries" class="nav-link">Inquiries</a>
                     </li>
                 </ul>
             </nav>
@@ -147,22 +147,22 @@
             <!-- Stats Cards -->
             <div class="mt-auto mb-8">
                 <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div class="bg-white rounded-md shadow-md p-4">
+                    <div class="card">
                         <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number songs">71</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Songs</div>
                     </div>
                     
-                    <div class="bg-white rounded-md shadow-md p-4">
+                    <div class="card">
                         <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number elvis">42</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Elvis Songs</div>
                     </div>
-                    
-                    <div class="bg-white rounded-md shadow-md p-4">
+
+                    <div class="card">
                         <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number artists">45</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Artists</div>
                     </div>
-                    
-                    <div class="bg-white rounded-md shadow-md p-4">
+
+                    <div class="card">
                         <div class="font-serif text-2xl md:text-3xl font-bold text-gold stat-number movies">22</div>
                         <div class="font-serif text-base md:text-lg text-gray-800">Movies</div>
                     </div>
@@ -177,10 +177,10 @@
     </section>
 
     <!-- About Section -->
-    <section id="legacy" class="py-16 px-8 bg-white scroll-mt-16">
-        <div class="max-w-4xl mx-auto section-container">
-            <h2 id="legacy-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center" 
-               aria-expanded="true" 
+    <section id="legacy" class="section-container section-light">
+        <div class="max-w-4xl mx-auto">
+            <h2 id="legacy-heading" class="heading-section collapsible-toggle"
+               aria-expanded="true"
                tabindex="0"
                aria-controls="legacy-content">
                 The Legacy
@@ -200,17 +200,17 @@
     </section>
 
     <!-- Songs Section -->
-    <section id="songs" class="py-16 px-8 bg-gray-100 scroll-mt-16">
-        <div class="max-w-4xl mx-auto section-container">
-            <h2 id="songs-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
-               aria-expanded="false" 
+    <section id="songs" class="section-container section-gray">
+        <div class="max-w-4xl mx-auto">
+            <h2 id="songs-heading" class="heading-section collapsible-toggle"
+               aria-expanded="false"
                tabindex="0"
                aria-controls="songs-content">
                 Songs
                 <span class="toggle-icon" aria-hidden="true">+</span>
             </h2>
             <div id="songs-content" class="collapsible-content" role="region" aria-labelledby="songs-heading">
-                <p class="text-lg mb-8">Explore the complete collection of songs written by Tepper & Bennett. Filter by artist, year, or genre to discover their extensive catalog.</p>
+                <p class="paragraph-spaced">Explore the complete collection of songs written by Tepper & Bennett. Filter by artist, year, or genre to discover their extensive catalog.</p>
                 
                 <div class="bg-gold bg-opacity-90 text-white p-3 rounded-md mb-8">
                     <p><strong>Note:</strong> The songs shown below are sample data only. The complete catalog will be available in the future.</p>
@@ -221,7 +221,7 @@
                         <input type="text" id="songs-search" placeholder="Search songs, performers, or administrators..." 
                                class="flex-grow p-3 border border-gray-300 rounded-md"
                                aria-label="Search songs">
-                        <button id="search-button" class="bg-navy text-white px-6 py-3 rounded-md hover:bg-opacity-90">Search</button>
+                        <button id="search-button" class="btn btn-navy btn-md">Search</button>
                     </div>
                 </div>
                 
@@ -232,8 +232,8 @@
                     </ul>
                     
                     <div class="pagination">
-                        <button class="pagination-button" id="mobile-prev-page" disabled>Previous</button>
-                        <button class="pagination-button" id="mobile-next-page">Next</button>
+                        <button class="pagination-button btn btn-navy btn-sm" id="mobile-prev-page" disabled>Previous</button>
+                        <button class="pagination-button btn btn-navy btn-sm" id="mobile-next-page">Next</button>
                     </div>
                 </div>
                 
@@ -287,10 +287,10 @@
     </section>
 
     <!-- Genres Section -->
-    <section id="genres" class="py-16 px-8 bg-white scroll-mt-16">
-        <div class="max-w-4xl mx-auto section-container">
-            <h2 id="genres-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
-               aria-expanded="false" 
+    <section id="genres" class="section-container section-light">
+        <div class="max-w-4xl mx-auto">
+            <h2 id="genres-heading" class="heading-section collapsible-toggle"
+               aria-expanded="false"
                tabindex="0"
                aria-controls="genres-content">
                 Genres
@@ -299,8 +299,8 @@
             <div id="genres-content" class="collapsible-content" role="region" aria-labelledby="genres-heading">
                 <div class="space-y-10">
                     <div>
-                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">The Many Genres</h3>
-                        <p class="text-lg">
+                        <h3 class="heading-subsection">The Many Genres</h3>
+                        <p class="paragraph">
                             Sid and Roy's discography ran the gamut of genres, and were sung by a vast constellation of stars. They were equally
                             at home with love songs, children's and holiday songs, and just plain fun songs. With over 300 published songs, the
                             duo covered many genres, but regardless of type, their songs, as <cite>The New York Times</cite> put it, were distinguished
@@ -309,8 +309,8 @@
                     </div>
 
                     <div>
-                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Love Songs</h3>
-                        <p class="text-lg">
+                        <h3 class="heading-subsection">Love Songs</h3>
+                        <p class="paragraph">
                             Sid and Roy often wrote about love, and came up with a number of memorable songs that approached it from a variety of
                             angles. Among those that still resonate deeply with audiences are
                             <a href="https://www.youtube.com/watch?v=yeMFw9tBrGo" target="_blank" class="site-link">"Red Roses for a Blue Lady"</a>
@@ -329,8 +329,8 @@
                     </div>
 
                     <div>
-                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Rock 'n' Roll Songs</h3>
-                        <p class="text-lg">
+                        <h3 class="heading-subsection">Rock 'n' Roll Songs</h3>
+                        <p class="paragraph">
                             Ushering in the birth of Rock 'n' Roll, Sid and Roy's songs were recorded by the likes of The Beatles
                             (<a href="https://www.youtube.com/watch?v=ghag_1WCEuQ" target="_blank" class="site-link">"Glad All Over"</a>),
                             Elvis (<a href="https://www.youtube.com/watch?v=GkyjCJvHLsA" target="_blank" class="site-link">"GI Blues"</a>),
@@ -346,25 +346,25 @@
     </section>
 
     <!-- Elvis Section -->
-    <section id="elvis" class="py-16 px-8 bg-gray-100 scroll-mt-16">
-        <div class="max-w-4xl mx-auto section-container">
-            <h2 id="elvis-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
-               aria-expanded="false" 
+    <section id="elvis" class="section-container section-gray">
+        <div class="max-w-4xl mx-auto">
+            <h2 id="elvis-heading" class="heading-section collapsible-toggle"
+               aria-expanded="false"
                tabindex="0"
                aria-controls="elvis-content">
                 Elvis Presley Songs
                 <span class="toggle-icon" aria-hidden="true">+</span>
             </h2>
             <div id="elvis-content" class="collapsible-content" role="region" aria-labelledby="elvis-heading">
-                <p class="text-lg mb-8">Tepper & Bennett wrote 42 songs for Elvis Presley, many of which appeared in his movies. Explore this special collection that highlights their contribution to The King's legacy.</p>
+                <p class="paragraph-spaced">Tepper & Bennett wrote 42 songs for Elvis Presley, many of which appeared in his movies. Explore this special collection that highlights their contribution to The King's legacy.</p>
                 
                 <div class="flex flex-col md:flex-row gap-8">
                     <div class="md:w-1/2">
                         <img src="images/elvis-chante-tepper-bennett.jpg" alt="Elvis Presley performing a Tepper and Bennett song" class="w-full h-auto rounded-lg shadow-md object-cover" onerror="this.src='https://placehold.co/600x400/1A305E/FFFFFF?text=Elvis+Presley'" />
                     </div>
                     <div class="md:w-1/2 space-y-4">
-                        <p class="text-lg">Sid Tepper and Roy C. Bennett wrote an impressive 42 songs that were recorded by Elvis Presley. Many of these songs were featured in Elvis's movies, helping to define the soundtrack of his film career in the 1960s.</p>
-                        <p class="text-lg">Their collaborations with Elvis include memorable tracks like "G.I. Blues," "Hawaiian Sunset," "New Orleans," and "Song of the Shrimp." While some of these songs may not be among Elvis's most well-known hits, they showcase the versatility and prolific nature of Tepper and Bennett's songwriting abilities.</p>
+                        <p class="paragraph">Sid Tepper and Roy C. Bennett wrote an impressive 42 songs that were recorded by Elvis Presley. Many of these songs were featured in Elvis's movies, helping to define the soundtrack of his film career in the 1960s.</p>
+                        <p class="paragraph">Their collaborations with Elvis include memorable tracks like "G.I. Blues," "Hawaiian Sunset," "New Orleans," and "Song of the Shrimp." While some of these songs may not be among Elvis's most well-known hits, they showcase the versatility and prolific nature of Tepper and Bennett's songwriting abilities.</p>
                     </div>
                 </div>
             </div>
@@ -372,10 +372,10 @@
     </section>
 
     <!-- Resources Section -->
-    <section id="resources" class="py-16 px-8 bg-white scroll-mt-16">
-        <div class="max-w-4xl mx-auto section-container">
-            <h2 id="resources-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
-               aria-expanded="false" 
+    <section id="resources" class="section-container section-light">
+        <div class="max-w-4xl mx-auto">
+            <h2 id="resources-heading" class="heading-section collapsible-toggle"
+               aria-expanded="false"
                tabindex="0"
                aria-controls="resources-content">
                 Resources
@@ -384,14 +384,14 @@
             <div id="resources-content" class="collapsible-content" role="region" aria-labelledby="resources-heading">
                 <div class="space-y-8">
                     <section>
-                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Discography</h3>
+                        <h3 class="heading-subsection">Discography</h3>
                         <ul class="list-disc pl-5 space-y-2">
                             <li><a href="https://www.discogs.com/search/?q=tepper+bennett&type=all" target="_blank" class="site-link">Tepper and Bennett Discography (discogs.com)</a></li>
                         </ul>
                     </section>
 
                     <section>
-                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Wikipedia</h3>
+                        <h3 class="heading-subsection">Wikipedia</h3>
                         <ul class="list-disc pl-5 space-y-2">
                             <li><a href="https://en.wikipedia.org/wiki/Sid_Tepper" target="_blank" class="site-link">Sid Tepper Wikipedia Article</a></li>
                             <li><a href="https://en.wikipedia.org/wiki/Roy_C._Bennett" target="_blank" class="site-link">Roy C. Bennett Wikipedia Article</a></li>
@@ -399,7 +399,7 @@
                     </section>
 
                     <section>
-                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Off the Beaten Path</h3>
+                        <h3 class="heading-subsection">Off the Beaten Path</h3>
                         <ul class="list-disc pl-5 space-y-2">
                             <li><a href="https://www.youtube.com/watch?v=8-kRyR9c0uc" target="_blank" class="site-link">Red Roses for a Blue Lady - Moscow City Jazz Band</a></li>
                             <li><a href="https://www.youtube.com/watch?v=me8aPqsQ620" target="_blank" class="site-link">Red Roses for a Blue Lady - Victoria Junior College Choir (Singapore) Choreographed Production, 2019</a></li>
@@ -414,7 +414,7 @@
                     </section>
 
                     <section>
-                        <h3 class="font-serif text-2xl font-bold text-navy mb-4">Obituaries</h3>
+                        <h3 class="heading-subsection">Obituaries</h3>
                         <ul class="list-disc pl-5 space-y-2">
                             <li><a href="https://www.nytimes.com/2015/04/30/arts/sid-tepper-dies-at-96-delivered-red-roses-for-a-blue-lady-and-other-songs.html" target="_blank" class="site-link">Sid Tepper Obituary in <cite>The New York Times</cite></a></li>
                             <li><a href="https://www.nytimes.com/2015/07/14/arts/music/roy-c-bennett-dies-at-96-writer-of-popular-songs.html" target="_blank" class="site-link">Roy C. Bennett Obituary in <cite>The New York Times</cite></a></li>
@@ -428,17 +428,17 @@
     </section>
 
     <!-- Reports Section -->
-    <section id="reports" class="py-16 px-8 bg-gray-100 scroll-mt-16">
-        <div class="max-w-4xl mx-auto section-container">
-            <h2 id="reports-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
-               aria-expanded="false" 
+    <section id="reports" class="section-container section-gray">
+        <div class="max-w-4xl mx-auto">
+            <h2 id="reports-heading" class="heading-section collapsible-toggle"
+               aria-expanded="false"
                tabindex="0"
                aria-controls="reports-content">
                 Reports
                 <span class="toggle-icon" aria-hidden="true">+</span>
             </h2>
             <div id="reports-content" class="collapsible-content" role="region" aria-labelledby="reports-heading">
-                <p class="text-lg mb-6">
+                <p class="paragraph-spaced">
                     Under construction...please visit
                     <a href="https://www.tepper-bennett.com/reports" class="site-link">https://www.tepper-bennett.com/reports</a>
                     for now for reports.
@@ -448,10 +448,10 @@
     </section>
 
     <!-- Inquiries Section -->
-    <section id="inquiries" class="py-16 px-8 bg-white scroll-mt-16">
-        <div class="max-w-4xl mx-auto section-container">
-            <h2 id="inquiries-heading" class="font-serif text-4xl font-bold text-navy mb-8 collapsible-toggle text-center"
-               aria-expanded="false" 
+    <section id="inquiries" class="section-container section-light">
+        <div class="max-w-4xl mx-auto">
+            <h2 id="inquiries-heading" class="heading-section collapsible-toggle"
+               aria-expanded="false"
                tabindex="0"
                aria-controls="inquiries-content">
                 Inquiries
@@ -467,7 +467,7 @@
                     
                     <p>For other questions or comments, feel free to contact us at <a href="mailto:info@tepper-bennett.com" class="site-link">info@tepper-bennett.com</a>.</p>
                     
-                    <h3 class="font-serif text-2xl font-bold text-navy mb-4 mt-8">Disclaimer</h3>
+                    <h3 class="heading-subsection mt-8">Disclaimer</h3>
                     
                     <p>This web site is a non-monetized site intended to showcase the Tepper and Bennett musical legacy, and to <em>assist</em> music supervisors in the selection of songs and acquiring contact information of the appropriate rights administrators. All information posted here is done so in good faith, but there may be errors and omissions. If you are looking to license a song, please be aware that in some cases there is more than one rights administrator, and it is possible there are rights administrators for a given song that are not listed on this site.</p>
                 </div>
