@@ -1,0 +1,91 @@
+API Endpoints Design
+
+  Base URL
+
+  /api/v1
+
+  Resource Endpoints
+
+  Songs
+
+  GET /api/v1/songs                 # List all songs with pagination
+  GET /api/v1/songs/:code           # Get a specific song by code
+  GET /api/v1/songs/scope/:scope    # Get songs by scope (best, elvis, all)
+  GET /api/v1/songs/search          # Search songs with query parameters
+
+  Song Relationships
+
+  GET /api/v1/songs/:code/performers      # Get performers for a song
+  GET /api/v1/songs/:code/genres          # Get genres for a song
+  GET /api/v1/songs/:code/movies          # Get movies for a song
+  GET /api/v1/songs/:code/writers         # Get writers for a song
+  GET /api/v1/songs/:code/rights_admins   # Get rights administrators for a song
+  GET /api/v1/songs/:code/song_plays      # Get song plays for a song
+
+  Performers
+
+  GET /api/v1/performers                  # List all performers
+  GET /api/v1/performers/:code            # Get a specific performer
+  GET /api/v1/performers/:code/songs      # Get songs by a performer
+
+  Genres
+
+  GET /api/v1/genres                     # List all genres
+  GET /api/v1/genres/:code               # Get a specific genre
+  GET /api/v1/genres/:code/songs         # Get songs in a genre
+
+  Movies
+
+  GET /api/v1/movies                     # List all movies
+  GET /api/v1/movies/:code               # Get a specific movie
+  GET /api/v1/movies/:code/songs         # Get songs from a movie
+
+  Organizations (Rights Administrators)
+
+  GET /api/v1/organizations                    # List all organizations
+  GET /api/v1/organizations/:code              # Get a specific organization
+  GET /api/v1/organizations/:code/songs        # Get songs managed by an organization
+
+  Writers
+
+  GET /api/v1/writers                    # List all writers
+  GET /api/v1/writers/:code              # Get a specific writer
+  GET /api/v1/writers/:code/songs        # Get songs by a writer
+
+  Song Plays
+
+  GET /api/v1/song_plays                 # List all song plays
+  GET /api/v1/song_plays/:id             # Get a specific song play
+  GET /api/v1/song_plays/scope/:scope    # Get song plays by scope (best, elvis, all)
+
+  Reports API
+
+  GET /api/v1/reports                     # List available report types
+  GET /api/v1/reports/:report_type        # Get a specific report
+
+  Query Parameters
+
+  For list endpoints:
+  - page: Page number for pagination
+  - per_page: Items per page
+  - sort: Field to sort by
+  - order: Sort direction (asc/desc)
+
+  For search endpoint:
+  - q: Search query
+  - fields: Which fields to search (name, code, etc.)
+
+  For report endpoint:
+  - format: Output format (json, yaml)
+
+  Implementation Approach
+
+  1. Create a new Api::V1 namespace in the Rails application
+  2. Implement API controllers for each resource type
+  3. Use existing models and report helpers for data retrieval
+  4. Add JSON serializers for consistent response formatting
+  5. Implement pagination, sorting, and filtering
+  6. Add proper error handling and status codes
+  7. Include documentation using OpenAPI/Swagger
+
+  This API design provides access to all the core functionality while maintaining the same data structure and relationships that exist in the current application.
