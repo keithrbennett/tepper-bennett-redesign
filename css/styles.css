@@ -49,15 +49,8 @@
   scroll-margin-top: 6rem; /* Increased to 6rem (96px) to prevent content from being hidden under the top of the screen */
 }
 
-/* Standard link styling */
-.site-link {
-  color: #1A305E; /* text-navy */
-  text-decoration: underline;
-}
-
-.site-link:hover {
-  color: #B8860B; /* text-gold */
-}
+/* Standard site link styling */
+/* Removed .site-link definition as it's now in src/input.css */
 
 /* Button abstractions */
 .btn {
@@ -144,23 +137,8 @@
   padding: 1rem; /* p-4 */
 }
 
-/* Navigation links */
-.nav-link {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem; /* text-2xl */
-  color: white;
-  display: block;
-}
-
-.nav-link:hover {
-  color: #B8860B; /* text-gold */
-}
-
-@media (min-width: 768px) {
-  .nav-link {
-    font-size: 1.875rem; /* md:text-3xl */
-  }
-}
+/* Navigation link styling */
+/* Removed .nav-link definition as it's now in src/input.css */
 
 /* Section styling */
 .section-container {

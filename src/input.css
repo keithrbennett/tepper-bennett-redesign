@@ -14,4 +14,12 @@
   .stat-card {
     @apply bg-white rounded shadow-md p-6 w-full max-w-xs mb-8;
   }
+  
+  .site-link {
+    @apply text-navy underline hover:text-gold;
+  }
+  
+  .nav-link {
+    @apply font-serif text-2xl md:text-3xl text-white hover:text-gold block;
+  }
 } 
