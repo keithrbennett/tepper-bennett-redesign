@@ -1,7 +1,7 @@
 /**
  * Song management and mobile pagination for Tepper & Bennett
  */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // Song search
     const searchInput = document.getElementById('songs-search');
     const searchButton = document.getElementById('search-button');
@@ -14,58 +14,106 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Song data for tables
-    window.songData = [
-        {
-            title: "Red Roses for a Blue Lady",
-            performers: "Vaughn Monroe, Wayne Newton, Vic Dana",
-            administrator: "Universal Music Publishing Group",
-            youtubeUrl: "https://www.youtube.com/watch?v=2bQZ6l_cq5Y"
-        },
-        {
-            title: "The Naughty Lady of Shady Lane",
-            performers: "The Ames Brothers, Dean Martin",
-            administrator: "Warner Chappell Music",
-            youtubeUrl: "https://www.youtube.com/watch?v=rEMrl7HgrpA"
-        },
-        {
-            title: "Kiss of Fire",
-            performers: "Georgia Gibbs, Louis Armstrong",
-            administrator: "Warner Chappell Music",
-            youtubeUrl: "https://www.youtube.com/watch?v=68oyEZDl1T4"
-        },
-        {
-            title: "The Young Ones",
-            performers: "Cliff Richard",
-            administrator: "Sony Music Publishing",
-            youtubeUrl: "https://www.youtube.com/watch?v=Juw_Vt8Y1A8"
-        },
-        {
-            title: "G.I. Blues",
-            performers: "Elvis Presley",
-            administrator: "Universal Music Publishing Group",
-            youtubeUrl: "https://www.youtube.com/watch?v=QMUHt5cATmk"
-        },
-        {
-            title: "Am I Ready",
-            performers: "Elvis Presley",
-            administrator: "Universal Music Publishing Group",
-            youtubeUrl: "https://www.youtube.com/watch?v=example1"
-        },
-        {
-            title: "Angel",
-            performers: "Elvis Presley",
-            administrator: "Warner Chappell Music",
-            youtubeUrl: "https://www.youtube.com/watch?v=example2"
-        },
-        {
-            title: "D in Love",
-            performers: "Cliff Richard",
-            administrator: "Universal Music",
-            youtubeUrl: "https://www.youtube.com/watch?v=example3"
-        }
-        // Add more songs here when they become available
-    ];
+    // Load song data from YAML files
+    try {
+        // Load songs data
+        const elvisSongs = await window.dataLoader.loadData('elvis-songs.yml');
+        const nonElvisSongs = await window.dataLoader.loadData('non-elvis-songs.yml');
+        const songPlays = await window.dataLoader.loadData('song-plays.yml');
+        const performers = await window.dataLoader.loadData('performers.yml');
+        const organizations = await window.dataLoader.loadData('organizations.yml');
+        
+        // Create a map of performers for easier lookup
+        const performersMap = {};
+        performers.forEach(performer => {
+            performersMap[performer.code] = performer.name;
+        });
+        
+        // Create a map of admin organizations for easier lookup
+        const orgsMap = {};
+        organizations.forEach(org => {
+            orgsMap[org.code] = org.name;
+        });
+
+        // Combine and process song data
+        const allSongs = [...elvisSongs, ...nonElvisSongs];
+        
+        // Create a map of songs for easier lookup in song plays
+        const songsMap = {};
+        allSongs.forEach(song => {
+            songsMap[song.code] = song;
+        });
+        
+        // Build song data for the table
+        window.songData = songPlays.map(play => {
+            const song = songsMap[play.song_code];
+            const performer = performersMap[play.performer_codes] || play.performer_codes;
+            
+            return {
+                title: song ? song.name : play.song_code,
+                performers: performer,
+                administrator: song && song.organization ? orgsMap[song.organization] : 'Unknown',
+                youtubeUrl: play.youtube_key ? `https://www.youtube.com/watch?v=${play.youtube_key}` : '#'
+            };
+        });
+        
+        console.log('Loaded song data:', window.songData.length, 'songs');
+    } catch (error) {
+        console.error('Error loading song data:', error);
+        
+        // Fallback to hardcoded data if loading fails
+        window.songData = [
+            {
+                title: "Red Roses for a Blue Lady",
+                performers: "Vaughn Monroe, Wayne Newton, Vic Dana",
+                administrator: "Universal Music Publishing Group",
+                youtubeUrl: "https://www.youtube.com/watch?v=2bQZ6l_cq5Y"
+            },
+            {
+                title: "The Naughty Lady of Shady Lane",
+                performers: "The Ames Brothers, Dean Martin",
+                administrator: "Warner Chappell Music",
+                youtubeUrl: "https://www.youtube.com/watch?v=rEMrl7HgrpA"
+            },
+            {
+                title: "Kiss of Fire",
+                performers: "Georgia Gibbs, Louis Armstrong",
+                administrator: "Warner Chappell Music",
+                youtubeUrl: "https://www.youtube.com/watch?v=68oyEZDl1T4"
+            },
+            {
+                title: "The Young Ones",
+                performers: "Cliff Richard",
+                administrator: "Sony Music Publishing",
+                youtubeUrl: "https://www.youtube.com/watch?v=Juw_Vt8Y1A8"
+            },
+            {
+                title: "G.I. Blues",
+                performers: "Elvis Presley",
+                administrator: "Universal Music Publishing Group",
+                youtubeUrl: "https://www.youtube.com/watch?v=QMUHt5cATmk"
+            },
+            {
+                title: "Am I Ready",
+                performers: "Elvis Presley",
+                administrator: "Universal Music Publishing Group",
+                youtubeUrl: "https://www.youtube.com/watch?v=example1"
+            },
+            {
+                title: "Angel",
+                performers: "Elvis Presley",
+                administrator: "Warner Chappell Music",
+                youtubeUrl: "https://www.youtube.com/watch?v=example2"
+            },
+            {
+                title: "D in Love",
+                performers: "Cliff Richard",
+                administrator: "Universal Music",
+                youtubeUrl: "https://www.youtube.com/watch?v=example3"
+            }
+            // Add more songs here when they become available
+        ];
+    }
     
     // Mobile table pagination
     const ROWS_PER_PAGE = 10;
@@ -91,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Truncate long texts for mobile
             const truncateText = (text, maxLength = 20) => {
+                if (!text) return '';
                 if (text.length <= maxLength) return text;
                 return text.substring(0, maxLength - 3) + '...';
             };
