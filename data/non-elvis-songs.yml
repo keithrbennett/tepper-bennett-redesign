@@ -1,0 +1,184 @@
+- code: bagel-lox
+  name: Bagels & Lox
+  performers:
+    - rob-schneid
+- code: d-in-love
+  name: D in Love
+  performers:
+    - clf-rich
+- code: run-back-me
+  name: Don't Come Running Back to Me
+  performers:
+    - n-wilson
+  genres:
+    - romantic
+- code: eggbert
+  name: Eggbert, The Easter Egg
+  performers:
+    - r-clooney
+  genres:
+    - children
+- code: glad
+  name: Glad All Over
+  performers:
+    - beatles
+    - jeff-beck
+- code: bye-boys
+  name: Goodbye Boys, Goodbye
+  performers:
+    - jay-amer
+- code: crush-ny
+  name: I've Got a Crush on New York Town
+  performers:
+    - c-francis
+- code: long-way
+  name: It's a Long Way from Your House to My House
+  performers:
+    - sinatra
+  genres:
+    - romantic
+- code: jenny-kiss
+  name: Jenny Kissed Me
+  performers:
+    - ed-albert
+  genres:
+    - romantic
+- code: kewpie-doll
+  name: Kewpie Doll
+  performers:
+    - p-como
+- code: kiss-fire
+  name: Kiss of Fire
+  performers:
+    - louis-arm
+    - geo-gibbs
+  genres:
+    - hit
+    - romantic
+  writers:
+    - les-allen
+    - rob-hill
+- code: n-for-xmas
+  name: Nuttin' for Christmas
+  performers:
+    - a-mooney
+    - b-gordon
+    - eartha-kitt
+    - homer-jethro
+    - plain-white
+    - sugarland
+  genres:
+    - children
+    - hit
+- code: red-roses
+  name: Red Roses for a Blue Lady
+  performers:
+    - andy-wms
+    - bert-kmft
+    - dean-martin
+    - moscow-jazz
+    - p-como
+    - r-conniff
+    - sinatra
+    - vic-choir
+    - vic-dana
+    - v-monroe
+    - w-newton
+  genres:
+    - hit
+    - romantic
+- code: santa-daddy
+  name: Santa Claus Looks Just Like Daddy
+  performers:
+    - a-mooney
+    - b-gordon
+  genres:
+    - children
+- code: ssss-heart
+  name: Say Something Sweet to Your Sweetheart
+  performers:
+    - ink-spots
+  genres:
+    - hit
+    - romantic
+- code: soft-love
+  name: Softly My Love
+  performers:
+    - della-reese
+  genres:
+    - romantic
+- code: smr-sounds
+  name: Summer Sounds
+  performers:
+    - r-goulet
+- code: stair-love
+  name: Stairway of Love
+  performers:
+    - m-robbins
+- code: stop-think
+  name: Stop and Think it Over
+  performers:
+    - p-como
+- code: suzy-snow
+  name: Suzy Snowflake
+  performers:
+    - r-clooney
+  genres:
+    - children
+- code: tear-rain
+  name: Teardrops in the Rain
+  performers:
+    - a-prysock
+  genres:
+    - romantic
+- code: train-ahchoo
+  name: The Little Train Who Said "Ah Choo"
+  performers:
+    - anne-lloyd
+  genres:
+    - children
+- code: nty-lady
+  name: The Naughty Lady of Shady Lane
+  performers:
+    - ames-bros
+  genres:
+    - funny
+    - hit
+- code: woodchuck
+  name: The Woodchuck Song
+  performers:
+    - ben-mill
+- code: young-ones
+  name: The Young Ones
+  performers:
+    - clf-rich
+  genres:
+    - hit
+    - movie
+    - tv
+  movie: young-ones
+- code: tr-light
+  name: Travelling Light
+  performers:
+    - clf-rich
+    - h-hermits
+    - jay-amer
+  genres: []
+- code: t-t-fingers
+  name: Twenty Tiny Fingers
+  performers:
+    - kilburn
+    - stargazers
+  genres:
+    - children
+- code: when-arms
+  name: When the Boy (Girl) in Your Arms
+  performers:
+    - c-francis
+  genres:
+    - romantic
+- code: ww-young
+  name: Wonderful World of the Young
+  performers:
+    - andy-wms
+    - clf-rich
