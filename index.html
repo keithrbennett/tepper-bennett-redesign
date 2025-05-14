@@ -222,6 +222,19 @@
                 
                 <!-- Desktop Table View -->
                 <div class="desktop-only">
+                    <!-- Upper Desktop Pagination Controls -->
+                    <div class="desktop-pagination" id="upper-pagination">
+                        <div class="page-info">
+                            <span id="upper-desktop-page-info">Showing all songs</span>
+                        </div>
+                        <div class="page-controls">
+                            <button class="btn btn-navy btn-sm" id="upper-desktop-first-page" title="First Page" disabled>&laquo;</button>
+                            <button class="btn btn-navy btn-sm" id="upper-desktop-prev-page" title="Previous Page" disabled>&lsaquo;</button>
+                            <button class="btn btn-navy btn-sm" id="upper-desktop-next-page" title="Next Page" disabled>&rsaquo;</button>
+                            <button class="btn btn-navy btn-sm" id="upper-desktop-last-page" title="Last Page" disabled>&raquo;</button>
+                        </div>
+                    </div>
+                    
                     <div class="table-container">
                         <table id="songs-table" class="min-w-full bg-white">
                             <thead class="bg-navy text-white">
@@ -245,8 +258,8 @@
                         </table>
                     </div>
                     
-                    <!-- Desktop Pagination Controls -->
-                    <div class="desktop-pagination">
+                    <!-- Lower Desktop Pagination Controls -->
+                    <div class="desktop-pagination" id="lower-pagination">
                         <div class="page-info">
                             <span id="desktop-page-info">Showing all songs</span>
                         </div>

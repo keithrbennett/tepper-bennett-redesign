@@ -32,9 +32,17 @@ document.addEventListener('DOMContentLoaded', function() {
   const desktopLastButton = document.getElementById('desktop-last-page');
   const desktopPageInfo = document.getElementById('desktop-page-info');
   
+  // Upper desktop pagination elements
+  const upperDesktopPrevButton = document.getElementById('upper-desktop-prev-page');
+  const upperDesktopNextButton = document.getElementById('upper-desktop-next-page');
+  const upperDesktopFirstButton = document.getElementById('upper-desktop-first-page');
+  const upperDesktopLastButton = document.getElementById('upper-desktop-last-page');
+  const upperDesktopPageInfo = document.getElementById('upper-desktop-page-info');
+  
   // Song search elements
   const searchInput = document.getElementById('songs-search');
   const searchButton = document.getElementById('search-button');
+  const searchContainer = document.querySelector('.search-container');
   
   // Show loading indicator
   const tbody = songsTable.querySelector('tbody');
@@ -245,86 +253,94 @@ document.addEventListener('DOMContentLoaded', function() {
   function setupSearch(songData) {
     if (searchButton && searchInput) {
       searchButton.addEventListener('click', function() {
-        const searchTerm = searchInput.value.toLowerCase();
-        console.log('Searching for:', searchTerm);
-        
-        if (searchTerm) {
-          const filteredData = songData.filter(song => 
-            song.title.toLowerCase().includes(searchTerm) || 
-            song.performers.toLowerCase().includes(searchTerm) || 
-            song.administrator.toLowerCase().includes(searchTerm)
-          );
-          
-          // Show "no results" if nothing found
-          if (filteredData.length === 0) {
-            if (songsTable) {
-              const tbody = songsTable.querySelector('tbody');
-              if (tbody) {
-                tbody.innerHTML = `
-                  <tr>
-                    <td colspan="4" class="py-8 text-center">
-                      <div>
-                        <p>No songs found matching "${searchTerm}"</p>
-                        <button id="reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
-                      </div>
-                    </td>
-                  </tr>
-                `;
-                
-                document.getElementById('reset-search')?.addEventListener('click', function() {
-                  searchInput.value = '';
-                  currentPage = 0;
-                  currentDesktopPage = 0;
-                  filteredSongData = songData;
-                  renderTable(songData);
-                  renderMobileList(songData);
-                });
-              }
-            }
-            
-            if (mobileList) {
-              mobileList.innerHTML = `
-                <li class="song-list-entry text-center py-4">
-                  <div>
-                    <p>No songs found matching "${searchTerm}"</p>
-                    <button id="mobile-reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
-                  </div>
-                </li>
-              `;
-              
-              document.getElementById('mobile-reset-search')?.addEventListener('click', function() {
-                searchInput.value = '';
-                currentPage = 0;
-                currentDesktopPage = 0;
-                filteredSongData = songData;
-                renderTable(songData);
-                renderMobileList(songData);
-              });
-            }
-          } else {
-            // Reset pagination when searching
-            currentPage = 0;
-            currentDesktopPage = 0;
-            filteredSongData = filteredData;
-            renderTable(filteredData);
-            renderMobileList(filteredData);
-          }
-        } else {
-          // Reset pagination when clearing search
-          currentPage = 0;
-          currentDesktopPage = 0;
-          filteredSongData = songData;
-          renderTable(songData);
-          renderMobileList(songData);
-        }
+        performSearch(songData);
       });
       
       // Add search on Enter key
       searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
-          searchButton.click();
+          performSearch(songData);
         }
       });
+    }
+  }
+  
+  /**
+   * Perform search on song data
+   * @param {Array} songData - The full song data array
+   */
+  function performSearch(songData) {
+    const searchTerm = searchInput.value.toLowerCase();
+    console.log('Searching for:', searchTerm);
+    
+    if (searchTerm) {
+      const filteredData = songData.filter(song => 
+        song.title.toLowerCase().includes(searchTerm) || 
+        song.performers.toLowerCase().includes(searchTerm) || 
+        song.administrator.toLowerCase().includes(searchTerm)
+      );
+      
+      // Show "no results" if nothing found
+      if (filteredData.length === 0) {
+        if (songsTable) {
+          const tbody = songsTable.querySelector('tbody');
+          if (tbody) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="4" class="py-8 text-center">
+                  <div>
+                    <p>No songs found matching "${searchTerm}"</p>
+                    <button id="reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+            
+            document.getElementById('reset-search')?.addEventListener('click', function() {
+              searchInput.value = '';
+              currentPage = 0;
+              currentDesktopPage = 0;
+              filteredSongData = songData;
+              renderTable(songData);
+              renderMobileList(songData);
+            });
+          }
+        }
+        
+        if (mobileList) {
+          mobileList.innerHTML = `
+            <li class="song-list-entry text-center py-4">
+              <div>
+                <p>No songs found matching "${searchTerm}"</p>
+                <button id="mobile-reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
+              </div>
+            </li>
+          `;
+          
+          document.getElementById('mobile-reset-search')?.addEventListener('click', function() {
+            searchInput.value = '';
+            currentPage = 0;
+            currentDesktopPage = 0;
+            filteredSongData = songData;
+            renderTable(songData);
+            renderMobileList(songData);
+          });
+        }
+      } else {
+        // Reset pagination when searching
+        currentPage = 0;
+        currentDesktopPage = 0;
+        filteredSongData = filteredData;
+        renderTable(filteredData);
+        renderMobileList(filteredData);
+      }
+    } else {
+      // Reset pagination when clearing search
+      currentPage = 0;
+      currentDesktopPage = 0;
+      filteredSongData = songData;
+      renderTable(songData);
+      renderMobileList(songData);
     }
   }
   
@@ -430,7 +446,23 @@ document.addEventListener('DOMContentLoaded', function() {
       tbody.appendChild(row);
     });
     
+    // Scroll to the top of the table
+    scrollToTable();
+    
     console.log('Table rendered successfully');
+  }
+  
+  /**
+   * Scrolls the window to the top of the table container
+   */
+  function scrollToTable() {
+    const searchSection = document.querySelector('.search-container');
+    if (searchSection) {
+      // Scroll to show the search bar and upper pagination controls
+      setTimeout(() => {
+        searchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
   }
   
   /**
@@ -440,27 +472,39 @@ document.addEventListener('DOMContentLoaded', function() {
    * @param {number} end - End index of current page
    */
   function updateDesktopPagination(songs, start, end) {
+    const totalPages = Math.ceil(songs.length / DESKTOP_ROWS_PER_PAGE);
+    const currentPageNumber = currentDesktopPage + 1;
+    const isFirstPage = currentDesktopPage === 0;
+    const isLastPage = end >= songs.length;
+    
+    // Create page info text
+    let pageInfoText;
+    if (songs.length <= DESKTOP_ROWS_PER_PAGE) {
+      pageInfoText = `Showing all ${songs.length} song${songs.length !== 1 ? 's' : ''}`;
+    } else {
+      pageInfoText = `Page ${currentPageNumber} of ${totalPages} (${start + 1}-${end} of ${songs.length} songs)`;
+    }
+    
+    // Update lower pagination controls
     if (desktopPageInfo) {
-      if (songs.length <= DESKTOP_ROWS_PER_PAGE) {
-        desktopPageInfo.textContent = `Showing all ${songs.length} song${songs.length !== 1 ? 's' : ''}`;
-        
-        // Disable pagination buttons if all songs fit on one page
-        if (desktopFirstButton) desktopFirstButton.disabled = true;
-        if (desktopPrevButton) desktopPrevButton.disabled = true;
-        if (desktopNextButton) desktopNextButton.disabled = true;
-        if (desktopLastButton) desktopLastButton.disabled = true;
-      } else {
-        const totalPages = Math.ceil(songs.length / DESKTOP_ROWS_PER_PAGE);
-        const currentPageNumber = currentDesktopPage + 1;
-        
-        desktopPageInfo.textContent = `Page ${currentPageNumber} of ${totalPages} (${start + 1}-${end} of ${songs.length} songs)`;
-        
-        // Enable/disable pagination buttons
-        if (desktopFirstButton) desktopFirstButton.disabled = currentDesktopPage === 0;
-        if (desktopPrevButton) desktopPrevButton.disabled = currentDesktopPage === 0;
-        if (desktopNextButton) desktopNextButton.disabled = end >= songs.length;
-        if (desktopLastButton) desktopLastButton.disabled = end >= songs.length;
-      }
+      desktopPageInfo.textContent = pageInfoText;
+      
+      // Update button states
+      if (desktopFirstButton) desktopFirstButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
+      if (desktopPrevButton) desktopPrevButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
+      if (desktopNextButton) desktopNextButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
+      if (desktopLastButton) desktopLastButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
+    }
+    
+    // Update upper pagination controls
+    if (upperDesktopPageInfo) {
+      upperDesktopPageInfo.textContent = pageInfoText;
+      
+      // Update button states
+      if (upperDesktopFirstButton) upperDesktopFirstButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
+      if (upperDesktopPrevButton) upperDesktopPrevButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
+      if (upperDesktopNextButton) upperDesktopNextButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
+      if (upperDesktopLastButton) upperDesktopLastButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
     }
   }
   
@@ -517,6 +561,21 @@ document.addEventListener('DOMContentLoaded', function() {
       prevButton.disabled = currentPage === 0;
       nextButton.disabled = (currentPage + 1) * ROWS_PER_PAGE >= songs.length;
     }
+    
+    // Scroll to the top of the mobile list
+    scrollToMobileList();
+  }
+  
+  /**
+   * Scrolls the window to the top of the mobile list
+   */
+  function scrollToMobileList() {
+    if (mobileList) {
+      // Use a slight delay to ensure the DOM has updated
+      setTimeout(() => {
+        mobileList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
   }
   
   // Add event listeners for pagination
@@ -563,6 +622,43 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     desktopLastButton.addEventListener('click', () => {
+      if (filteredSongData) {
+        const lastPage = Math.max(0, Math.ceil(filteredSongData.length / DESKTOP_ROWS_PER_PAGE) - 1);
+        if (currentDesktopPage !== lastPage) {
+          currentDesktopPage = lastPage;
+          renderTable(filteredSongData);
+        }
+      }
+    });
+  }
+  
+  // Add event listeners for upper desktop pagination
+  if (upperDesktopPrevButton && upperDesktopNextButton) {
+    upperDesktopPrevButton.addEventListener('click', () => {
+      if (currentDesktopPage > 0 && filteredSongData) {
+        currentDesktopPage--;
+        renderTable(filteredSongData);
+      }
+    });
+    
+    upperDesktopNextButton.addEventListener('click', () => {
+      if (filteredSongData && (currentDesktopPage + 1) * DESKTOP_ROWS_PER_PAGE < filteredSongData.length) {
+        currentDesktopPage++;
+        renderTable(filteredSongData);
+      }
+    });
+  }
+  
+  // Add event listeners for upper first and last page buttons
+  if (upperDesktopFirstButton && upperDesktopLastButton) {
+    upperDesktopFirstButton.addEventListener('click', () => {
+      if (currentDesktopPage > 0 && filteredSongData) {
+        currentDesktopPage = 0;
+        renderTable(filteredSongData);
+      }
+    });
+    
+    upperDesktopLastButton.addEventListener('click', () => {
       if (filteredSongData) {
         const lastPage = Math.max(0, Math.ceil(filteredSongData.length / DESKTOP_ROWS_PER_PAGE) - 1);
         if (currentDesktopPage !== lastPage) {
