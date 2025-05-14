@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tepper & Bennett - Masters of American Song</title>
+    <!-- Prevent scroll issues immediately -->
+    <script>
+      // Prevent scroll restoration immediately
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+      
+      // If this is a refresh with a hash, temporarily disable scrolling
+      if (window.location.hash && sessionStorage.getItem('pageLoaded') === 'true') {
+        document.write('<style id="initial-scroll-lock">html, body { overflow: hidden !important; }</style>');
+        if (history.replaceState) {
+          history.replaceState(null, null, window.location.pathname + window.location.search);
+        }
+        // Force scroll to top immediately
+        window.scrollTo(0, 0);
+        setTimeout(() => window.scrollTo(0, 0), 0);
+      }
+    </script>
     <!-- Google Fonts - Fixed CORS issues -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,6 +59,14 @@
           
           // When DOM is loaded, mark sections that should be closed
           document.addEventListener('DOMContentLoaded', function() {
+            // Remove initial scroll lock after DOM is loaded
+            var initialScrollLock = document.getElementById('initial-scroll-lock');
+            if (initialScrollLock) {
+              initialScrollLock.remove();
+              // Force scroll to top
+              window.scrollTo(0, 0);
+            }
+          
             closedSections.forEach(function(sectionId) {
               var content = document.getElementById(sectionId + '-content');
               if (content) {
@@ -494,6 +520,10 @@
     <script src="js/lib/js-yaml.min.js"></script>
     <!-- Debug script - comment out in production -->
     <!-- <script src="js/debug.js"></script>-->
+    <script src="js/url-handler.js"></script>
+    <script src="js/table-pagination.js"></script>
+    <script src="js/table-renderer.js"></script>
+    <script src="js/search-handler.js"></script>
     <script src="js/data-loader.js"></script>
 </body>
 </html> 

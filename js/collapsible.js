@@ -65,6 +65,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update URL hash without scrolling
     function updateUrlHash(sectionId, scrollToSection = false) {
+        // Check if url-handler is controlling scroll
+        if (window.urlHandlerControllingScroll) {
+            console.log('URL handler is controlling scroll, skipping hash update');
+            return;
+        }
+        
+        // Don't update the URL if sectionId is empty (closing a section)
+        if (!sectionId) {
+            // Only clear the hash if it's currently set
+            if (window.location.hash && history.pushState) {
+                history.pushState(null, null, window.location.pathname);
+            }
+            return;
+        }
+        
         if (history.pushState) {
             // Modern browsers
             const url = sectionId ? `#${sectionId}` : window.location.pathname;
@@ -227,12 +242,25 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function() {
+        anchor.addEventListener('click', function(event) {
+            // Skip if url-handler is controlling scroll
+            if (window.urlHandlerControllingScroll) {
+                console.log('URL handler is controlling scroll, skipping anchor click handler');
+                return;
+            }
+            
             const targetId = this.getAttribute('href').substring(1);
             if (!targetId) return;
 
             const targetToggle = document.getElementById(`${targetId}-heading`);
             const targetElement = document.getElementById(targetId);
+            
+            // Check if we're already at this hash
+            if (window.location.hash === `#${targetId}`) {
+                // Prevent default behavior to avoid unnecessary scrolling
+                event.preventDefault();
+                return;
+            }
 
             // Always expand the section when clicked directly
             if (targetToggle) {
@@ -248,8 +276,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     removeFromClosedSections(targetId);
                     updateButtonStates();
                 }
-
-                // Always update the URL
+                
+                // Update the URL only for direct navigation
                 updateUrlHash(targetId, true);
             }
 
@@ -266,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Handle hash in URL on initial load - scroll to section
-    if (window.location.hash) {
+    if (window.location.hash && !sessionStorage.getItem('blockOtherScrollHandlers')) {
         const targetId = window.location.hash.substring(1);
         if (targetId) {
             const targetElement = document.getElementById(targetId);
@@ -285,6 +313,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Listen for hash changes after initial load
     window.addEventListener('hashchange', function() {
+        // Skip if url-handler is controlling scroll
+        if (window.urlHandlerControllingScroll || sessionStorage.getItem('blockOtherScrollHandlers') === 'true') {
+            console.log('URL handler is controlling scroll, skipping hashchange handler');
+            return;
+        }
+        
+        // Skip if this is a page refresh (handled by url-handler.js)
+        if (sessionStorage.getItem('hashChangeHandled') === 'true') {
+            sessionStorage.removeItem('hashChangeHandled');
+            return;
+        }
+        
         if (window.location.hash) {
             const targetId = window.location.hash.substring(1);
             if (targetId) {
@@ -309,6 +349,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fix scroll position when page is refreshed with a hash in the URL
     window.addEventListener('load', function() {
+        // Skip if url-handler is controlling scroll
+        if (window.urlHandlerControllingScroll || sessionStorage.getItem('blockOtherScrollHandlers') === 'true') {
+            console.log('URL handler is controlling scroll, skipping load scroll handler');
+            return;
+        }
+        
         if (window.location.hash) {
             const targetId = window.location.hash.substring(1);
             const targetElement = document.getElementById(targetId);
