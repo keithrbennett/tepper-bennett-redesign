@@ -253,7 +253,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!targetId) return;
 
             const targetToggle = document.getElementById(`${targetId}-heading`);
-            const targetElement = document.getElementById(targetId);
             
             // Check if we're already at this hash
             if (window.location.hash === `#${targetId}`) {
@@ -277,18 +276,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateButtonStates();
                 }
                 
-                // Update the URL only for direct navigation
-                updateUrlHash(targetId, true);
-            }
-
-            // Scroll to the section
-            if (targetElement) {
-                setTimeout(() => {
-                    // Scroll with a vertical offset to ensure the element isn't hidden by fixed elements
-                    const yOffset = -100; // Negative value to scroll element below the top edge
-                    const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                    window.scrollTo({top: y, behavior: 'smooth'});
-                }, 100);
+                // Just update the URL without scrolling
+                updateUrlHash(targetId, false);
+                
+                // Prevent the default scrolling behavior
+                event.preventDefault();
             }
         });
     });
@@ -297,17 +289,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.location.hash && !sessionStorage.getItem('blockOtherScrollHandlers')) {
         const targetId = window.location.hash.substring(1);
         if (targetId) {
-            const targetElement = document.getElementById(targetId);
-
-            // Initial state is handled in the toggle setup, just scroll to section
-            if (targetElement) {
-                setTimeout(() => {
-                    // Scroll with a vertical offset to ensure the element isn't hidden by fixed elements
-                    const yOffset = -100; // Negative value to scroll element below the top edge
-                    const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                    window.scrollTo({top: y, behavior: 'smooth'});
-                }, 100);
-            }
+            // Only expand the section, don't auto-scroll
+            expandSection(targetId);
         }
     }
     
@@ -328,18 +311,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.location.hash) {
             const targetId = window.location.hash.substring(1);
             if (targetId) {
-                // Expand the section and scroll to it
+                // Only expand the section, don't auto-scroll
                 expandSection(targetId);
-
-                const targetElement = document.getElementById(targetId);
-                if (targetElement) {
-                    setTimeout(() => {
-                        // Scroll with a vertical offset to ensure the element isn't hidden by fixed elements
-                        const yOffset = -100; // Negative value to scroll element below the top edge
-                        const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                        window.scrollTo({top: y, behavior: 'smooth'});
-                    }, 100);
-                }
             }
         }
     });
@@ -353,27 +326,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.urlHandlerControllingScroll || sessionStorage.getItem('blockOtherScrollHandlers') === 'true') {
             console.log('URL handler is controlling scroll, skipping load scroll handler');
             return;
-        }
-        
-        if (window.location.hash) {
-            const targetId = window.location.hash.substring(1);
-            const targetElement = document.getElementById(targetId);
-
-            if (targetElement) {
-                // Use requestAnimationFrame to ensure the browser has finished any pending layout work
-                requestAnimationFrame(() => {
-                    // Add a more significant offset to push the section further down
-                    const yOffset = -120;
-                    const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                    window.scrollTo({top: y, behavior: 'auto'});
-
-                    // Sometimes a single scroll adjustment isn't enough, try again after a short delay
-                    setTimeout(() => {
-                        const updatedY = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                        window.scrollTo({top: updatedY, behavior: 'auto'});
-                    }, 100);
-                });
-            }
         }
     });
 });

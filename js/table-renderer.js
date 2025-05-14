@@ -52,9 +52,6 @@ function renderTable(songs) {
     tbody.appendChild(row);
   });
   
-  // Scroll to the top of the search section
-  scrollToSearchSection();
-  
   console.log('Table rendered successfully');
 }
 
@@ -114,9 +111,6 @@ function renderMobileList(songs) {
     
     mobileList.appendChild(listItem);
   });
-  
-  // Scroll to the top of the mobile list
-  scrollToMobileList();
 }
 
 /**
@@ -150,31 +144,6 @@ function showError(message) {
         </div>
       </li>
     `;
-  }
-}
-
-/**
- * Scrolls the window to the search section
- */
-function scrollToSearchSection() {
-  const searchSection = document.querySelector('.search-container');
-  if (searchSection) {
-    // Scroll to show the search bar and upper pagination controls
-    setTimeout(() => {
-      searchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
-  }
-}
-
-/**
- * Scrolls the window to the top of the mobile list
- */
-function scrollToMobileList() {
-  if (mobileList) {
-    // Use a slight delay to ensure the DOM has updated
-    setTimeout(() => {
-      mobileList.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
   }
 }
 

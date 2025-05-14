@@ -415,6 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
    */
   function renderTable(songs) {
     console.log("Song count: " + songs.length);
+    
     // Get or create the tbody element
     let tbody = songsTable.querySelector('tbody');
     if (!tbody) {
@@ -449,29 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
       tbody.appendChild(row);
     });
     
-    // Scroll to the top of the table
-    scrollToTable();
-    
     console.log('Table rendered successfully');
-  }
-  
-  /**
-   * Scrolls the window to the top of the table container
-   */
-  function scrollToTable() {
-    // Check if this is a page with a hash in the URL or initial page load
-    if (window.location.hash || !window.initialLoadComplete) {
-      console.log('Hash detected or initial page load, skipping automatic scroll to table');
-      return;
-    }
-    
-    const searchSection = document.querySelector('.search-container');
-    if (searchSection) {
-      // Scroll to show the search bar and upper pagination controls
-      setTimeout(() => {
-        searchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 50);
-    }
   }
   
   /**
@@ -569,27 +548,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (prevButton && nextButton) {
       prevButton.disabled = currentPage === 0;
       nextButton.disabled = (currentPage + 1) * ROWS_PER_PAGE >= songs.length;
-    }
-    
-    // Scroll to the top of the mobile list
-    scrollToMobileList();
-  }
-  
-  /**
-   * Scrolls the window to the top of the mobile list
-   */
-  function scrollToMobileList() {
-    // Check if this is a page with a hash in the URL or initial page load
-    if (window.location.hash || !window.initialLoadComplete) {
-      console.log('Hash detected or initial page load, skipping automatic scroll to mobile list');
-      return;
-    }
-    
-    if (mobileList) {
-      // Use a slight delay to ensure the DOM has updated
-      setTimeout(() => {
-        mobileList.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 50);
     }
   }
   
