@@ -103,6 +103,28 @@
   .pagination-button:disabled {
     opacity: 0.5;
   }
+  
+  /* Loading indicator */
+  .animate-pulse {
+    animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+  
+  /* Pagination info */
+  .song-list-pagination-info {
+    font-size: 0.7rem;
+    color: #6b7280;
+    padding: 4px 0;
+    font-style: italic;
+  }
 }
 
 /* Desktop styles */

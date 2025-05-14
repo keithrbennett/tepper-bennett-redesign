@@ -194,10 +194,6 @@
             <div id="songs-content" class="collapsible-content" role="region" aria-labelledby="songs-heading">
                 <p class="paragraph-spaced">Explore the complete collection of songs written by Tepper & Bennett. Filter by artist, year, or genre to discover their extensive catalog.</p>
                 
-                <div class="bg-gold bg-opacity-90 text-white p-3 rounded-md mb-8">
-                    <p><strong>Note:</strong> The songs shown below are sample data only. The complete catalog will be available in the future.</p>
-                </div>
-                
                 <div class="mb-8 search-container">
                     <div class="flex flex-col md:flex-row gap-4">
                         <input type="text" id="songs-search" placeholder="Search songs, performers, or administrators..." 
@@ -211,6 +207,11 @@
                 <div class="songs-section-content mobile-only">
                     <ul id="mobile-songs-list" class="mobile-song-list">
                         <!-- List will be populated dynamically -->
+                        <li class="song-list-entry text-center py-8">
+                            <div class="animate-pulse">
+                                Initializing song data...
+                            </div>
+                        </li>
                     </ul>
                     
                     <div class="pagination">
@@ -231,35 +232,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="py-3 px-4"><a href="#songs" class="site-link">Red Roses for a Blue Lady</a></td>
-                                <td class="py-3 px-4">Vaughn Monroe, Wayne Newton, Vic Dana</td>
-                                <td class="py-3 px-4">Universal Music Publishing Group</td>
-                                <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=2bQZ6l_cq5Y" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
-                            </tr>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="py-3 px-4"><a href="#songs" class="site-link">The Naughty Lady of Shady Lane</a></td>
-                                <td class="py-3 px-4">The Ames Brothers, Dean Martin</td>
-                                <td class="py-3 px-4">Warner Chappell Music</td>
-                                <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=rEMrl7HgrpA" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
-                            </tr>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="py-3 px-4"><a href="#songs" class="site-link">Kiss of Fire</a></td>
-                                <td class="py-3 px-4">Georgia Gibbs, Louis Armstrong</td>
-                                <td class="py-3 px-4">Warner Chappell Music</td>
-                                <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=68oyEZDl1T4" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
-                            </tr>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="py-3 px-4"><a href="#songs" class="site-link">The Young Ones</a></td>
-                                <td class="py-3 px-4">Cliff Richard</td>
-                                <td class="py-3 px-4">Sony Music Publishing</td>
-                                <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=Juw_Vt8Y1A8" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
-                            </tr>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="py-3 px-4"><a href="#songs" class="site-link">G.I. Blues</a></td>
-                                <td class="py-3 px-4">Elvis Presley</td>
-                                <td class="py-3 px-4">Universal Music Publishing Group</td>
-                                <td class="py-3 px-4 text-center"><a href="https://www.youtube.com/watch?v=QMUHt5cATmk" target="_blank" class="text-red-600 hover:text-red-800">▶</a></td>
+                            <!-- Table content will be populated dynamically by JavaScript -->
+                            <tr>
+                                <td colspan="4" class="py-8 text-center">
+                                    <div class="inline-block animate-pulse">
+                                        <span class="inline-block">Initializing song data...</span>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -457,10 +436,39 @@
         </div>
     </section>
 
-    <!-- Scripts externes -->
+    <!-- External Scripts -->
     <script src="js/collapsible.js"></script>
-    <script src="js/songs.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
-    <script src="js/data-loader.js"></script>
+    <!-- Ensure js-yaml is loaded *before* our modules -->
+    <script>
+        // Verify js-yaml loading
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.jsyaml) {
+                console.error('CRITICAL ERROR: js-yaml is not loaded correctly!');
+                // Display error in song tables
+                const songsTable = document.getElementById('songs-table');
+                if (songsTable && songsTable.querySelector('tbody')) {
+                    songsTable.querySelector('tbody').innerHTML = `
+                        <tr>
+                            <td colspan="4" class="py-4 text-center text-red-600">
+                                <div>
+                                    <p class="font-bold">Error loading YAML library</p>
+                                    <p class="text-sm">Please check console for details</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            } else {
+                console.log('js-yaml loaded successfully, version:', window.jsyaml.version);
+            }
+        });
+    </script>
+    <script src="js/lib/js-yaml.min.js"></script>
+    <!-- Debug script - comment out in production -->
+    <!-- <script src="js/debug.js"></script>-->
+    <!-- New direct YAML loader -->
+    <script src="js/direct-yaml-loader.js"></script>
+    <!-- Commenting out the ES module version for now -->
+    <!-- <script type="module" src="js/songs.js"></script> -->
 </body>
 </html> 

@@ -1,118 +1,261 @@
 /**
- * Song management and mobile pagination for Tepper & Bennett
+ * Song management and pagination for Tepper & Bennett
  */
-document.addEventListener('DOMContentLoaded', async function() {
+import { loadData } from './data-loader.js';
+
+// Lazy loading song data - will be initialized when needed
+let songDataPromise = null;
+
+/**
+ * Lazy initializes the song data by loading all required resources
+ * This is only called when actually needed, avoiding unnecessary network calls
+ * @returns {Promise<Array>} Promise resolving to the processed song data
+ */
+function initSongData() {
+    // Only initialize once
+    if (songDataPromise === null) {
+        console.log('Initializing song data lazily');
+        
+        // Show loading indicators
+        showLoadingState(true);
+        
+        songDataPromise = (async () => {
+            try {
+                console.log('Loading song data files...');
+                
+                // Load data files using our improved data-loader
+                // which will automatically try YAML first, then JSON
+                const elvisSongs = await loadData('elvis-songs');
+                const nonElvisSongs = await loadData('non-elvis-songs');
+                const songPlays = await loadData('song-plays');
+                const performers = await loadData('performers');
+                const organizations = await loadData('organizations');
+                
+                console.log('All data files loaded successfully');
+                
+                // Create a map of performers for easier lookup
+                const performersMap = {};
+                performers.forEach(performer => {
+                    performersMap[performer.code] = performer.name;
+                });
+                
+                // Create a map of admin organizations for easier lookup
+                const orgsMap = {};
+                organizations.forEach(org => {
+                    orgsMap[org.code] = org.name;
+                });
+
+                // Combine and process song data
+                const allSongs = [...elvisSongs, ...nonElvisSongs];
+                
+                // Create a map of songs for easier lookup in song plays
+                const songsMap = {};
+                allSongs.forEach(song => {
+                    songsMap[song.code] = song;
+                });
+                
+                // Build song data for the table
+                const songData = songPlays.map(play => {
+                    const song = songsMap[play.song_code];
+                    const performer = performersMap[play.performer_codes] || play.performer_codes;
+                    
+                    return {
+                        title: song ? song.name : play.song_code,
+                        performers: performer,
+                        administrator: song && song.organization ? orgsMap[song.organization] : 'Unknown',
+                        youtubeUrl: play.youtube_key ? `https://www.youtube.com/watch?v=${play.youtube_key}` : '#'
+                    };
+                });
+                
+                console.log('Processed song data:', songData.length, 'songs');
+                
+                // Hide loading indicators
+                showLoadingState(false);
+                
+                return songData;
+            } catch (error) {
+                console.error('Error loading song data:', error);
+                
+                // Hide loading indicators but show error
+                showLoadingState(false, true);
+                
+                // Return empty array instead of fallback data
+                return [];
+            }
+        })();
+    }
+
+    return songDataPromise;
+}
+
+/**
+ * Shows or hides loading state for song data
+ * @param {boolean} isLoading Whether data is loading
+ * @param {boolean} hasError Whether there was an error loading data
+ */
+function showLoadingState(isLoading, hasError = false) {
+    console.log('Setting loading state:', isLoading, 'hasError:', hasError);
+    
+    // Desktop loading indicator
+    const songsTable = document.getElementById('songs-table');
+    if (songsTable) {
+        let tbody = songsTable.querySelector('tbody');
+        if (!tbody) {
+            tbody = document.createElement('tbody');
+            songsTable.appendChild(tbody);
+        }
+        
+        if (isLoading) {
+            console.log('Showing loading indicator in table');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="py-8 text-center">
+                        <div class="inline-block animate-pulse">
+                            <span class="inline-block">Loading song data...</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        } else if (hasError) {
+            console.log('Showing error in table');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="py-4 text-center text-red-600">
+                        <div>
+                            <p class="font-bold">Error loading song data</p>
+                            <p class="text-sm">Unable to load song data</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+        // We no longer clear the tbody when isLoading is false and there's no error
+        // This prevents accidentally clearing loaded content
+    }
+    
+    // Mobile loading indicator
+    const mobileList = document.getElementById('mobile-songs-list');
+    if (mobileList) {
+        if (isLoading) {
+            console.log('Showing loading indicator in mobile list');
+            mobileList.innerHTML = `
+                <li class="song-list-entry text-center py-8">
+                    <div class="animate-pulse">
+                        Loading song data...
+                    </div>
+                </li>
+            `;
+        } else if (hasError) {
+            console.log('Showing error in mobile list');
+            mobileList.innerHTML = `
+                <li class="song-list-entry text-center py-4 text-red-600">
+                    <div>
+                        <p class="font-bold">Error loading song data</p>
+                        <p class="text-sm">Unable to load song data</p>
+                    </div>
+                </li>
+            `;
+        }
+        // We no longer clear the list when isLoading is false and there's no error
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
     // Song search
     const searchInput = document.getElementById('songs-search');
     const searchButton = document.getElementById('search-button');
     
+    // Force initialize tables regardless of expansion state
+    // This ensures data is always ready when user expands the section
+    initSongData().then(songData => {
+        // Only render if section is visible
+        const songsHeading = document.getElementById('songs-heading');
+        const isExpanded = songsHeading && songsHeading.getAttribute('aria-expanded') === 'true';
+        
+        if (isExpanded) {
+            renderDesktopTable(songData);
+            renderMobileList(songData);
+        }
+    }).catch(error => {
+        console.error('Error initializing song data:', error);
+    });
+    
     if (searchButton && searchInput) {
-        searchButton.addEventListener('click', function() {
+        searchButton.addEventListener('click', async function() {
             const searchTerm = searchInput.value.toLowerCase();
             console.log('Searching for:', searchTerm);
-            // Add search functionality here
-        });
-    }
-    
-    // Load song data from YAML files
-    try {
-        // Load songs data
-        const elvisSongs = await window.dataLoader.loadData('elvis-songs.yml');
-        const nonElvisSongs = await window.dataLoader.loadData('non-elvis-songs.yml');
-        const songPlays = await window.dataLoader.loadData('song-plays.yml');
-        const performers = await window.dataLoader.loadData('performers.yml');
-        const organizations = await window.dataLoader.loadData('organizations.yml');
-        
-        // Create a map of performers for easier lookup
-        const performersMap = {};
-        performers.forEach(performer => {
-            performersMap[performer.code] = performer.name;
-        });
-        
-        // Create a map of admin organizations for easier lookup
-        const orgsMap = {};
-        organizations.forEach(org => {
-            orgsMap[org.code] = org.name;
-        });
-
-        // Combine and process song data
-        const allSongs = [...elvisSongs, ...nonElvisSongs];
-        
-        // Create a map of songs for easier lookup in song plays
-        const songsMap = {};
-        allSongs.forEach(song => {
-            songsMap[song.code] = song;
-        });
-        
-        // Build song data for the table
-        window.songData = songPlays.map(play => {
-            const song = songsMap[play.song_code];
-            const performer = performersMap[play.performer_codes] || play.performer_codes;
             
-            return {
-                title: song ? song.name : play.song_code,
-                performers: performer,
-                administrator: song && song.organization ? orgsMap[song.organization] : 'Unknown',
-                youtubeUrl: play.youtube_key ? `https://www.youtube.com/watch?v=${play.youtube_key}` : '#'
-            };
+            // Show loading state during search
+            showLoadingState(true);
+            
+            // Lazy initialize data and do search
+            const songData = await initSongData();
+            
+            if (searchTerm) {
+                const filteredData = songData.filter(song => 
+                    song.title.toLowerCase().includes(searchTerm) || 
+                    song.performers.toLowerCase().includes(searchTerm) || 
+                    song.administrator.toLowerCase().includes(searchTerm)
+                );
+                
+                // Show "no results" if nothing found
+                if (filteredData.length === 0) {
+                    const songsTable = document.getElementById('songs-table');
+                    if (songsTable) {
+                        const tbody = songsTable.querySelector('tbody');
+                        if (tbody) {
+                            tbody.innerHTML = `
+                                <tr>
+                                    <td colspan="4" class="py-8 text-center">
+                                        <div>
+                                            <p>No songs found matching "${searchTerm}"</p>
+                                            <button id="reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                            
+                            document.getElementById('reset-search')?.addEventListener('click', function() {
+                                searchInput.value = '';
+                                renderDesktopTable(songData);
+                                renderMobileList(songData);
+                            });
+                        }
+                    }
+                    
+                    const mobileList = document.getElementById('mobile-songs-list');
+                    if (mobileList) {
+                        mobileList.innerHTML = `
+                            <li class="song-list-entry text-center py-4">
+                                <div>
+                                    <p>No songs found matching "${searchTerm}"</p>
+                                    <button id="mobile-reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
+                                </div>
+                            </li>
+                        `;
+                        
+                        document.getElementById('mobile-reset-search')?.addEventListener('click', function() {
+                            searchInput.value = '';
+                            renderDesktopTable(songData);
+                            renderMobileList(songData);
+                        });
+                    }
+                } else {
+                    renderDesktopTable(filteredData);
+                    renderMobileList(filteredData);
+                }
+            } else {
+                renderDesktopTable(songData);
+                renderMobileList(songData);
+            }
         });
         
-        console.log('Loaded song data:', window.songData.length, 'songs');
-    } catch (error) {
-        console.error('Error loading song data:', error);
-        
-        // Fallback to hardcoded data if loading fails
-        window.songData = [
-            {
-                title: "Red Roses for a Blue Lady",
-                performers: "Vaughn Monroe, Wayne Newton, Vic Dana",
-                administrator: "Universal Music Publishing Group",
-                youtubeUrl: "https://www.youtube.com/watch?v=2bQZ6l_cq5Y"
-            },
-            {
-                title: "The Naughty Lady of Shady Lane",
-                performers: "The Ames Brothers, Dean Martin",
-                administrator: "Warner Chappell Music",
-                youtubeUrl: "https://www.youtube.com/watch?v=rEMrl7HgrpA"
-            },
-            {
-                title: "Kiss of Fire",
-                performers: "Georgia Gibbs, Louis Armstrong",
-                administrator: "Warner Chappell Music",
-                youtubeUrl: "https://www.youtube.com/watch?v=68oyEZDl1T4"
-            },
-            {
-                title: "The Young Ones",
-                performers: "Cliff Richard",
-                administrator: "Sony Music Publishing",
-                youtubeUrl: "https://www.youtube.com/watch?v=Juw_Vt8Y1A8"
-            },
-            {
-                title: "G.I. Blues",
-                performers: "Elvis Presley",
-                administrator: "Universal Music Publishing Group",
-                youtubeUrl: "https://www.youtube.com/watch?v=QMUHt5cATmk"
-            },
-            {
-                title: "Am I Ready",
-                performers: "Elvis Presley",
-                administrator: "Universal Music Publishing Group",
-                youtubeUrl: "https://www.youtube.com/watch?v=example1"
-            },
-            {
-                title: "Angel",
-                performers: "Elvis Presley",
-                administrator: "Warner Chappell Music",
-                youtubeUrl: "https://www.youtube.com/watch?v=example2"
-            },
-            {
-                title: "D in Love",
-                performers: "Cliff Richard",
-                administrator: "Universal Music",
-                youtubeUrl: "https://www.youtube.com/watch?v=example3"
+        // Add search on Enter key
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchButton.click();
             }
-            // Add more songs here when they become available
-        ];
+        });
     }
     
     // Mobile table pagination
@@ -124,14 +267,32 @@ document.addEventListener('DOMContentLoaded', async function() {
     const nextButton = document.getElementById('mobile-next-page');
     
     // Function to render the mobile list
-    window.renderMobileList = function() {
+    async function renderMobileList(songs) {
         if (!mobileList) return;
+        
+        // If no songs were passed, load them lazily
+        if (!songs) {
+            songs = await initSongData();
+        }
+        
+        // Reset pagination when showing a new set of data
+        if (currentPage !== 0) {
+            currentPage = 0;
+        }
         
         mobileList.innerHTML = '';
         
         const start = currentPage * ROWS_PER_PAGE;
-        const end = Math.min(start + ROWS_PER_PAGE, window.songData.length);
-        const pageData = window.songData.slice(start, end);
+        const end = Math.min(start + ROWS_PER_PAGE, songs.length);
+        const pageData = songs.slice(start, end);
+        
+        // Add pagination info
+        if (songs.length > ROWS_PER_PAGE) {
+            const paginationInfo = document.createElement('li');
+            paginationInfo.className = 'song-list-pagination-info text-center text-sm text-gray-600 mb-2';
+            paginationInfo.textContent = `Showing ${start + 1}-${end} of ${songs.length} songs`;
+            mobileList.appendChild(paginationInfo);
+        }
         
         pageData.forEach(song => {
             const listItem = document.createElement('li');
@@ -163,36 +324,131 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Update pagination buttons
         if (prevButton && nextButton) {
             prevButton.disabled = currentPage === 0;
-            nextButton.disabled = (currentPage + 1) * ROWS_PER_PAGE >= window.songData.length;
+            nextButton.disabled = (currentPage + 1) * ROWS_PER_PAGE >= songs.length;
         }
-    };
+    }
     
-    // Add event listeners for pagination
-    if (prevButton && nextButton) {
-        prevButton.addEventListener('click', () => {
-            if (currentPage > 0) {
-                currentPage--;
-                window.renderMobileList();
+    // Function to render the desktop table
+    async function renderDesktopTable(songs) {
+        const songsTable = document.getElementById('songs-table');
+        if (!songsTable) {
+            console.error('Songs table element not found!');
+            return;
+        }
+        
+        console.log('Rendering desktop table with', songs ? songs.length : 0, 'songs');
+        
+        // If no songs were passed, load them lazily
+        if (!songs) {
+            songs = await initSongData();
+        }
+        
+        if (!Array.isArray(songs) || songs.length === 0) {
+            console.warn('No songs data available to render in desktop table');
+        }
+        
+        // Get the table body or create one if it doesn't exist
+        let tbody = songsTable.querySelector('tbody');
+        if (!tbody) {
+            console.log('Creating new tbody element');
+            tbody = document.createElement('tbody');
+            songsTable.appendChild(tbody);
+        } else {
+            console.log('Clearing existing tbody content');
+            tbody.innerHTML = '';
+        }
+        
+        // Add song count summary
+        const countRow = document.createElement('tr');
+        countRow.innerHTML = `
+            <td colspan="4" class="py-2 px-4 text-sm text-gray-600 bg-gray-50">
+                Displaying ${songs.length} song${songs.length !== 1 ? 's' : ''}
+            </td>
+        `;
+        tbody.appendChild(countRow);
+        
+        // Build table rows
+        songs.forEach((song, index) => {
+            const row = document.createElement('tr');
+            row.className = 'border-b hover:bg-gray-50';
+            
+            row.innerHTML = `
+                <td class="py-3 px-4"><a href="#songs" class="site-link">${song.title || 'Unknown Title'}</a></td>
+                <td class="py-3 px-4">${song.performers || 'Unknown Performer'}</td>
+                <td class="py-3 px-4">${song.administrator || 'Unknown'}</td>
+                <td class="py-3 px-4 text-center">
+                    <a href="${song.youtubeUrl || '#'}" target="_blank" class="text-red-600 hover:text-red-800">▶</a>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+            
+            if (index === 0) {
+                console.log('First song rendered:', song);
             }
         });
         
-        nextButton.addEventListener('click', () => {
-            if ((currentPage + 1) * ROWS_PER_PAGE < window.songData.length) {
-                currentPage++;
-                window.renderMobileList();
+        console.log('Finished rendering desktop table');
+    }
+    
+    // Add event listeners for pagination
+    if (prevButton && nextButton) {
+        prevButton.addEventListener('click', async () => {
+            if (currentPage > 0) {
+                const songs = await initSongData();
+                currentPage--;
+                renderMobileList(songs);
             }
+        });
+        
+        nextButton.addEventListener('click', async () => {
+            const songs = await initSongData();
+            if ((currentPage + 1) * ROWS_PER_PAGE < songs.length) {
+                currentPage++;
+                renderMobileList(songs);
+            }
+        });
+    }
+    
+    // Only initialize the song table when the songs heading is expanded
+    const songsHeading = document.getElementById('songs-heading');
+    if (songsHeading) {
+        songsHeading.addEventListener('click', async function() {
+            // Check if content is being expanded
+            const willBeExpanded = this.getAttribute('aria-expanded') === 'false';
+            console.log('Songs section clicked, willBeExpanded:', willBeExpanded);
+            
+            if (willBeExpanded) {
+                console.log('Songs section will be expanded, initializing tables');
+                // Initialize tables when expanded
+                try {
+                    const songData = await initSongData();
+                    renderDesktopTable(songData);
+                    renderMobileList(songData);
+                } catch (error) {
+                    console.error('Error initializing tables on section expansion:', error);
+                }
+            }
+        });
+    }
+    
+    // If songs section is already expanded on load, initialize the tables
+    if (songsHeading && songsHeading.getAttribute('aria-expanded') === 'true') {
+        console.log('Songs section is already expanded on load, initializing tables');
+        Promise.all([renderDesktopTable(), renderMobileList()]).catch(error => {
+            console.error('Error initializing tables on already expanded section:', error);
         });
     }
     
     // Initialize mobile table if on mobile
     if (window.innerWidth < 768 && mobileList) {
-        window.renderMobileList();
+        renderMobileList();
     }
     
     // Reset on window resize
     window.addEventListener('resize', () => {
         if (window.innerWidth < 768 && mobileList) {
-            window.renderMobileList();
+            renderMobileList();
         }
     });
 }); 

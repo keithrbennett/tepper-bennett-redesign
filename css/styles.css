@@ -8,7 +8,7 @@
 }
 
 .collapsible-content.open {
-  max-height: 2000px; /* A sufficiently large value */
+  max-height: 10000px; /* Increased from 2000px to accommodate larger tables */
 }
 
 .collapsible-toggle {
