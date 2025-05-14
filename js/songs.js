@@ -2,6 +2,7 @@
  * Song management and pagination for Tepper & Bennett
  */
 import { loadData } from './data-loader.js';
+import { createSongOrgMap, processSongData as processTableData } from './song-utils.js';
 
 // Lazy loading song data - will be initialized when needed
 let songDataPromise = null;
@@ -30,6 +31,7 @@ function initSongData() {
                 const songPlays = await loadData('song-plays');
                 const performers = await loadData('performers');
                 const organizations = await loadData('organizations');
+                const rightsAdminSongs = await loadData('rights-admin-songs');
                 
                 console.log('All data files loaded successfully');
                 
@@ -45,6 +47,9 @@ function initSongData() {
                     orgsMap[org.code] = org.name;
                 });
 
+                // Create song organization map using the shared utility
+                const songOrgMap = createSongOrgMap(rightsAdminSongs);
+                
                 // Combine and process song data
                 const allSongs = [...elvisSongs, ...nonElvisSongs];
                 
@@ -54,18 +59,8 @@ function initSongData() {
                     songsMap[song.code] = song;
                 });
                 
-                // Build song data for the table
-                const songData = songPlays.map(play => {
-                    const song = songsMap[play.song_code];
-                    const performer = performersMap[play.performer_codes] || play.performer_codes;
-                    
-                    return {
-                        title: song ? song.name : play.song_code,
-                        performers: performer,
-                        administrator: song && song.organization ? orgsMap[song.organization] : 'Unknown',
-                        youtubeUrl: play.youtube_key ? `https://www.youtube.com/watch?v=${play.youtube_key}` : '#'
-                    };
-                });
+                // Process song data using the shared utility
+                const songData = processTableData(songPlays, songsMap, performersMap, orgsMap, songOrgMap);
                 
                 console.log('Processed song data:', songData.length, 'songs');
                 

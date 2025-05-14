@@ -2,6 +2,7 @@
  * Direct YAML loader for Tepper & Bennett
  * Bypasses the issues in the existing loader using a simplified approach
  */
+import { createSongOrgMap, processSongData as processTableData } from './song-utils.js';
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Direct YAML loader: starting');
@@ -46,7 +47,8 @@ document.addEventListener('DOMContentLoaded', function() {
     'elvis-songs.yml', 
     'non-elvis-songs.yml',
     'performers.yml',
-    'organizations.yml'
+    'organizations.yml',
+    'rights-admin-songs.yml'
   ];
   
   // Load the data
@@ -100,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     return Promise.all(loadPromises)
-      .then(([songPlays, elvisSongs, nonElvisSongs, performers, organizations]) => {
+      .then(([songPlays, elvisSongs, nonElvisSongs, performers, organizations, rightsAdminSongs]) => {
         if (!songPlays || !songPlays.length) {
           throw new Error('Song plays data is empty or invalid');
         }
@@ -111,8 +113,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('- non-elvis-songs.yml:', nonElvisSongs.length, 'entries');
         console.log('- performers.yml:', performers.length, 'entries');
         console.log('- organizations.yml:', organizations.length, 'entries');
+        console.log('- rights-admin-songs.yml:', Object.keys(rightsAdminSongs).length, 'organizations');
         
-        processSongData(songPlays, elvisSongs, nonElvisSongs, performers, organizations);
+        processSongData(songPlays, elvisSongs, nonElvisSongs, performers, organizations, rightsAdminSongs);
         return true;
       });
   }
@@ -120,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
   /**
    * Process the loaded data and render the table
    */
-  function processSongData(songPlays, elvisSongs, nonElvisSongs, performers, organizations) {
+  function processSongData(songPlays, elvisSongs, nonElvisSongs, performers, organizations, rightsAdminSongs) {
     console.log('All YAML files successfully loaded');
     
     // Create maps for easier lookup
@@ -134,6 +137,9 @@ document.addEventListener('DOMContentLoaded', function() {
       orgsMap[org.code] = org.name;
     });
     
+    // Create song organization map using the shared utility
+    const songOrgMap = createSongOrgMap(rightsAdminSongs);
+    
     // Combine song data
     const allSongs = [...elvisSongs, ...nonElvisSongs];
     const songsMap = {};
@@ -141,18 +147,8 @@ document.addEventListener('DOMContentLoaded', function() {
       songsMap[song.code] = song;
     });
     
-    // Build data for the table
-    const songData = songPlays.map(play => {
-      const song = songsMap[play.song_code];
-      const performer = performersMap[play.performer_codes] || play.performer_codes;
-      
-      return {
-        title: song ? song.name : play.song_code,
-        performers: performer,
-        administrator: song && song.organization ? orgsMap[song.organization] : 'Unknown',
-        youtubeUrl: play.youtube_key ? `https://www.youtube.com/watch?v=${play.youtube_key}` : '#'
-      };
-    });
+    // Process song data using the shared utility
+    const songData = processTableData(songPlays, songsMap, performersMap, orgsMap, songOrgMap);
     
     console.log(`Song data processed: ${songData.length} songs`);
     
@@ -181,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
           const data = window.jsyaml.load(text);
-          console.log(`File ${url} loaded successfully:`, data.length, 'items');
+          console.log(`File ${url} loaded successfully:`, data ? (Array.isArray(data) ? data.length : 'object') : 'empty', 'items');
           return data;
         } catch (e) {
           console.error(`Error parsing YAML for ${url}:`, e);
