@@ -4,24 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tepper & Bennett - Masters of American Song</title>
-    <!-- Prevent scroll issues immediately -->
+    
+    <!-- Prevent unwanted scrolling during page load -->
     <script>
-      // Prevent scroll restoration immediately
-      if ('scrollRestoration' in history) {
-        history.scrollRestoration = 'manual';
-      }
-      
-      // If this is a refresh with a hash, temporarily disable scrolling
-      if (window.location.hash && sessionStorage.getItem('pageLoaded') === 'true') {
-        document.write('<style id="initial-scroll-lock">html, body { overflow: hidden !important; }</style>');
-        if (history.replaceState) {
-          history.replaceState(null, null, window.location.pathname + window.location.search);
-        }
-        // Force scroll to top immediately
+      // Force scroll to top during initial page load
+      window.scrollTo(0, 0);
+      document.addEventListener('DOMContentLoaded', function() {
         window.scrollTo(0, 0);
-        setTimeout(() => window.scrollTo(0, 0), 0);
-      }
+        // Prevent any automatic scrolling for the first second after page load
+        const preventScroll = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        };
+        
+        // Temporarily disable smooth scrolling
+        const originalStyle = document.documentElement.style.scrollBehavior;
+        document.documentElement.style.scrollBehavior = 'auto';
+        
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+        
+        // Block scroll events briefly
+        document.addEventListener('scroll', preventScroll, { passive: false });
+        
+        // Remove the scroll blocking and restore smooth scrolling after a delay
+        setTimeout(function() {
+          document.removeEventListener('scroll', preventScroll);
+          document.documentElement.style.scrollBehavior = originalStyle;
+        }, 1000);
+      });
     </script>
+    
     <!-- Google Fonts - Fixed CORS issues -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,14 +73,6 @@
           
           // When DOM is loaded, mark sections that should be closed
           document.addEventListener('DOMContentLoaded', function() {
-            // Remove initial scroll lock after DOM is loaded
-            var initialScrollLock = document.getElementById('initial-scroll-lock');
-            if (initialScrollLock) {
-              initialScrollLock.remove();
-              // Force scroll to top
-              window.scrollTo(0, 0);
-            }
-          
             closedSections.forEach(function(sectionId) {
               var content = document.getElementById(sectionId + '-content');
               if (content) {

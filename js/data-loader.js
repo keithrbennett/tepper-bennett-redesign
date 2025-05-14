@@ -6,6 +6,9 @@
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Data loader: starting');
   
+  // Flag to track initial page load
+  window.initialLoadComplete = false;
+  
   // Reference to the table
   const songsTable = document.getElementById('songs-table');
   if (!songsTable) {
@@ -456,6 +459,12 @@ document.addEventListener('DOMContentLoaded', function() {
    * Scrolls the window to the top of the table container
    */
   function scrollToTable() {
+    // Check if this is a page with a hash in the URL or initial page load
+    if (window.location.hash || !window.initialLoadComplete) {
+      console.log('Hash detected or initial page load, skipping automatic scroll to table');
+      return;
+    }
+    
     const searchSection = document.querySelector('.search-container');
     if (searchSection) {
       // Scroll to show the search bar and upper pagination controls
@@ -570,6 +579,12 @@ document.addEventListener('DOMContentLoaded', function() {
    * Scrolls the window to the top of the mobile list
    */
   function scrollToMobileList() {
+    // Check if this is a page with a hash in the URL or initial page load
+    if (window.location.hash || !window.initialLoadComplete) {
+      console.log('Hash detected or initial page load, skipping automatic scroll to mobile list');
+      return;
+    }
+    
     if (mobileList) {
       // Use a slight delay to ensure the DOM has updated
       setTimeout(() => {
@@ -693,4 +708,10 @@ document.addEventListener('DOMContentLoaded', function() {
       renderTable(filteredSongData);
     }
   });
+  
+  // Mark initial load as complete after a delay
+  setTimeout(() => {
+    window.initialLoadComplete = true;
+    console.log('Initial page load completed, scroll behavior enabled');
+  }, 1500);
 }); 
