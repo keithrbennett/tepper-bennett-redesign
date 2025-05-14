@@ -1,10 +1,10 @@
 /**
- * Direct YAML loader for Tepper & Bennett
- * Bypasses the issues in the existing loader using a simplified approach
+ * Data loader for Tepper & Bennett song information
+ * Loads and processes song data from YAML files for display in the songs table
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Direct YAML loader: starting');
+  console.log('Data loader: starting');
   
   // Reference to the table
   const songsTable = document.getElementById('songs-table');
