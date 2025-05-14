@@ -215,33 +215,48 @@
                     </ul>
                     
                     <div class="pagination">
-                        <button class="pagination-button btn btn-navy btn-sm" id="mobile-prev-page" disabled>Previous</button>
-                        <button class="pagination-button btn btn-navy btn-sm" id="mobile-next-page">Next</button>
+                        <button class="pagination-button btn btn-navy" id="mobile-prev-page" title="Previous Page" disabled>&lsaquo; Previous</button>
+                        <button class="pagination-button btn btn-navy" id="mobile-next-page" title="Next Page">Next &rsaquo;</button>
                     </div>
                 </div>
                 
                 <!-- Desktop Table View -->
-                <div class="overflow-x-auto shadow-md rounded-lg desktop-only">
-                    <table id="songs-table" class="min-w-full bg-white">
-                        <thead class="bg-navy text-white">
-                            <tr>
-                                <th class="py-3 px-4 text-left">Title</th>
-                                <th class="py-3 px-4 text-left">Performer(s)</th>
-                                <th class="py-3 px-4 text-left">Rights Administrator</th>
-                                <th class="py-3 px-4 text-center">YouTube</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Table content will be populated dynamically by JavaScript -->
-                            <tr>
-                                <td colspan="4" class="py-8 text-center">
-                                    <div class="inline-block animate-pulse">
-                                        <span class="inline-block">Initializing song data...</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="desktop-only">
+                    <div class="table-container">
+                        <table id="songs-table" class="min-w-full bg-white">
+                            <thead class="bg-navy text-white">
+                                <tr>
+                                    <th class="py-3 px-4 text-left">Title</th>
+                                    <th class="py-3 px-4 text-left">Performer(s)</th>
+                                    <th class="py-3 px-4 text-left">Rights Administrator</th>
+                                    <th class="py-3 px-4 text-center">YouTube</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Table content will be populated dynamically by JavaScript -->
+                                <tr>
+                                    <td colspan="4" class="py-8 text-center">
+                                        <div class="inline-block animate-pulse">
+                                            <span class="inline-block">Initializing song data...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Desktop Pagination Controls -->
+                    <div class="desktop-pagination">
+                        <div class="page-info">
+                            <span id="desktop-page-info">Showing all songs</span>
+                        </div>
+                        <div class="page-controls">
+                            <button class="btn btn-navy btn-sm" id="desktop-first-page" title="First Page" disabled>&laquo;</button>
+                            <button class="btn btn-navy btn-sm" id="desktop-prev-page" title="Previous Page" disabled>&lsaquo;</button>
+                            <button class="btn btn-navy btn-sm" id="desktop-next-page" title="Next Page" disabled>&rsaquo;</button>
+                            <button class="btn btn-navy btn-sm" id="desktop-last-page" title="Last Page" disabled>&raquo;</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

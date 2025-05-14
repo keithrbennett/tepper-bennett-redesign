@@ -17,9 +17,20 @@ document.addEventListener('DOMContentLoaded', function() {
   const ROWS_PER_PAGE = 10;
   let currentPage = 0;
   
+  // Desktop table pagination
+  const DESKTOP_ROWS_PER_PAGE = 25;
+  let currentDesktopPage = 0;
+  
   const mobileList = document.getElementById('mobile-songs-list');
   const prevButton = document.getElementById('mobile-prev-page');
   const nextButton = document.getElementById('mobile-next-page');
+  
+  // Desktop pagination elements
+  const desktopPrevButton = document.getElementById('desktop-prev-page');
+  const desktopNextButton = document.getElementById('desktop-next-page');
+  const desktopFirstButton = document.getElementById('desktop-first-page');
+  const desktopLastButton = document.getElementById('desktop-last-page');
+  const desktopPageInfo = document.getElementById('desktop-page-info');
   
   // Song search elements
   const searchInput = document.getElementById('songs-search');
@@ -112,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Store loaded song data for reuse
   let loadedSongData = null;
+  let filteredSongData = null;
   
   // Load the data
   loadSongData();
@@ -216,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Store the processed data for reuse
     loadedSongData = songData;
+    filteredSongData = songData;
     
     // Render the table and mobile list
     renderTable(songData);
@@ -260,6 +273,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 document.getElementById('reset-search')?.addEventListener('click', function() {
                   searchInput.value = '';
+                  currentPage = 0;
+                  currentDesktopPage = 0;
+                  filteredSongData = songData;
                   renderTable(songData);
                   renderMobileList(songData);
                 });
@@ -278,15 +294,26 @@ document.addEventListener('DOMContentLoaded', function() {
               
               document.getElementById('mobile-reset-search')?.addEventListener('click', function() {
                 searchInput.value = '';
+                currentPage = 0;
+                currentDesktopPage = 0;
+                filteredSongData = songData;
                 renderTable(songData);
                 renderMobileList(songData);
               });
             }
           } else {
+            // Reset pagination when searching
+            currentPage = 0;
+            currentDesktopPage = 0;
+            filteredSongData = filteredData;
             renderTable(filteredData);
             renderMobileList(filteredData);
           }
         } else {
+          // Reset pagination when clearing search
+          currentPage = 0;
+          currentDesktopPage = 0;
+          filteredSongData = songData;
           renderTable(songData);
           renderMobileList(songData);
         }
@@ -378,17 +405,16 @@ document.addEventListener('DOMContentLoaded', function() {
       tbody.innerHTML = '';
     }
     
-    // Add song count summary
-    const countRow = document.createElement('tr');
-    countRow.innerHTML = `
-      <td colspan="4" class="py-2 px-4 text-sm text-gray-600 bg-gray-50">
-        Displaying ${songs.length} song${songs.length !== 1 ? 's' : ''}
-      </td>
-    `;
-    tbody.appendChild(countRow);
+    // Calculate pagination for desktop
+    const start = currentDesktopPage * DESKTOP_ROWS_PER_PAGE;
+    const end = Math.min(start + DESKTOP_ROWS_PER_PAGE, songs.length);
+    const pageData = songs.slice(start, end);
+    
+    // Update desktop pagination info and buttons
+    updateDesktopPagination(songs, start, end);
     
     // Add each song to the table
-    songs.forEach(song => {
+    pageData.forEach(song => {
       const row = document.createElement('tr');
       row.className = 'border-b hover:bg-gray-50';
       
@@ -408,16 +434,42 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   /**
+   * Update desktop pagination information and button states
+   * @param {Array} songs - Full array of songs (filtered or not)
+   * @param {number} start - Start index of current page
+   * @param {number} end - End index of current page
+   */
+  function updateDesktopPagination(songs, start, end) {
+    if (desktopPageInfo) {
+      if (songs.length <= DESKTOP_ROWS_PER_PAGE) {
+        desktopPageInfo.textContent = `Showing all ${songs.length} song${songs.length !== 1 ? 's' : ''}`;
+        
+        // Disable pagination buttons if all songs fit on one page
+        if (desktopFirstButton) desktopFirstButton.disabled = true;
+        if (desktopPrevButton) desktopPrevButton.disabled = true;
+        if (desktopNextButton) desktopNextButton.disabled = true;
+        if (desktopLastButton) desktopLastButton.disabled = true;
+      } else {
+        const totalPages = Math.ceil(songs.length / DESKTOP_ROWS_PER_PAGE);
+        const currentPageNumber = currentDesktopPage + 1;
+        
+        desktopPageInfo.textContent = `Page ${currentPageNumber} of ${totalPages} (${start + 1}-${end} of ${songs.length} songs)`;
+        
+        // Enable/disable pagination buttons
+        if (desktopFirstButton) desktopFirstButton.disabled = currentDesktopPage === 0;
+        if (desktopPrevButton) desktopPrevButton.disabled = currentDesktopPage === 0;
+        if (desktopNextButton) desktopNextButton.disabled = end >= songs.length;
+        if (desktopLastButton) desktopLastButton.disabled = end >= songs.length;
+      }
+    }
+  }
+  
+  /**
    * Function to render the mobile list
    * @param {Array} songs - Array of song objects
    */
   function renderMobileList(songs) {
     if (!mobileList) return;
-    
-    // Reset pagination when showing a new set of data
-    if (currentPage !== 0) {
-      currentPage = 0;
-    }
     
     mobileList.innerHTML = '';
     
@@ -470,16 +522,53 @@ document.addEventListener('DOMContentLoaded', function() {
   // Add event listeners for pagination
   if (prevButton && nextButton) {
     prevButton.addEventListener('click', () => {
-      if (currentPage > 0 && loadedSongData) {
+      if (currentPage > 0 && filteredSongData) {
         currentPage--;
-        renderMobileList(loadedSongData);
+        renderMobileList(filteredSongData);
       }
     });
     
     nextButton.addEventListener('click', () => {
-      if (loadedSongData && (currentPage + 1) * ROWS_PER_PAGE < loadedSongData.length) {
+      if (filteredSongData && (currentPage + 1) * ROWS_PER_PAGE < filteredSongData.length) {
         currentPage++;
-        renderMobileList(loadedSongData);
+        renderMobileList(filteredSongData);
+      }
+    });
+  }
+  
+  // Add event listeners for desktop pagination
+  if (desktopPrevButton && desktopNextButton) {
+    desktopPrevButton.addEventListener('click', () => {
+      if (currentDesktopPage > 0 && filteredSongData) {
+        currentDesktopPage--;
+        renderTable(filteredSongData);
+      }
+    });
+    
+    desktopNextButton.addEventListener('click', () => {
+      if (filteredSongData && (currentDesktopPage + 1) * DESKTOP_ROWS_PER_PAGE < filteredSongData.length) {
+        currentDesktopPage++;
+        renderTable(filteredSongData);
+      }
+    });
+  }
+  
+  // Add event listeners for first and last page buttons
+  if (desktopFirstButton && desktopLastButton) {
+    desktopFirstButton.addEventListener('click', () => {
+      if (currentDesktopPage > 0 && filteredSongData) {
+        currentDesktopPage = 0;
+        renderTable(filteredSongData);
+      }
+    });
+    
+    desktopLastButton.addEventListener('click', () => {
+      if (filteredSongData) {
+        const lastPage = Math.max(0, Math.ceil(filteredSongData.length / DESKTOP_ROWS_PER_PAGE) - 1);
+        if (currentDesktopPage !== lastPage) {
+          currentDesktopPage = lastPage;
+          renderTable(filteredSongData);
+        }
       }
     });
   }
@@ -492,18 +581,20 @@ document.addEventListener('DOMContentLoaded', function() {
       const willBeExpanded = this.getAttribute('aria-expanded') === 'false';
       console.log('Songs section clicked, willBeExpanded:', willBeExpanded);
       
-      if (willBeExpanded && loadedSongData) {
+      if (willBeExpanded && filteredSongData) {
         console.log('Songs section will be expanded, rendering tables');
-        renderTable(loadedSongData);
-        renderMobileList(loadedSongData);
+        renderTable(filteredSongData);
+        renderMobileList(filteredSongData);
       }
     });
   }
   
   // Handle responsive behavior
   window.addEventListener('resize', () => {
-    if (window.innerWidth < 768 && mobileList && loadedSongData) {
-      renderMobileList(loadedSongData);
+    if (window.innerWidth < 768 && mobileList && filteredSongData) {
+      renderMobileList(filteredSongData);
+    } else if (window.innerWidth >= 768 && songsTable && filteredSongData) {
+      renderTable(filteredSongData);
     }
   });
 }); 
