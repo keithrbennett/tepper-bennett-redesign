@@ -149,6 +149,11 @@
   scroll-margin-top: 6rem; /* scroll-mt-16 */
 }
 
+/* Set scroll margin for section headings */
+.heading-section {
+  scroll-margin-top: 2rem;
+}
+
 .section-light {
   background-color: white; /* bg-white */
 }

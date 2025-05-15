@@ -1,16 +1,24 @@
 /**
- * Collapsible panels management for Tepper & Bennett
+ * Collapsible panels management for Tepper & Bennett - SIMPLIFIED VERSION
  */
 document.addEventListener('DOMContentLoaded', function() {
     // Basic elements
     const toggles = document.querySelectorAll('.collapsible-toggle');
-    // const contents = document.querySelectorAll('.collapsible-content'); // Not needed
     const expandAllButton = document.getElementById('expand-all');
     const collapseAllButton = document.getElementById('collapse-all');
     
-    // Storage keys for persistent state
+    // Storage key for persistent state
     const CLOSED_SECTIONS_KEY = 'tepperBennettClosedSections';
-    const ALL_EXPANDED_KEY = 'tepperBennettAllExpanded';
+    
+    // Debug state - set to false for production
+    const DEBUG = false;
+    
+    // Logger function that only logs when DEBUG is true
+    function log(message, ...args) {
+        if (DEBUG) {
+            console.log(`[Collapsible] ${message}`, ...args);
+        }
+    }
     
     // Helper functions for closed sections storage
     function getClosedSections() {
@@ -18,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const array = JSON.parse(localStorage.getItem(CLOSED_SECTIONS_KEY) || '[]');
             return new Set(array);
         } catch (e) {
-            console.error('Error reading closed sections into Set:', e);
+            console.error('Error reading closed sections:', e);
             return new Set();
         }
     }
@@ -27,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             localStorage.setItem(CLOSED_SECTIONS_KEY, JSON.stringify(Array.from(closedSectionsSet)));
         } catch (e) {
-            console.error('Error saving closed sections from Set:', e);
+            console.error('Error saving closed sections:', e);
         }
     }
     
@@ -43,15 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
         saveClosedSections(closedSectionsSet);
     }
     
-    // Helper functions for all-expanded state
-    function setAllExpanded(expanded) {
-        try {
-            localStorage.setItem(ALL_EXPANDED_KEY, expanded);
-        } catch (e) {
-            console.error('Error saving all-expanded state:', e);
-        }
-    }
-    
     // Update button states
     function updateButtonStates() {
         const allExpanded = Array.from(toggles).every(toggle =>
@@ -63,17 +62,10 @@ document.addEventListener('DOMContentLoaded', function() {
         collapseAllButton.disabled = allCollapsed;
     }
     
-    // Update URL hash without scrolling
-    function updateUrlHash(sectionId, scrollToSection = false) {
-        // Check if url-handler is controlling scroll
-        if (window.urlHandlerControllingScroll) {
-            console.log('URL handler is controlling scroll, skipping hash update');
-            return;
-        }
-        
-        // Don't update the URL if sectionId is empty (closing a section)
+    // Update URL hash without causing scroll
+    function updateUrlHash(sectionId) {
         if (!sectionId) {
-            // Only clear the hash if it's currently set
+            // Clear hash if no section ID provided
             if (window.location.hash && history.pushState) {
                 history.pushState(null, null, window.location.pathname);
             }
@@ -82,22 +74,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (history.pushState) {
             // Modern browsers
-            const url = sectionId ? `#${sectionId}` : window.location.pathname;
-            history.pushState(null, null, url);
+            history.pushState(null, null, `#${sectionId}`);
         } else {
             // Fallback for older browsers
-            if (scrollToSection) {
-                window.location.hash = sectionId;
-            } else {
-                // This is a hack to avoid scrolling when setting the hash
-                const scrollPosition = window.pageYOffset;
-                window.location.hash = sectionId;
-                window.scrollTo(0, scrollPosition);
-            }
+            const scrollPosition = window.pageYOffset;
+            window.location.hash = sectionId;
+            window.scrollTo(0, scrollPosition);
         }
     }
     
-    // Helper function to expand a section
+    // Helper function to expand a section (used by direct links)
     function expandSection(sectionId) {
         const targetToggle = document.getElementById(`${sectionId}-heading`);
         if (targetToggle) {
@@ -106,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const content = targetToggle.nextElementSibling;
             content.classList.add('open');
             content.classList.remove('section-initially-closed');
-            // Always remove from closed sections when explicitly expanded
             removeFromClosedSections(sectionId);
             updateButtonStates();
             return true;
@@ -123,20 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const sectionId = headingId.replace('-heading', '');
         const content = toggle.nextElementSibling;
 
-        // Check if this section is targeted by URL hash
-        const isTargetedByHash = window.location.hash === `#${sectionId}`;
-
-        // Initial state is now handled by the inline script, only handle URL hash overrides
-        if (isTargetedByHash) {
-            // URL hash takes precedence - section should be open
-            toggle.setAttribute('aria-expanded', 'true');
-            toggle.querySelector('.toggle-icon').textContent = '−';
-            content.classList.add('open');
-            content.classList.remove('section-initially-closed');
-            // Remove from closed sections
-            removeFromClosedSections(sectionId);
-        }
-        
         // Toggle on click
         toggle.addEventListener('click', function() {
             const isExpanded = this.getAttribute('aria-expanded') === 'true';
@@ -146,27 +117,14 @@ document.addEventListener('DOMContentLoaded', function() {
             this.setAttribute('aria-expanded', willBeExpanded);
             this.querySelector('.toggle-icon').textContent = willBeExpanded ? '−' : '+';
             content.classList.toggle('open', willBeExpanded);
+            
             if (willBeExpanded) {
                 content.classList.remove('section-initially-closed');
-            }
-
-            // Remember user preference
-            if (willBeExpanded) {
                 removeFromClosedSections(sectionId);
-                // Update URL to show which section we're viewing
                 updateUrlHash(sectionId);
-
-                // Check if all sections are now expanded
-                const allNowExpanded = Array.from(toggles).every(t =>
-                    t.getAttribute('aria-expanded') === 'true');
-                if (allNowExpanded) {
-                    setAllExpanded(true);
-                }
             } else {
                 addToClosedSections(sectionId);
-                // When any section is collapsed, we're no longer in "all expanded" state
-                setAllExpanded(false);
-
+                
                 // If we're closing the section that's in the URL, remove the hash
                 if (window.location.hash === `#${sectionId}`) {
                     updateUrlHash('');
@@ -204,12 +162,8 @@ document.addEventListener('DOMContentLoaded', function() {
             removeFromClosedSections(sectionId);
         });
 
-        // Set the all-expanded state to true
-        setAllExpanded(true);
-
         // Clear URL hash when all sections are expanded
         updateUrlHash('');
-
         updateButtonStates();
     });
     
@@ -231,101 +185,20 @@ document.addEventListener('DOMContentLoaded', function() {
             addToClosedSections(sectionId);
         });
 
-        // Set the all-expanded state to false
-        setAllExpanded(false);
-
         // Clear URL hash when all sections are collapsed
         updateUrlHash('');
-
         updateButtonStates();
     });
     
-    // Handle anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(event) {
-            // Skip if url-handler is controlling scroll
-            if (window.urlHandlerControllingScroll) {
-                console.log('URL handler is controlling scroll, skipping anchor click handler');
-                return;
-            }
-            
-            const targetId = this.getAttribute('href').substring(1);
-            if (!targetId) return;
-
-            const targetToggle = document.getElementById(`${targetId}-heading`);
-            
-            // Check if we're already at this hash
-            if (window.location.hash === `#${targetId}`) {
-                // Prevent default behavior to avoid unnecessary scrolling
-                event.preventDefault();
-                return;
-            }
-
-            // Always expand the section when clicked directly
-            if (targetToggle) {
-                if (targetToggle.getAttribute('aria-expanded') === 'false') {
-                    // Expand the section if it's closed
-                    targetToggle.setAttribute('aria-expanded', 'true');
-                    targetToggle.querySelector('.toggle-icon').textContent = '−';
-                    const content = targetToggle.nextElementSibling;
-                    content.classList.add('open');
-                    content.classList.remove('section-initially-closed');
-
-                    // Always remove from closed sections when accessed via anchor
-                    removeFromClosedSections(targetId);
-                    updateButtonStates();
-                }
-                
-                // Just update the URL without scrolling
-                updateUrlHash(targetId, false);
-                
-                // Prevent the default scrolling behavior
-                event.preventDefault();
-            }
-        });
-    });
-    
-    // Handle hash in URL on initial load - scroll to section
-    if (window.location.hash && !sessionStorage.getItem('blockOtherScrollHandlers')) {
+    // Check URL hash on initial load
+    if (window.location.hash) {
         const targetId = window.location.hash.substring(1);
         if (targetId) {
-            // Only expand the section, don't auto-scroll
+            log('Hash detected in URL, expanding section:', targetId);
             expandSection(targetId);
         }
     }
     
-    // Listen for hash changes after initial load
-    window.addEventListener('hashchange', function() {
-        // Skip if url-handler is controlling scroll
-        if (window.urlHandlerControllingScroll || sessionStorage.getItem('blockOtherScrollHandlers') === 'true') {
-            console.log('URL handler is controlling scroll, skipping hashchange handler');
-            return;
-        }
-        
-        // Skip if this is a page refresh (handled by url-handler.js)
-        if (sessionStorage.getItem('hashChangeHandled') === 'true') {
-            sessionStorage.removeItem('hashChangeHandled');
-            return;
-        }
-        
-        if (window.location.hash) {
-            const targetId = window.location.hash.substring(1);
-            if (targetId) {
-                // Only expand the section, don't auto-scroll
-                expandSection(targetId);
-            }
-        }
-    });
-    
     // Initialize button states
     updateButtonStates();
-
-    // Fix scroll position when page is refreshed with a hash in the URL
-    window.addEventListener('load', function() {
-        // Skip if url-handler is controlling scroll
-        if (window.urlHandlerControllingScroll || sessionStorage.getItem('blockOtherScrollHandlers') === 'true') {
-            console.log('URL handler is controlling scroll, skipping load scroll handler');
-            return;
-        }
-    });
 });
