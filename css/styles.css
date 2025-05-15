@@ -5,10 +5,13 @@
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease-out;
+  opacity: 0;
 }
 
 .collapsible-content.open {
-  max-height: 10000px; /* Increased from 2000px to accommodate larger tables */
+  max-height: 10000px;
+  opacity: 1;
+  padding-top: 1.5rem; /* Ajout d'un espace au dessus du contenu */
 }
 
 .collapsible-toggle {
@@ -19,6 +22,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 0.75rem; /* Further reduced from 1rem */
+  transition: background-color 0.2s, box-shadow 0.2s, position 0s;
+}
+
+.collapsible-toggle[aria-expanded="true"] {
+  margin-bottom: 0.5rem; /* Ajout d'une marge en bas du titre quand ouvert */
+  color: #1A305E; /* Keep navy color */
 }
 
 .toggle-icon {
@@ -42,6 +52,12 @@
 .section-container {
   position: relative;
   width: 100%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  scroll-margin-top: 0; /* Permet au titre précédent de défiler complètement */
+  overflow: visible;
 }
 
 /* Scroll margin for sections linked with anchors */
@@ -102,8 +118,14 @@
   font-size: 2.25rem; /* text-4xl */
   font-weight: 700; /* font-bold */
   color: #1A305E; /* text-navy */
-  margin-bottom: 2rem; /* mb-8 */
+  margin-bottom: 10px;
   text-align: center;
+  transition: margin-bottom 0.2s ease-out;
+  line-height: 1.1; /* Tighter line height */
+  scroll-margin-top: 1rem;
+  position: relative;
+  z-index: 10;
+  background-color: inherit;
 }
 
 @media (min-width: 768px) {
@@ -117,7 +139,8 @@
   font-size: 1.5rem; /* text-2xl */
   font-weight: 700; /* font-bold */
   color: #1A305E; /* text-navy */
-  margin-bottom: 1rem; /* mb-4 */
+  margin-bottom: 0.5rem; /* Reduced from 1rem */
+  line-height: 1.1; /* Tighter line height */
 }
 
 .paragraph {
@@ -141,17 +164,9 @@
 /* Removed .nav-link definition as it's now in src/input.css */
 
 /* Section styling */
-.section-container {
-  padding-top: 4rem; /* py-16 */
-  padding-bottom: 4rem;
-  padding-left: 2rem; /* px-8 */
-  padding-right: 2rem;
-  scroll-margin-top: 6rem; /* scroll-mt-16 */
-}
-
-/* Set scroll margin for section headings */
-.heading-section {
-  scroll-margin-top: 2rem;
+.section-container + .section-container {
+  margin-top: 0;
+  padding-top: 1rem;
 }
 
 .section-light {
@@ -166,7 +181,7 @@
 .table-container {
   border: 1px solid #e2e8f0;
   border-radius: 0.375rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 10px;
   overflow-x: auto; /* Keep horizontal scrolling if needed */
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
@@ -178,13 +193,13 @@
 }
 
 .table-container table thead th {
-  padding: 0.75rem 1rem;
+  padding: 5px 8px;
   font-weight: 600;
 }
 
 /* Table cell styling */
 .table-container table td {
-  padding: 0.75rem 1rem;
+  padding: 5px 8px;
   vertical-align: middle;
 }
 
@@ -193,8 +208,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-top: 5px;
+  margin-bottom: 5px;
   padding: 0 0.5rem;
 }
 
@@ -211,8 +226,8 @@
 
 /* Larger pagination buttons */
 .page-controls .btn {
-  min-width: 40px;
-  height: 40px;
+  min-width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -285,4 +300,171 @@
 .page-info {
   display: flex;
   flex-direction: column;
+}
+
+/* Additional space adjustment for items within collapsible content */
+.collapsible-content > .space-y-10 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.collapsible-content > div > h3:first-child {
+  margin-top: 0;
+}
+
+/* Reduce spacing between sections */
+.section-container + .section-container {
+  margin-top: 0;
+  padding-top: 1rem;
+}
+
+/* Reduce padding for all open content areas */
+.collapsible-content.open > div {
+  padding-top: 0.5rem; /* Ajout d'espace en haut à l'intérieur du contenu */
+  padding-bottom: 0;
+}
+
+/* Ensure that space-y utilities don't add too much spacing */
+.space-y-10 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Fix spacing for mobile song list entries */
+.mobile-song-list .song-list-entry {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Adjust desktop pagination spacing */
+.desktop-pagination {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/* Adjust margin for search container */
+.mb-8.search-container {
+  margin-bottom: 10px !important; 
+}
+
+/* Reduce space in paragraphs */
+.paragraph-spaced {
+  margin-bottom: 1rem; /* Reduced from 2rem */
+}
+
+/* Space between items in space-y classes */
+.space-y-10 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1.5rem; /* Reduced from 2.5rem */
+}
+
+.space-y-8 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem; /* Reduced from 2rem */
+}
+
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.75rem; /* Slightly reduced */
+}
+
+/* Songs section specific styles */
+#songs-content.open {
+  position: static;
+  top: auto;
+  margin-bottom: 0;
+  padding-top: 1.5rem; /* Ajout d'un espace au dessus du contenu des chansons */
+}
+
+#songs-heading {
+  margin-bottom: 10px;
+}
+
+#songs-heading[aria-expanded="true"] {
+  margin-bottom: 1rem; /* Augmenté pour plus d'espace */
+}
+
+/* Supprimer les optimisations de position pour le conteneur de recherche */
+#songs-content.open .search-container {
+  position: static;
+  top: auto;
+  margin-top: 0;
+  margin-bottom: 10px;
+  padding-top: 0;
+}
+
+/* Supprimer les optimisations de position pour le tableau */
+#songs-content.open .table-container {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* Supprimer les optimisations d'espace au bas */
+#songs-content.open .desktop-only {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Fix table cell vertical padding */
+.table-container table th {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Style pour les sections quand elles sont ouvertes */
+.collapsible-toggle[aria-expanded="true"] {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin-bottom: 1rem; /* Augmenté de 0 à 1rem pour plus d'espace */
+  background-color: inherit;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Styles pour le contenu ouvert */
+.collapsible-content.open {
+  position: relative;
+  z-index: 5;
+  min-height: 100vh; /* Assure que le contenu est suffisamment grand pour permettre le défilement */
+  padding-bottom: 20vh; /* Espace en bas pour permettre le défilement */
+  padding-top: 0.75rem; /* Espace au dessus du contenu */
+}
+
+/* Style background pour les sections */
+.section-gray {
+  background-color: #f3f4f6;
+}
+
+.section-light {
+  background-color: white;
+}
+
+/* Améliore la gestion des sections lors du défilement */
+.section-container {
+  position: relative;
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  scroll-margin-top: 0; /* Permet au titre précédent de défiler complètement */
+  overflow: visible;
+}
+
+/* Assure que les titres collants ont le bon arrière-plan */
+.section-gray .collapsible-toggle[aria-expanded="true"] {
+  background-color: #f3f4f6;
+}
+
+.section-light .collapsible-toggle[aria-expanded="true"] {
+  background-color: white;
+}
+
+/* Assure un bord distinct entre les sections adjacentes */
+.section-container + .section-container .collapsible-toggle[aria-expanded="true"] {
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Transition plus douce pour les titres collants */
+.collapsible-toggle {
+  transition: background-color 0.2s, box-shadow 0.2s, position 0s;
 } 

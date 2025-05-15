@@ -10,16 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Storage key for persistent state
     const CLOSED_SECTIONS_KEY = 'tepperBennettClosedSections';
     
-    // Debug state - set to false for production
-    const DEBUG = false;
-    
-    // Logger function that only logs when DEBUG is true
-    function log(message, ...args) {
-        if (DEBUG) {
-            console.log(`[Collapsible] ${message}`, ...args);
-        }
-    }
-    
     // Helper functions for closed sections storage
     function getClosedSections() {
         try {
@@ -62,6 +52,24 @@ document.addEventListener('DOMContentLoaded', function() {
         collapseAllButton.disabled = allCollapsed;
     }
     
+    // Simple scroll to element with offset
+    function scrollToElement(element) {
+        // Add a small delay to allow CSS transitions to complete
+        setTimeout(() => {
+            // Use scrollIntoView with a small offset
+            element.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start'
+            });
+            
+            // Add a small offset to show the heading properly
+            window.scrollBy({
+                top: -10, 
+                behavior: 'smooth'
+            });
+        }, 10);
+    }
+    
     // Update URL hash without causing scroll
     function updateUrlHash(sectionId) {
         if (!sectionId) {
@@ -93,6 +101,10 @@ document.addEventListener('DOMContentLoaded', function() {
             content.classList.add('open');
             content.classList.remove('section-initially-closed');
             removeFromClosedSections(sectionId);
+            
+            // Scroll to the heading - simple approach
+            scrollToElement(targetToggle);
+            
             updateButtonStates();
             return true;
         }
@@ -194,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.location.hash) {
         const targetId = window.location.hash.substring(1);
         if (targetId) {
-            log('Hash detected in URL, expanding section:', targetId);
             expandSection(targetId);
         }
     }
