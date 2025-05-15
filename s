@@ -38,7 +38,7 @@ echo "Python web server started with PID: $PYTHON_PID"
 sleep 2
 
 echo "Opening web browser to http://localhost:$PORT..."
-open "http://localhost:$PORT/#songs"
+open "http://localhost:$PORT"
 
 echo "Development server started. Tailwind CSS is watching for changes, and the Python web server is serving content."
 echo "To stop both, you'll need to kill their PIDs:"
