@@ -20,3 +20,4 @@
 
 ## Problem Solving Approach
 - If the code that you're trying to modify is too complex, say so and give me the opportunity to instruct you to simplify it
+- Where practical, avoid duplication by using templates, functions, centralize data values, etc.
