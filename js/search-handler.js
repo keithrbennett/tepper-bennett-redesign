@@ -1,70 +1,158 @@
 /**
- * Search handler functionality for Tepper & Bennett
- * Manages search functionality for song data
+ * Search handler module for Tepper & Bennett song table
+ * Manages search functionality for the song listings
  */
 
-// DOM element references
-const searchInput = document.getElementById('songs-search');
-const searchButton = document.getElementById('search-button');
-
-// Reference to original data
-let originalSongData = null;
+// Data storage
+let originalSongData = [];
 
 /**
- * Initialize search functionality
- * @param {Array} songData - The full song data array
+ * Initialize the search functionality
+ * @param {Array} songData - The complete song data array
  */
 function initSearch(songData) {
-  // Store reference to original data
+  console.log('Initializing search with', songData.length, 'songs');
+  
+  // Store the original data for reference
   originalSongData = songData;
   
+  // Get DOM elements (they might not have been available during initial script load)
+  const searchInput = document.getElementById('songs-search');
+  const searchButton = document.getElementById('search-button');
+  
+  // Set up event listeners
   if (searchButton && searchInput) {
-    // Add click event listener
+    console.log('Search elements found, setting up listeners');
+    
+    // Search on button click
     searchButton.addEventListener('click', function() {
       performSearch();
     });
     
-    // Add search on Enter key
-    searchInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
+    // Search on Enter key press
+    searchInput.addEventListener('keyup', function(event) {
+      if (event.key === 'Enter') {
         performSearch();
       }
     });
+    
+    // Optional: real-time search with debounce
+    // Uncomment to enable real-time search
+    /*
+    let debounceTimer;
+    searchInput.addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function() {
+        performSearch();
+      }, 300); // Wait 300ms after typing stops
+    });
+    */
+  } else {
+    console.warn('Search elements not found in the DOM');
   }
 }
 
 /**
- * Perform search on song data
+ * Perform search based on current input value
  */
 function performSearch() {
-  if (!originalSongData) return;
+  // Get fresh DOM reference
+  const searchInput = document.getElementById('songs-search');
+  if (!searchInput) {
+    console.error('Search input element not found');
+    return;
+  }
   
-  const searchTerm = searchInput.value.toLowerCase();
+  const searchTerm = searchInput.value.toLowerCase().trim();
   console.log('Searching for:', searchTerm);
   
   if (searchTerm) {
-    const filteredData = originalSongData.filter(song => 
-      song.title.toLowerCase().includes(searchTerm) || 
-      song.performers.toLowerCase().includes(searchTerm) || 
-      song.administrator.toLowerCase().includes(searchTerm)
-    );
-    
-    // Show "no results" if nothing found
-    if (filteredData.length === 0) {
-      showNoResults(searchTerm);
-    } else {
-      // Reset pagination when searching
-      window.tablePagination.resetPagination();
-      window.tablePagination.updateFilteredData(filteredData);
-      window.renderTable(filteredData);
-      window.renderMobileList(filteredData);
+    try {
+      const filteredData = originalSongData.filter(song => {
+        // Ensure all values are strings before calling toLowerCase()
+        const title = String(song.title || '').toLowerCase();
+        const performers = String(song.performers || '').toLowerCase();
+        const administrator = String(song.administrator || '').toLowerCase();
+        
+        return title.includes(searchTerm) || 
+               performers.includes(searchTerm) || 
+               administrator.includes(searchTerm);
+      });
+      
+      // Show "no results" if nothing found
+      if (filteredData.length === 0) {
+        showNoResults(searchTerm);
+      } else {
+        // Reset pagination when searching
+        if (window.tablePagination) {
+          window.tablePagination.resetPagination();
+          window.tablePagination.updateFilteredData(filteredData);
+        } else {
+          console.warn('tablePagination not available');
+        }
+        
+        // Update table views
+        if (window.renderTable) {
+          window.renderTable(filteredData);
+        } else {
+          console.warn('renderTable not available');
+        }
+        
+        if (window.renderMobileList) {
+          window.renderMobileList(filteredData);
+        } else {
+          console.warn('renderMobileList not available');
+        }
+      }
+    } catch (error) {
+      console.error('Error during search:', error);
+      alert('An error occurred while searching. Please try again.');
     }
   } else {
     // Reset pagination when clearing search
-    window.tablePagination.resetPagination();
-    window.tablePagination.updateFilteredData(originalSongData);
-    window.renderTable(originalSongData);
-    window.renderMobileList(originalSongData);
+    if (window.tablePagination) {
+      window.tablePagination.resetPagination();
+      window.tablePagination.updateFilteredData(originalSongData);
+    } else {
+      console.warn('tablePagination not available');
+    }
+    
+    // Update table views
+    if (window.renderTable) {
+      window.renderTable(originalSongData);
+    } else {
+      console.warn('renderTable not available');
+    }
+    
+    if (window.renderMobileList) {
+      window.renderMobileList(originalSongData);
+    } else {
+      console.warn('renderMobileList not available');
+    }
+  }
+}
+
+/**
+ * Update the songs heading to indicate search is active
+ * @param {string} searchTerm - The current search term
+ * @param {number} resultCount - Number of results found
+ */
+function updateSearchIndicator(searchTerm, resultCount) {
+  const songsHeading = document.getElementById('songs-heading');
+  if (!songsHeading) return;
+  
+  const originalText = "Songs";
+  
+  if (searchTerm && resultCount > 0) {
+    songsHeading.innerHTML = `${originalText} <span style="font-size: 0.7em; opacity: 0.8; font-weight: normal;">(Filtered: ${resultCount} results)</span>`;
+  } else {
+    songsHeading.textContent = originalText;
+    // Restore toggle icon
+    const toggleIcon = document.createElement('span');
+    toggleIcon.className = 'toggle-icon';
+    toggleIcon.setAttribute('aria-hidden', 'true');
+    toggleIcon.textContent = songsHeading.getAttribute('aria-expanded') === 'true' ? '−' : '+';
+    songsHeading.appendChild(toggleIcon);
   }
 }
 
@@ -73,6 +161,9 @@ function performSearch() {
  * @param {string} searchTerm - The search term that yielded no results
  */
 function showNoResults(searchTerm) {
+  // Get fresh DOM references
+  const searchInput = document.getElementById('songs-search');
+  
   // Show no results in desktop table
   const songsTable = document.getElementById('songs-table');
   if (songsTable) {
@@ -89,9 +180,15 @@ function showNoResults(searchTerm) {
         </tr>
       `;
       
-      document.getElementById('reset-search')?.addEventListener('click', function() {
-        resetSearch();
-      });
+      // Add event listener after creating the button
+      setTimeout(() => {
+        const resetButton = document.getElementById('reset-search');
+        if (resetButton) {
+          resetButton.addEventListener('click', function() {
+            resetSearch();
+          });
+        }
+      }, 0);
     }
   }
   
@@ -107,9 +204,15 @@ function showNoResults(searchTerm) {
       </li>
     `;
     
-    document.getElementById('mobile-reset-search')?.addEventListener('click', function() {
-      resetSearch();
-    });
+    // Add event listener after creating the button
+    setTimeout(() => {
+      const mobileResetButton = document.getElementById('mobile-reset-search');
+      if (mobileResetButton) {
+        mobileResetButton.addEventListener('click', function() {
+          resetSearch();
+        });
+      }
+    }, 0);
   }
 }
 
@@ -119,11 +222,30 @@ function showNoResults(searchTerm) {
 function resetSearch() {
   if (!originalSongData) return;
   
-  searchInput.value = '';
-  window.tablePagination.resetPagination();
-  window.tablePagination.updateFilteredData(originalSongData);
-  window.renderTable(originalSongData);
-  window.renderMobileList(originalSongData);
+  // Get fresh DOM reference
+  const searchInput = document.getElementById('songs-search');
+  if (searchInput) {
+    searchInput.value = '';
+  }
+  
+  if (window.tablePagination) {
+    window.tablePagination.resetPagination();
+    window.tablePagination.updateFilteredData(originalSongData);
+  } else {
+    console.warn('tablePagination not available');
+  }
+  
+  if (window.renderTable) {
+    window.renderTable(originalSongData);
+  } else {
+    console.warn('renderTable not available');
+  }
+  
+  if (window.renderMobileList) {
+    window.renderMobileList(originalSongData);
+  } else {
+    console.warn('renderMobileList not available');
+  }
 }
 
 // Export functions to global scope

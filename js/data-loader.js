@@ -101,14 +101,16 @@ document.addEventListener('DOMContentLoaded', function() {
   function processTableData(songPlays, songsMap, performersMap, orgsMap, songOrgMap) {
     return songPlays.map(play => {
       const song = songsMap[play.song_code];
-      const performer = performersMap[play.performer_codes] || play.performer_codes;
+      // Ensure performer is always a string
+      const performer = String(performersMap[play.performer_codes] || play.performer_codes || 'Unknown Performer');
       
       // Get organization from the song organization map
       const orgCode = songOrgMap[play.song_code];
-      const administrator = orgCode ? orgsMap[orgCode] : 'Unknown';
+      // Ensure administrator is always a string
+      const administrator = String(orgCode ? orgsMap[orgCode] : 'Unknown');
       
       return {
-        title: song ? song.name : play.song_code,
+        title: String(song ? song.name : play.song_code || 'Unknown Title'),
         performers: performer,
         administrator: administrator,
         youtubeUrl: play.youtube_key ? `https://www.youtube.com/watch?v=${play.youtube_key}` : '#'
@@ -241,12 +243,31 @@ document.addEventListener('DOMContentLoaded', function() {
     loadedSongData = songData;
     filteredSongData = songData;
     
-    // Render the table and mobile list
-    renderTable(songData);
-    renderMobileList(songData);
+    // Initialize pagination module
+    if (window.tablePagination) {
+      window.tablePagination.initPagination(songData);
+    }
     
-    // Set up search functionality
-    setupSearch(songData);
+    // Initialize search handler with the song data
+    if (window.searchHandler) {
+      window.searchHandler.initSearch(songData);
+    } else {
+      // Fallback to legacy search if search handler module is not available
+      setupSearch(songData);
+    }
+    
+    // Render the table and mobile list
+    if (window.renderTable) {
+      window.renderTable(songData);
+    } else {
+      renderTable(songData);
+    }
+    
+    if (window.renderMobileList) {
+      window.renderMobileList(songData);
+    } else {
+      renderMobileList(songData);
+    }
   }
   
   /**
@@ -254,17 +275,25 @@ document.addEventListener('DOMContentLoaded', function() {
    * @param {Array} songData - The full song data array
    */
   function setupSearch(songData) {
-    if (searchButton && searchInput) {
-      searchButton.addEventListener('click', function() {
-        performSearch(songData);
-      });
-      
-      // Add search on Enter key
-      searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
+    console.log('Setting up search functionality');
+    // Only use the legacy search if the search handler module is not available
+    if (!window.searchHandler) {
+      console.log('Search handler module not found, using legacy search');
+      // Legacy search function as fallback
+      if (searchButton && searchInput) {
+        searchButton.addEventListener('click', function() {
           performSearch(songData);
-        }
-      });
+        });
+        
+        // Add search on Enter key
+        searchInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            performSearch(songData);
+          }
+        });
+      }
+    } else {
+      console.log('Search handler module found, skipping legacy search setup');
     }
   }
   
@@ -273,69 +302,93 @@ document.addEventListener('DOMContentLoaded', function() {
    * @param {Array} songData - The full song data array
    */
   function performSearch(songData) {
-    const searchTerm = searchInput.value.toLowerCase();
+    if (!searchInput) {
+      console.error('Search input element not found');
+      return;
+    }
+    
+    const searchTerm = searchInput.value.toLowerCase().trim();
     console.log('Searching for:', searchTerm);
     
     if (searchTerm) {
-      const filteredData = songData.filter(song => 
-        song.title.toLowerCase().includes(searchTerm) || 
-        song.performers.toLowerCase().includes(searchTerm) || 
-        song.administrator.toLowerCase().includes(searchTerm)
-      );
-      
-      // Show "no results" if nothing found
-      if (filteredData.length === 0) {
-        if (songsTable) {
-          const tbody = songsTable.querySelector('tbody');
-          if (tbody) {
-            tbody.innerHTML = `
-              <tr>
-                <td colspan="4" class="py-8 text-center">
-                  <div>
-                    <p>No songs found matching "${searchTerm}"</p>
-                    <button id="reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
-                  </div>
-                </td>
-              </tr>
+      try {
+        const filteredData = songData.filter(song => {
+          // Ensure all values are strings before calling toLowerCase()
+          const title = String(song.title || '').toLowerCase();
+          const performers = String(song.performers || '').toLowerCase();
+          const administrator = String(song.administrator || '').toLowerCase();
+          
+          return title.includes(searchTerm) || 
+                 performers.includes(searchTerm) || 
+                 administrator.includes(searchTerm);
+        });
+        
+        // Show "no results" if nothing found
+        if (filteredData.length === 0) {
+          if (songsTable) {
+            const tbody = songsTable.querySelector('tbody');
+            if (tbody) {
+              tbody.innerHTML = `
+                <tr>
+                  <td colspan="4" class="py-8 text-center">
+                    <div>
+                      <p>No songs found matching "${searchTerm}"</p>
+                      <button id="reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+              
+              setTimeout(() => {
+                const resetButton = document.getElementById('reset-search');
+                if (resetButton) {
+                  resetButton.addEventListener('click', function() {
+                    searchInput.value = '';
+                    currentPage = 0;
+                    currentDesktopPage = 0;
+                    filteredSongData = songData;
+                    renderTable(songData);
+                    renderMobileList(songData);
+                  });
+                }
+              }, 0);
+            }
+          }
+          
+          if (mobileList) {
+            mobileList.innerHTML = `
+              <li class="song-list-entry text-center py-4">
+                <div>
+                  <p>No songs found matching "${searchTerm}"</p>
+                  <button id="mobile-reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
+                </div>
+              </li>
             `;
             
-            document.getElementById('reset-search')?.addEventListener('click', function() {
-              searchInput.value = '';
-              currentPage = 0;
-              currentDesktopPage = 0;
-              filteredSongData = songData;
-              renderTable(songData);
-              renderMobileList(songData);
-            });
+            setTimeout(() => {
+              const mobileResetButton = document.getElementById('mobile-reset-search');
+              if (mobileResetButton) {
+                mobileResetButton.addEventListener('click', function() {
+                  searchInput.value = '';
+                  currentPage = 0;
+                  currentDesktopPage = 0;
+                  filteredSongData = songData;
+                  renderTable(songData);
+                  renderMobileList(songData);
+                });
+              }
+            }, 0);
           }
+        } else {
+          // Reset pagination when searching
+          currentPage = 0;
+          currentDesktopPage = 0;
+          filteredSongData = filteredData;
+          renderTable(filteredData);
+          renderMobileList(filteredData);
         }
-        
-        if (mobileList) {
-          mobileList.innerHTML = `
-            <li class="song-list-entry text-center py-4">
-              <div>
-                <p>No songs found matching "${searchTerm}"</p>
-                <button id="mobile-reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
-              </div>
-            </li>
-          `;
-          
-          document.getElementById('mobile-reset-search')?.addEventListener('click', function() {
-            searchInput.value = '';
-            currentPage = 0;
-            currentDesktopPage = 0;
-            filteredSongData = songData;
-            renderTable(songData);
-            renderMobileList(songData);
-          });
-        }
-      } else {
-        // Reset pagination when searching
-        currentPage = 0;
-        currentDesktopPage = 0;
-        filteredSongData = filteredData;
-        renderTable(filteredData);
-        renderMobileList(filteredData);
+      } catch (error) {
+        console.error('Error during search:', error);
       }
     } else {
       // Reset pagination when clearing search
