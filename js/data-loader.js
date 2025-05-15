@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
   window.initialLoadComplete = false;
   
   // Reference to the table
-  const songsTable = document.getElementById('songs-table');
-  if (!songsTable) {
+  const songlistTable = document.getElementById('songlist-table');
+  if (!songlistTable) {
     console.error('Songs table not found');
     return;
   }
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const searchContainer = document.querySelector('.search-container');
   
   // Show loading indicator
-  const tbody = songsTable.querySelector('tbody');
+  const tbody = songlistTable.querySelector('tbody');
   if (tbody) {
     tbody.innerHTML = `
       <tr>
@@ -228,45 +228,45 @@ document.addEventListener('DOMContentLoaded', function() {
     const songOrgMap = createSongOrgMap(rightsAdminSongs);
     
     // Combine song data
-    const allSongs = [...elvisSongs, ...nonElvisSongs];
-    const songsMap = {};
-    allSongs.forEach(song => {
-      songsMap[song.code] = song;
+    const allSonglist = [...elvisSongs, ...nonElvisSongs];
+    const songlistMap = {};
+    allSonglist.forEach(song => {
+      songlistMap[song.code] = song;
     });
     
     // Process song data using the local utility function
-    const songData = processTableData(songPlays, songsMap, performersMap, orgsMap, songOrgMap);
+    const songlistData = processTableData(songPlays, songlistMap, performersMap, orgsMap, songOrgMap);
     
-    console.log(`Song data processed: ${songData.length} songs`);
+    console.log(`Song data processed: ${songlistData.length} songlist`);
     
     // Store the processed data for reuse
-    loadedSongData = songData;
-    filteredSongData = songData;
+    loadedSongData = songlistData;
+    filteredSongData = songlistData;
     
     // Initialize pagination module
     if (window.tablePagination) {
-      window.tablePagination.initPagination(songData);
+      window.tablePagination.initPagination(songlistData);
     }
     
     // Initialize search handler with the song data
     if (window.searchHandler) {
-      window.searchHandler.initSearch(songData);
+      window.searchHandler.initSearch(songlistData);
     } else {
       // Fallback to legacy search if search handler module is not available
-      setupSearch(songData);
+      setupSearch(songlistData);
     }
     
     // Render the table and mobile list
     if (window.renderTable) {
-      window.renderTable(songData);
+      window.renderTable(songlistData);
     } else {
-      renderTable(songData);
+      renderTable(songlistData);
     }
     
     if (window.renderMobileList) {
-      window.renderMobileList(songData);
+      window.renderMobileList(songlistData);
     } else {
-      renderMobileList(songData);
+      renderMobileList(songlistData);
     }
   }
   
@@ -325,8 +325,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Show "no results" if nothing found
         if (filteredData.length === 0) {
-          if (songsTable) {
-            const tbody = songsTable.querySelector('tbody');
+          if (songlistTable) {
+            const tbody = songlistTable.querySelector('tbody');
             if (tbody) {
               tbody.innerHTML = `
                 <tr>
@@ -470,10 +470,10 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("Song count: " + songs.length);
     
     // Get or create the tbody element
-    let tbody = songsTable.querySelector('tbody');
+    let tbody = songlistTable.querySelector('tbody');
     if (!tbody) {
       tbody = document.createElement('tbody');
-      songsTable.appendChild(tbody);
+      songlistTable.appendChild(tbody);
     } else {
       tbody.innerHTML = '';
     }
@@ -696,15 +696,15 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // Listen for section expansion
-  const songsHeading = document.getElementById('songs-heading');
-  if (songsHeading) {
-    songsHeading.addEventListener('click', function() {
+  const songlistHeading = document.getElementById('songlist-heading');
+  if (songlistHeading) {
+    songlistHeading.addEventListener('click', function() {
       // Check if content is being expanded
       const willBeExpanded = this.getAttribute('aria-expanded') === 'false';
-      console.log('Songs section clicked, willBeExpanded:', willBeExpanded);
+      console.log('Song List section clicked, willBeExpanded:', willBeExpanded);
       
       if (willBeExpanded && filteredSongData) {
-        console.log('Songs section will be expanded, rendering tables');
+        console.log('Song List section will be expanded, rendering tables');
         renderTable(filteredSongData);
         renderMobileList(filteredSongData);
       }
@@ -715,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addEventListener('resize', () => {
     if (window.innerWidth < 768 && mobileList && filteredSongData) {
       renderMobileList(filteredSongData);
-    } else if (window.innerWidth >= 768 && songsTable && filteredSongData) {
+    } else if (window.innerWidth >= 768 && songlistTable && filteredSongData) {
       renderTable(filteredSongData);
     }
   });

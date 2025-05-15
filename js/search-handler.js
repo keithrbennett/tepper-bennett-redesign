@@ -11,13 +11,13 @@ let originalSongData = [];
  * @param {Array} songData - The complete song data array
  */
 function initSearch(songData) {
-  console.log('Initializing search with', songData.length, 'songs');
+  console.log('Initializing search with', songData.length, 'songlist');
   
   // Store the original data for reference
   originalSongData = songData;
   
   // Get DOM elements (they might not have been available during initial script load)
-  const searchInput = document.getElementById('songs-search');
+  const searchInput = document.getElementById('songlist-search');
   const searchButton = document.getElementById('search-button');
   
   // Set up event listeners
@@ -54,7 +54,7 @@ function initSearch(songData) {
  */
 function performSearch() {
   // Get fresh DOM reference
-  const searchInput = document.getElementById('songs-search');
+  const searchInput = document.getElementById('songlist-search');
   if (!searchInput) {
     console.error('Search input element not found');
     return;
@@ -130,26 +130,26 @@ function performSearch() {
 }
 
 /**
- * Update the songs heading to indicate search is active
+ * Update the songlist heading to indicate search is active
  * @param {string} searchTerm - The current search term
  * @param {number} resultCount - Number of results found
  */
 function updateSearchIndicator(searchTerm, resultCount) {
-  const songsHeading = document.getElementById('songs-heading');
-  if (!songsHeading) return;
+  const songlistHeading = document.getElementById('songlist-heading');
+  if (!songlistHeading) return;
   
-  const originalText = "Songs";
+  const originalText = "Song List";
   
   if (searchTerm && resultCount > 0) {
-    songsHeading.innerHTML = `${originalText} <span style="font-size: 0.7em; opacity: 0.8; font-weight: normal;">(Filtered: ${resultCount} results)</span>`;
+    songlistHeading.innerHTML = `${originalText} <span style="font-size: 0.7em; opacity: 0.8; font-weight: normal;">(Filtered: ${resultCount} results)</span>`;
   } else {
-    songsHeading.textContent = originalText;
+    songlistHeading.textContent = originalText;
     // Restore toggle icon
     const toggleIcon = document.createElement('span');
     toggleIcon.className = 'toggle-icon';
     toggleIcon.setAttribute('aria-hidden', 'true');
-    toggleIcon.textContent = songsHeading.getAttribute('aria-expanded') === 'true' ? '−' : '+';
-    songsHeading.appendChild(toggleIcon);
+    toggleIcon.textContent = songlistHeading.getAttribute('aria-expanded') === 'true' ? '−' : '+';
+    songlistHeading.appendChild(toggleIcon);
   }
 }
 
@@ -159,19 +159,19 @@ function updateSearchIndicator(searchTerm, resultCount) {
  */
 function showNoResults(searchTerm) {
   // Get fresh DOM references
-  const searchInput = document.getElementById('songs-search');
+  const searchInput = document.getElementById('songlist-search');
   
   // Show no results in desktop table
-  const songsTable = document.getElementById('songs-table');
-  if (songsTable) {
-    const tbody = songsTable.querySelector('tbody');
+  const songlistTable = document.getElementById('songlist-table');
+  if (songlistTable) {
+    const tbody = songlistTable.querySelector('tbody');
     if (tbody) {
       tbody.innerHTML = `
         <tr>
           <td colspan="4" class="py-8 text-center">
             <div>
-              <p>No songs found matching "${searchTerm}"</p>
-              <button id="reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
+              <p>No songlist found matching "${searchTerm}"</p>
+              <button id="reset-search" class="btn btn-navy btn-sm mt-2">Show All Song List</button>
             </div>
           </td>
         </tr>
@@ -190,13 +190,13 @@ function showNoResults(searchTerm) {
   }
   
   // Show no results in mobile list
-  const mobileList = document.getElementById('mobile-songs-list');
+  const mobileList = document.getElementById('mobile-songlist-list');
   if (mobileList) {
     mobileList.innerHTML = `
       <li class="song-list-entry text-center py-4">
         <div>
-          <p>No songs found matching "${searchTerm}"</p>
-          <button id="mobile-reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
+          <p>No songlist found matching "${searchTerm}"</p>
+          <button id="mobile-reset-search" class="btn btn-navy btn-sm mt-2">Show All Song List</button>
         </div>
       </li>
     `;
@@ -214,13 +214,13 @@ function showNoResults(searchTerm) {
 }
 
 /**
- * Reset search to show all songs
+ * Reset search to show all songlist
  */
 function resetSearch() {
   if (!originalSongData) return;
   
   // Get fresh DOM reference
-  const searchInput = document.getElementById('songs-search');
+  const searchInput = document.getElementById('songlist-search');
   if (searchInput) {
     searchInput.value = '';
   }

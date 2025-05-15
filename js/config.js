@@ -52,9 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!window.jsyaml) {
     console.error('CRITICAL ERROR: js-yaml is not loaded correctly!');
     // Display error in song tables
-    const songsTable = document.getElementById('songs-table');
-    if (songsTable && songsTable.querySelector('tbody')) {
-      songsTable.querySelector('tbody').innerHTML = `
+    const songlistTable = document.getElementById('songlist-table');
+    if (songlistTable && songlistTable.querySelector('tbody')) {
+      songlistTable.querySelector('tbody').innerHTML = `
         <tr>
           <td colspan="4" class="py-4 text-center text-red-600">
             <div>

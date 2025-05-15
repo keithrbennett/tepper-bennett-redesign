@@ -4,32 +4,32 @@
  */
 
 // DOM element references
-const songsTable = document.getElementById('songs-table');
-const mobileList = document.getElementById('mobile-songs-list');
+const songlistTable = document.getElementById('songlist-table');
+const mobileList = document.getElementById('mobile-songlist-list');
 
 // Current sort state
 let currentSortField = 'title';
 let currentSortDirection = 'asc';
 
 /**
- * Sort songs by the specified field and direction
- * @param {Array} songs - Array of song objects
+ * Sort songlist by the specified field and direction
+ * @param {Array} songlist - Array of songlist objects
  * @param {string} field - Field to sort by (title, performers, administrator)
  * @param {string} direction - Sort direction (asc, desc)
- * @returns {Array} Sorted array of songs
+ * @returns {Array} Sorted array of songlist
  */
-function sortSongs(songs, field = currentSortField, direction = currentSortDirection) {
-  console.log(`Sorting songs by ${field} in ${direction} order`);
+function sortSonglist(songlist, field = currentSortField, direction = currentSortDirection) {
+  console.log(`Sorting songlist by ${field} in ${direction} order`);
   
   // Update current sort state
   currentSortField = field;
   currentSortDirection = direction;
   
   // Create a copy of the array to avoid modifying the original
-  const sortedSongs = [...songs];
+  const sortedSonglist = [...songlist];
   
   // Sort the array
-  sortedSongs.sort((a, b) => {
+  sortedSonglist.sort((a, b) => {
     let valueA = String(a[field] || '').toLowerCase();
     let valueB = String(b[field] || '').toLowerCase();
     
@@ -49,24 +49,24 @@ function sortSongs(songs, field = currentSortField, direction = currentSortDirec
     return 0;
   });
   
-  return sortedSongs;
+  return sortedSonglist;
 }
 
 /**
  * Render the table with the provided data
- * @param {Array} songs - Array of song objects
+ * @param {Array} songlist - Array of songlist objects
  */
-function renderTable(songs) {
-  console.log("Song count: " + songs.length);
+function renderTable(songlist) {
+  console.log("Song count: " + songlist.length);
   
-  // Sort the songs by title (default)
-  const sortedSongs = sortSongs(songs);
+  // Sort the songlist by title (default)
+  const sortedSonglist = sortSonglist(songlist);
   
   // Get or create the tbody element
-  let tbody = songsTable.querySelector('tbody');
+  let tbody = songlistTable.querySelector('tbody');
   if (!tbody) {
     tbody = document.createElement('tbody');
-    songsTable.appendChild(tbody);
+    songlistTable.appendChild(tbody);
   } else {
     tbody.innerHTML = '';
   }
@@ -77,11 +77,11 @@ function renderTable(songs) {
   
   // Calculate pagination
   const start = currentPage * rowsPerPage;
-  const end = Math.min(start + rowsPerPage, sortedSongs.length);
-  const pageData = sortedSongs.slice(start, end);
+  const end = Math.min(start + rowsPerPage, sortedSonglist.length);
+  const pageData = sortedSonglist.slice(start, end);
   
   // Update pagination info and buttons
-  window.tablePagination.updateDesktopPagination(sortedSongs, start, end);
+  window.tablePagination.updateDesktopPagination(sortedSonglist, start, end);
   
   // Add each song to the table
   pageData.forEach(song => {
@@ -89,7 +89,7 @@ function renderTable(songs) {
     row.className = 'border-b hover:bg-gray-50';
     
     row.innerHTML = `
-      <td class="py-3 px-4"><a href="#songs" class="site-link">${song.title || 'Unknown Title'}</a></td>
+      <td class="py-3 px-4"><a href="#songlist" class="site-link">${song.title || 'Unknown Title'}</a></td>
       <td class="py-3 px-4">${song.performers || 'Unknown Performer'}</td>
       <td class="py-3 px-4">${song.administrator || 'Unknown'}</td>
       <td class="py-3 px-4 text-center">
@@ -105,13 +105,13 @@ function renderTable(songs) {
 
 /**
  * Function to render the mobile list
- * @param {Array} songs - Array of song objects
+ * @param {Array} songlist - Array of songlist objects
  */
-function renderMobileList(songs) {
+function renderMobileList(songlist) {
   if (!mobileList) return;
   
-  // Sort the songs by title (default)
-  const sortedSongs = sortSongs(songs);
+  // Sort the songlist by title (default)
+  const sortedSonglist = sortSonglist(songlist);
   
   mobileList.innerHTML = '';
   
@@ -121,19 +121,19 @@ function renderMobileList(songs) {
   
   // Calculate pagination
   const start = currentPage * rowsPerPage;
-  const end = Math.min(start + rowsPerPage, sortedSongs.length);
-  const pageData = sortedSongs.slice(start, end);
+  const end = Math.min(start + rowsPerPage, sortedSonglist.length);
+  const pageData = sortedSonglist.slice(start, end);
   
   // Add pagination info
-  if (sortedSongs.length > rowsPerPage) {
+  if (sortedSonglist.length > rowsPerPage) {
     const paginationInfo = document.createElement('li');
     paginationInfo.className = 'song-list-pagination-info text-center text-sm text-gray-600 mb-2';
-    paginationInfo.textContent = `Showing ${start + 1}-${end} of ${sortedSongs.length} songs`;
+    paginationInfo.textContent = `Showing ${start + 1}-${end} of ${sortedSonglist.length} songs`;
     mobileList.appendChild(paginationInfo);
   }
   
   // Update pagination buttons
-  window.tablePagination.updateMobilePagination(sortedSongs, start, end);
+  window.tablePagination.updateMobilePagination(sortedSonglist, start, end);
   
   // Render each song in the mobile list
   pageData.forEach(song => {
@@ -152,7 +152,7 @@ function renderMobileList(songs) {
     const admin = song.administrator ? truncateText(song.administrator, 20) : '';
     
     listItem.innerHTML = `
-      <div class="mobile-song-title"><a href="#songs">${title}</a></div>
+      <div class="mobile-song-title"><a href="#songlist">${title}</a></div>
       <div class="mobile-song-performers">${performers}</div>
       <div class="mobile-song-details">
         <div class="mobile-song-admin">${admin}</div>
@@ -170,7 +170,7 @@ function renderMobileList(songs) {
  */
 function showError(message) {
   // Show error in desktop table
-  const tbody = songsTable?.querySelector('tbody');
+  const tbody = songlistTable?.querySelector('tbody');
   if (tbody) {
     tbody.innerHTML = `
       <tr>
@@ -202,4 +202,4 @@ function showError(message) {
 window.renderTable = renderTable;
 window.renderMobileList = renderMobileList;
 window.showTableError = showError;
-window.sortSongs = sortSongs; 
+window.sortSonglist = sortSonglist; 

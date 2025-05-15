@@ -222,11 +222,11 @@ function initMobilePagination() {
 
 /**
  * Update desktop pagination information and button states
- * @param {Array} songs - Full array of songs (filtered or not)
+ * @param {Array} songlist - Full array of songlist (filtered or not)
  * @param {number} start - Start index of current page
  * @param {number} end - End index of current page
  */
-function updateDesktopPagination(songs, start, end) {
+function updateDesktopPagination(songlist, start, end) {
   const desktopPageInfo = document.getElementById('desktop-page-info');
   const upperDesktopPageInfo = document.getElementById('upper-desktop-page-info');
   
@@ -240,17 +240,17 @@ function updateDesktopPagination(songs, start, end) {
   const upperDesktopNextButton = document.getElementById('upper-desktop-next-page');
   const upperDesktopLastButton = document.getElementById('upper-desktop-last-page');
   
-  const totalPages = Math.ceil(songs.length / DESKTOP_ROWS_PER_PAGE);
+  const totalPages = Math.ceil(songlist.length / DESKTOP_ROWS_PER_PAGE);
   const currentPageNumber = currentDesktopPage + 1;
   const isFirstPage = currentDesktopPage === 0;
-  const isLastPage = end >= songs.length;
+  const isLastPage = end >= songlist.length;
   
   // Create page info text
   let pageInfoText;
-  if (songs.length <= DESKTOP_ROWS_PER_PAGE) {
-    pageInfoText = `Showing all ${songs.length} song${songs.length !== 1 ? 's' : ''}`;
+  if (songlist.length <= DESKTOP_ROWS_PER_PAGE) {
+    pageInfoText = `Showing all ${songlist.length} song${songlist.length !== 1 ? 's' : ''}`;
   } else {
-    pageInfoText = `Page ${currentPageNumber} of ${totalPages} (${start + 1}-${end} of ${songs.length} songs)`;
+    pageInfoText = `Page ${currentPageNumber} of ${totalPages} (${start + 1}-${end} of ${songlist.length} songs)`;
   }
   
   // Update lower pagination controls
@@ -258,10 +258,10 @@ function updateDesktopPagination(songs, start, end) {
     desktopPageInfo.textContent = pageInfoText;
     
     // Update button states
-    if (desktopFirstButton) desktopFirstButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-    if (desktopPrevButton) desktopPrevButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-    if (desktopNextButton) desktopNextButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-    if (desktopLastButton) desktopLastButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
+    if (desktopFirstButton) desktopFirstButton.disabled = isFirstPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
+    if (desktopPrevButton) desktopPrevButton.disabled = isFirstPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
+    if (desktopNextButton) desktopNextButton.disabled = isLastPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
+    if (desktopLastButton) desktopLastButton.disabled = isLastPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
   }
   
   // Update upper pagination controls
@@ -269,26 +269,26 @@ function updateDesktopPagination(songs, start, end) {
     upperDesktopPageInfo.textContent = pageInfoText;
     
     // Update button states
-    if (upperDesktopFirstButton) upperDesktopFirstButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-    if (upperDesktopPrevButton) upperDesktopPrevButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-    if (upperDesktopNextButton) upperDesktopNextButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-    if (upperDesktopLastButton) upperDesktopLastButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
+    if (upperDesktopFirstButton) upperDesktopFirstButton.disabled = isFirstPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
+    if (upperDesktopPrevButton) upperDesktopPrevButton.disabled = isFirstPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
+    if (upperDesktopNextButton) upperDesktopNextButton.disabled = isLastPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
+    if (upperDesktopLastButton) upperDesktopLastButton.disabled = isLastPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
   }
 }
 
 /**
  * Update mobile pagination buttons
- * @param {Array} songs - Full array of songs
+ * @param {Array} songlist - Full array of songlist
  * @param {number} start - Start index
  * @param {number} end - End index
  */
-function updateMobilePagination(songs, start, end) {
+function updateMobilePagination(songlist, start, end) {
   const prevButton = document.getElementById('mobile-prev-page');
   const nextButton = document.getElementById('mobile-next-page');
   
   if (prevButton && nextButton) {
     prevButton.disabled = currentMobilePage === 0;
-    nextButton.disabled = (currentMobilePage + 1) * MOBILE_ROWS_PER_PAGE >= songs.length;
+    nextButton.disabled = (currentMobilePage + 1) * MOBILE_ROWS_PER_PAGE >= songlist.length;
   }
 }
 
