@@ -107,22 +107,22 @@
                         <a href="#legacy-heading" class="nav-link">The Legacy</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#songs" class="nav-link">Songs</a>
+                        <a href="#songs-heading" class="nav-link">Songs</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#genres" class="nav-link">Genres</a>
+                        <a href="#genres-heading" class="nav-link">Genres</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#elvis" class="nav-link">Elvis</a>
+                        <a href="#elvis-heading" class="nav-link">Elvis</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#resources" class="nav-link">Resources</a>
+                        <a href="#resources-heading" class="nav-link">Resources</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#reports" class="nav-link">Reports</a>
+                        <a href="#reports-heading" class="nav-link">Reports</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#inquiries" class="nav-link">Inquiries</a>
+                        <a href="#inquiries-heading" class="nav-link">Inquiries</a>
                     </li>
                 </ul>
             </nav>
@@ -447,7 +447,7 @@
             </h2>
             <div id="inquiries-content" class="collapsible-content" role="region" aria-labelledby="inquiries-heading">
                 <div class="space-y-6 text-lg">
-                    <p>If you are interested in incorporating any of Sid and Roy's songs into your production, please contact the appropriate rights administrator(s). The name of the rights administrator organization can be found in a column of the <a href="#songs" class="site-link">Songs table</a>. This information is not yet complete; we are still in the process of obtaining some of it.</p>
+                    <p>If you are interested in incorporating any of Sid and Roy's songs into your production, please contact the appropriate rights administrator(s). The name of the rights administrator organization can be found in a column of the <a href="#songs-heading" class="site-link">Songs table</a>. This information is not yet complete; we are still in the process of obtaining some of it.</p>
                     
                     <p>For licensing songs administered by Chappell & Co., Inc. (Warner Chappell Music), please contact <a href="mailto:filmtvlicensing@warnerchappell.com" class="site-link">filmtvlicensing@warnerchappell.com</a>.</p>
                     
@@ -469,11 +469,35 @@
     <!-- External Scripts -->
     <script src="js/lib/js-yaml.min.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/scroll-settings.js"></script>
     <script src="js/url-handler.js"></script>
-    <script src="js/collapsible.js"></script>
     <script src="js/table-renderer.js"></script>
     <script src="js/table-pagination.js"></script>
     <script src="js/search-handler.js"></script>
+    <script src="js/event-debug.js"></script>
+    
+    <!-- Debug Script -->
+    <script>
+        // Add specific debug event listener for Elvis section
+        document.addEventListener('DOMContentLoaded', function() {
+            const elvisHeading = document.getElementById('elvis-heading');
+            if (elvisHeading) {
+                // This is a capturing phase listener that runs before the regular click handler
+                elvisHeading.addEventListener('click', function(e) {
+                    console.log('[INLINE DEBUG] Elvis heading clicked via addEventListener');
+                    console.log('Current aria-expanded:', this.getAttribute('aria-expanded'));
+                    
+                    // Check if stopPropagation is affecting events
+                    setTimeout(() => {
+                        console.log('[INLINE DEBUG] Elvis section after click timeout check:', {
+                            expanded: elvisHeading.getAttribute('aria-expanded'),
+                            contentVisible: window.getComputedStyle(document.getElementById('elvis-content')).visibility
+                        });
+                    }, 500);
+                }, true); // true for capture phase - runs before the regular event handler
+            }
+        });
+    </script>
     
     <!-- Templates -->
     <template id="rows-per-page-template">

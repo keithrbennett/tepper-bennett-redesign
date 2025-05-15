@@ -1,7 +1,26 @@
 /**
  * Collapsible panels management for Tepper & Bennett - SIMPLIFIED VERSION
  */
+
+// Create a namespace for Tepper & Bennett functionality
+window.tb = window.tb || {};
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Debug flags
+    const DEBUG = window.tbConfig?.debug?.enabled || false;
+    const DEBUG_SECTIONS = window.tbConfig?.debug?.logSectionEvents || false;
+    const DEBUG_ELVIS = window.tbConfig?.debug?.logElvisEvents || false;
+    
+    // Debug log function
+    function debugLog(prefix, message, ...args) {
+        if (!DEBUG) return;
+        
+        if (prefix === 'ELVIS' && !DEBUG_ELVIS) return;
+        if (prefix === 'SECTION' && !DEBUG_SECTIONS) return;
+        
+        console.log(`[${prefix}] ${message}`, ...args);
+    }
+    
     // Basic elements
     const toggles = document.querySelectorAll('.collapsible-toggle');
     const expandAllButton = document.getElementById('expand-all');
@@ -52,22 +71,25 @@ document.addEventListener('DOMContentLoaded', function() {
         collapseAllButton.disabled = allCollapsed;
     }
     
-    // Simple scroll to element with offset
+    // Simple scroll to element with offset using centralized settings
     function scrollToElement(element) {
-        // Add a small delay to allow CSS transitions to complete
-        setTimeout(() => {
-            // Use scrollIntoView with a small offset
-            element.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start'
-            });
-            
-            // Add a small offset to show the heading properly
-            window.scrollBy({
-                top: -10, 
-                behavior: 'smooth'
-            });
-        }, 10);
+        // Use ScrollUtils if available, otherwise fallback to direct implementation
+        if (typeof ScrollUtils !== 'undefined' && ScrollUtils.scrollToElement) {
+            ScrollUtils.scrollToElement(element);
+            return;
+        }
+
+        console.log(`scroll fallback for ${element}`)
+        // Fallback implementation
+        element.scrollIntoView({ 
+            behavior: 'auto', 
+            block: 'start'
+        });
+        
+        window.scrollBy({
+            top: -10, 
+            behavior: 'auto'
+        });
     }
     
     // Update URL hash without causing scroll
@@ -91,59 +113,191 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Helper function to expand a section (used by direct links)
-    function expandSection(sectionId) {
-        const targetToggle = document.getElementById(`${sectionId}-heading`);
-        if (targetToggle) {
-            targetToggle.setAttribute('aria-expanded', 'true');
-            targetToggle.querySelector('.toggle-icon').textContent = '−';
-            const content = targetToggle.nextElementSibling;
-            content.classList.add('open');
+    // Core function to open or close a section
+    // This is the central function that handles all toggle behavior
+    function toggleSection(toggle, forcedState) {
+        // DEBUGGING: Log Elvis-specific behavior
+        const isElvis = toggle.id === 'elvis-heading';
+        
+        if (isElvis && DEBUG_ELVIS) {
+            debugLog('ELVIS', 'Toggle click detected on Elvis section');
+            debugLog('ELVIS', 'Initial toggle state:', {
+                id: toggle.id,
+                expanded: toggle.getAttribute('aria-expanded'),
+                nextElement: toggle.nextElementSibling ? toggle.nextElementSibling.id : 'none'
+            });
+        }
+        
+        // Get section information
+        const headingId = toggle.id;
+        if (!headingId || !headingId.endsWith('-heading')) {
+            if (isElvis && DEBUG_ELVIS) debugLog('ELVIS', 'Invalid heading ID:', headingId);
+            return false;
+        }
+        
+        const sectionId = headingId.replace('-heading', '');
+        const content = toggle.nextElementSibling;
+        if (!content) {
+            if (isElvis && DEBUG_ELVIS) debugLog('ELVIS', 'No content element found after heading');
+            return false;
+        }
+        
+        if (isElvis && DEBUG_ELVIS) {
+            debugLog('ELVIS', 'Content element:', {
+                id: content.id,
+                class: content.className,
+                isVisible: window.getComputedStyle(content).visibility,
+                display: window.getComputedStyle(content).display,
+                maxHeight: window.getComputedStyle(content).maxHeight,
+                opacity: window.getComputedStyle(content).opacity
+            });
+        }
+        
+        // Determine if we're opening or closing
+        const isCurrentlyExpanded = toggle.getAttribute('aria-expanded') === 'true';
+        const willBeExpanded = (forcedState !== undefined) ? forcedState : !isCurrentlyExpanded;
+        
+        if (isElvis && DEBUG_ELVIS) {
+            debugLog('ELVIS', 'Toggle operation:', {
+                isCurrentlyExpanded,
+                willBeExpanded,
+                forcedState
+            });
+        }
+        
+        // Update toggle UI
+        toggle.setAttribute('aria-expanded', willBeExpanded);
+        toggle.querySelector('.toggle-icon').textContent = willBeExpanded ? '−' : '+';
+        
+        // Update content visibility
+        content.classList.toggle('open', willBeExpanded);
+        
+        // Apply direct style changes for immediate effect
+        if (willBeExpanded) {
+            // Opening the section
+            content.style.visibility = 'visible';
+            content.style.maxHeight = 'none';
+            content.style.opacity = '1';
+            content.style.display = 'block';
             content.classList.remove('section-initially-closed');
             removeFromClosedSections(sectionId);
             
-            // Scroll to the heading - simple approach
-            scrollToElement(targetToggle);
+            // Update URL to reflect the open section
+            updateUrlHash(sectionId);
             
-            updateButtonStates();
-            return true;
+            if (isElvis && DEBUG_ELVIS) {
+                debugLog('ELVIS', 'Elvis section opened, styles applied:', {
+                    visibility: content.style.visibility,
+                    maxHeight: content.style.maxHeight,
+                    opacity: content.style.opacity,
+                    display: content.style.display,
+                    classes: content.className
+                });
+            }
+        } else {
+            // Closing the section
+            content.style.maxHeight = '0';
+            content.style.opacity = '0';
+            addToClosedSections(sectionId);
+            
+            // If we're closing the section that's in the URL, remove the hash
+            if (window.location.hash === `#${sectionId}`) {
+                updateUrlHash('');
+            }
+            
+            if (isElvis && DEBUG_ELVIS) {
+                debugLog('ELVIS', 'Elvis section closed, styles applied:', {
+                    maxHeight: content.style.maxHeight,
+                    opacity: content.style.opacity,
+                });
+                
+                debugLog('ELVIS', 'Will set visibility:hidden after transition');
+            }
+            
+            // Delay hiding to allow animation
+            setTimeout(() => {
+                if (!content.classList.contains('open')) {
+                    content.style.visibility = 'hidden';
+                    
+                    if (isElvis && DEBUG_ELVIS) {
+                        debugLog('ELVIS', 'Visibility set to hidden after timeout');
+                    }
+                }
+            }, 300); // Match the CSS transition duration
+        }
+        
+        // Check for Elvis-specific behavior after the operation
+        if (isElvis && DEBUG_ELVIS) {
+            setTimeout(() => {
+                debugLog('ELVIS', 'Elvis section state after changes:', {
+                    toggleExpanded: toggle.getAttribute('aria-expanded'),
+                    contentOpen: content.classList.contains('open'),
+                    computedStyle: {
+                        visibility: window.getComputedStyle(content).visibility,
+                        display: window.getComputedStyle(content).display,
+                        maxHeight: window.getComputedStyle(content).maxHeight,
+                        opacity: window.getComputedStyle(content).opacity
+                    }
+                });
+            }, 350); // Check after the transition should be complete
+        }
+        
+        // Update expand/collapse all buttons
+        updateButtonStates();
+        
+        return true;
+    }
+    
+    // Expose the toggle function globally so it can be used by other scripts
+    window.tb.toggleSection = toggleSection;
+    
+    // Helper function to expand a section (used by direct links)
+    function expandSection(sectionId) {
+        // DEBUGGING: Log Elvis-specific behavior
+        const isElvis = sectionId === 'elvis' || sectionId === 'elvis-heading';
+        if (isElvis && DEBUG_ELVIS) {
+            debugLog('ELVIS', 'expandSection called for Elvis:', sectionId);
+        }
+        
+        // Handle both formats of IDs (with and without -heading suffix)
+        let headingId = sectionId;
+        if (!headingId.endsWith('-heading')) {
+            // If the ID doesn't end with -heading, append it
+            headingId = `${sectionId}-heading`;
+        } else {
+            // If it already has -heading, extract the base section ID
+            sectionId = headingId.replace('-heading', '');
+        }
+        
+        const targetToggle = document.getElementById(headingId);
+        if (targetToggle) {
+            if (isElvis && DEBUG_ELVIS) {
+                debugLog('ELVIS', 'Found target toggle element:', targetToggle.id);
+            }
+            
+            // Use the central toggle function to open the section
+            const success = toggleSection(targetToggle, true);
+            
+            if (success) {
+                // Scroll to the heading after opening
+                scrollToElement(targetToggle);
+                return true;
+            }
+        } else if (isElvis && DEBUG_ELVIS) {
+            debugLog('ELVIS', 'Could not find toggle element for ID:', headingId);
         }
         return false;
     }
     
+    // Also expose the expandSection function globally
+    window.tb.expandSection = expandSection;
+    
     // Setup each toggle
     toggles.forEach(toggle => {
-        // Extract section ID
-        const headingId = toggle.id;
-        if (!headingId || !headingId.endsWith('-heading')) return;
-
-        const sectionId = headingId.replace('-heading', '');
-        const content = toggle.nextElementSibling;
-
         // Toggle on click
         toggle.addEventListener('click', function() {
-            const isExpanded = this.getAttribute('aria-expanded') === 'true';
-            const willBeExpanded = !isExpanded;
-
-            // Update UI
-            this.setAttribute('aria-expanded', willBeExpanded);
-            this.querySelector('.toggle-icon').textContent = willBeExpanded ? '−' : '+';
-            content.classList.toggle('open', willBeExpanded);
-            
-            if (willBeExpanded) {
-                content.classList.remove('section-initially-closed');
-                removeFromClosedSections(sectionId);
-                updateUrlHash(sectionId);
-            } else {
-                addToClosedSections(sectionId);
-                
-                // If we're closing the section that's in the URL, remove the hash
-                if (window.location.hash === `#${sectionId}`) {
-                    updateUrlHash('');
-                }
-            }
-
-            updateButtonStates();
+            // Use the central toggle function
+            toggleSection(this);
         });
         
         // Keyboard support
@@ -160,23 +314,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (this.disabled) return;
 
         toggles.forEach(toggle => {
-            const headingId = toggle.id;
-            if (!headingId || !headingId.endsWith('-heading')) return;
-
-            const sectionId = headingId.replace('-heading', '');
-            const content = toggle.nextElementSibling;
-
-            toggle.setAttribute('aria-expanded', 'true');
-            toggle.querySelector('.toggle-icon').textContent = '−';
-            content.classList.add('open');
-            content.classList.remove('section-initially-closed');
-
-            removeFromClosedSections(sectionId);
+            // Use the central toggle function to open all sections
+            toggleSection(toggle, true);
         });
 
         // Clear URL hash when all sections are expanded
         updateUrlHash('');
-        updateButtonStates();
     });
     
     // Collapse All button
@@ -184,32 +327,130 @@ document.addEventListener('DOMContentLoaded', function() {
         if (this.disabled) return;
 
         toggles.forEach(toggle => {
-            const headingId = toggle.id;
-            if (!headingId || !headingId.endsWith('-heading')) return;
-
-            const sectionId = headingId.replace('-heading', '');
-            const content = toggle.nextElementSibling;
-
-            toggle.setAttribute('aria-expanded', 'false');
-            toggle.querySelector('.toggle-icon').textContent = '+';
-            content.classList.remove('open');
-
-            addToClosedSections(sectionId);
+            // Use the central toggle function to close all sections
+            toggleSection(toggle, false);
         });
 
         // Clear URL hash when all sections are collapsed
         updateUrlHash('');
-        updateButtonStates();
     });
     
     // Check URL hash on initial load
     if (window.location.hash) {
         const targetId = window.location.hash.substring(1);
         if (targetId) {
+            // Log if we're targeting Elvis section
+            if ((targetId === 'elvis' || targetId === 'elvis-heading') && DEBUG_ELVIS) {
+                debugLog('ELVIS', 'Initial URL hash targeting Elvis section:', targetId);
+            }
             expandSection(targetId);
         }
     }
     
     // Initialize button states
     updateButtonStates();
+    
+    // Elvis Special Fix
+    // This fix is specifically for the Elvis section which may have issues with event handling
+    /*
+    setTimeout(() => {
+        const elvisHeading = document.getElementById('elvis-heading');
+        const elvisContent = document.getElementById('elvis-content');
+        
+        if (elvisHeading && elvisContent) {
+            debugLog('ELVIS', 'Adding special handling for Elvis section');
+            
+            // Remove any existing click handlers by cloning the element
+            const elvisHeadingClone = elvisHeading.cloneNode(true);
+            elvisHeading.parentNode.replaceChild(elvisHeadingClone, elvisHeading);
+            
+            // Add a fresh click handler
+            elvisHeadingClone.addEventListener('click', function(e) {
+                debugLog('ELVIS', 'Handling Elvis click via special handler');
+                e.stopPropagation(); // Prevent other handlers from running
+                
+                // Get current state
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                
+                // Toggle state
+                this.setAttribute('aria-expanded', !isExpanded);
+                this.querySelector('.toggle-icon').textContent = !isExpanded ? '−' : '+';
+                
+                // Toggle content
+                if (!isExpanded) {
+                    // Opening
+                    elvisContent.classList.add('open');
+                    elvisContent.style.visibility = 'visible';
+                    elvisContent.style.maxHeight = 'none';
+                    elvisContent.style.opacity = '1';
+                    elvisContent.style.display = 'block';
+                    
+                    // If we're keeping track of closed sections, update that
+                    try {
+                        const closedSectionsSet = getClosedSections();
+                        closedSectionsSet.delete('elvis');
+                        saveClosedSections(closedSectionsSet);
+                    } catch (e) {
+                        console.error('Error updating closed sections:', e);
+                    }
+                    
+                    // Update URL to reflect the open section
+                    if (typeof updateUrlHash === 'function') {
+                        updateUrlHash('elvis');
+                    } else if (history.pushState) {
+                        history.pushState(null, null, '#elvis');
+                    }
+                } else {
+                    // Closing
+                    elvisContent.classList.remove('open');
+                    elvisContent.style.maxHeight = '0';
+                    elvisContent.style.opacity = '0';
+                    
+                    // If we're keeping track of closed sections, update that
+                    try {
+                        const closedSectionsSet = getClosedSections();
+                        closedSectionsSet.add('elvis');
+                        saveClosedSections(closedSectionsSet);
+                    } catch (e) {
+                        console.error('Error updating closed sections:', e);
+                    }
+                    
+                    // Clear URL hash if this section is in the hash
+                    if (window.location.hash === '#elvis') {
+                        if (typeof updateUrlHash === 'function') {
+                            updateUrlHash('');
+                        } else if (history.pushState) {
+                            history.pushState(null, null, window.location.pathname);
+                        }
+                    }
+                    
+                    // Delay hiding to allow animation
+                    setTimeout(() => {
+                        if (!elvisContent.classList.contains('open')) {
+                            elvisContent.style.visibility = 'hidden';
+                            debugLog('ELVIS', 'Visibility set to hidden after timeout');
+                        }
+                    }, 300);
+                }
+                
+                // Update button states if available
+                if (typeof updateButtonStates === 'function') {
+                    updateButtonStates();
+                }
+                
+                debugLog('ELVIS', 'Elvis section toggled to:', !isExpanded ? 'open' : 'closed');
+            });
+            
+            // Also handle keyboard events
+            elvisHeadingClone.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+            
+            debugLog('ELVIS', 'Special handling added for Elvis section');
+        }
+    }, 500); // Delay to ensure all other scripts have initialized
+    */
 });

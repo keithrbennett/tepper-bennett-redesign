@@ -4,14 +4,17 @@
 .collapsible-content {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-out;
+  transition: all 0.3s ease-out;
   opacity: 0;
+  visibility: hidden; /* Explicitly hide when collapsed */
 }
 
 .collapsible-content.open {
-  max-height: 10000px;
+  max-height: none; /* Allow content to expand to natural height */
   opacity: 1;
-  padding-top: 1.5rem; /* Ajout d'un espace au dessus du contenu */
+  visibility: visible; /* Explicitly show when expanded */
+  padding-top: 1.5rem; /* Added space above the content */
+  display: block; /* Ensure it's displayed */
 }
 
 .collapsible-toggle {
@@ -27,7 +30,7 @@
 }
 
 .collapsible-toggle[aria-expanded="true"] {
-  margin-bottom: 0.5rem; /* Ajout d'une marge en bas du titre quand ouvert */
+  margin-bottom: 0.5rem; /* Added bottom margin to the title when open */
   color: #1A305E; /* Keep navy color */
 }
 
@@ -56,7 +59,7 @@
   padding-bottom: 20px;
   padding-left: 2rem;
   padding-right: 2rem;
-  scroll-margin-top: 0; /* Permet au titre précédent de défiler complètement */
+  scroll-margin-top: 0; /* Allows previous title to scroll completely */
   overflow: visible;
 }
 
@@ -320,7 +323,7 @@
 
 /* Reduce padding for all open content areas */
 .collapsible-content.open > div {
-  padding-top: 0.5rem; /* Ajout d'espace en haut à l'intérieur du contenu */
+  padding-top: 0.5rem; /* Added space at the top of content */
   padding-bottom: 0;
 }
 
@@ -370,7 +373,7 @@
   position: static;
   top: auto;
   margin-bottom: 0;
-  padding-top: 1.5rem; /* Ajout d'un espace au dessus du contenu des chansons */
+  padding-top: 1.5rem; /* Added space above the songs content */
 }
 
 #songs-heading {
@@ -378,10 +381,10 @@
 }
 
 #songs-heading[aria-expanded="true"] {
-  margin-bottom: 1rem; /* Augmenté pour plus d'espace */
+  margin-bottom: 1rem; /* Increased for more space */
 }
 
-/* Supprimer les optimisations de position pour le conteneur de recherche */
+/* Remove position optimizations for the search container */
 #songs-content.open .search-container {
   position: static;
   top: auto;
@@ -390,13 +393,13 @@
   padding-top: 0;
 }
 
-/* Supprimer les optimisations de position pour le tableau */
+/* Remove position optimizations for the table */
 #songs-content.open .table-container {
   margin-top: 0;
   padding-top: 0;
 }
 
-/* Supprimer les optimisations d'espace au bas */
+/* Remove space optimizations at the bottom */
 #songs-content.open .desktop-only {
   margin-bottom: 0;
   padding-bottom: 0;
@@ -408,28 +411,28 @@
   padding-bottom: 0.5rem;
 }
 
-/* Style pour les sections quand elles sont ouvertes */
+/* Style for sections when they are open */
 .collapsible-toggle[aria-expanded="true"] {
   position: sticky;
   top: 0;
   z-index: 20;
-  margin-bottom: 1rem; /* Augmenté de 0 à 1rem pour plus d'espace */
+  margin-bottom: 1rem; /* Increased from 0 to 1rem for more space */
   background-color: inherit;
   padding-top: 10px;
   padding-bottom: 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Styles pour le contenu ouvert */
+/* Styles for open content sections */
 .collapsible-content.open {
   position: relative;
   z-index: 5;
-  min-height: 100vh; /* Assure que le contenu est suffisamment grand pour permettre le défilement */
-  padding-bottom: 20vh; /* Espace en bas pour permettre le défilement */
-  padding-top: 0.75rem; /* Espace au dessus du contenu */
+  /* Removed min-height: 100vh that was forcing sections to take full viewport height */
+  padding-bottom: 2rem; /* Reduced from 20vh to a reasonable fixed value */
+  padding-top: 0.75rem; /* Space above content */
 }
 
-/* Style background pour les sections */
+/* Background style for sections */
 .section-gray {
   background-color: #f3f4f6;
 }
@@ -438,7 +441,7 @@
   background-color: white;
 }
 
-/* Améliore la gestion des sections lors du défilement */
+/* Improves section handling during scrolling */
 .section-container {
   position: relative;
   width: 100%;
@@ -446,11 +449,11 @@
   padding-bottom: 20px;
   padding-left: 2rem;
   padding-right: 2rem;
-  scroll-margin-top: 0; /* Permet au titre précédent de défiler complètement */
+  scroll-margin-top: 0; /* Allows previous title to scroll completely */
   overflow: visible;
 }
 
-/* Assure que les titres collants ont le bon arrière-plan */
+/* Ensures sticky titles have the correct background */
 .section-gray .collapsible-toggle[aria-expanded="true"] {
   background-color: #f3f4f6;
 }
@@ -459,12 +462,12 @@
   background-color: white;
 }
 
-/* Assure un bord distinct entre les sections adjacentes */
+/* Ensures a distinct border between adjacent sections */
 .section-container + .section-container .collapsible-toggle[aria-expanded="true"] {
   border-top: 1px solid rgba(0,0,0,0.1);
 }
 
-/* Transition plus douce pour les titres collants */
+/* Smoother transition for sticky titles */
 .collapsible-toggle {
   transition: background-color 0.2s, box-shadow 0.2s, position 0s;
 } 
