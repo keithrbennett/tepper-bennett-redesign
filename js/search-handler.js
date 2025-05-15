@@ -36,9 +36,7 @@ function initSearch(songData) {
       }
     });
     
-    // Optional: real-time search with debounce
-    // Uncomment to enable real-time search
-    /*
+    // Real-time search with debounce
     let debounceTimer;
     searchInput.addEventListener('input', function() {
       clearTimeout(debounceTimer);
@@ -46,7 +44,6 @@ function initSearch(songData) {
         performSearch();
       }, 300); // Wait 300ms after typing stops
     });
-    */
   } else {
     console.warn('Search elements not found in the DOM');
   }
