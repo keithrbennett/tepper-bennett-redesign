@@ -17,10 +17,6 @@
   
   log('Initializing URL handler');
   
-  // Store page load state for refresh detection
-  const isRefresh = sessionStorage.getItem('pageLoaded') === 'true';
-  sessionStorage.setItem('pageLoaded', 'true');
-  
   // Helper function to expand a section and scroll to it
   function expandAndScrollToSection(sectionId, shouldScroll = true) {
     console.log('expandAndScrollToSection called with sectionId:', sectionId);
