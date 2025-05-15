@@ -7,12 +7,60 @@
 const songsTable = document.getElementById('songs-table');
 const mobileList = document.getElementById('mobile-songs-list');
 
+// Current sort state
+let currentSortField = 'title';
+let currentSortDirection = 'asc';
+
+/**
+ * Sort songs by the specified field and direction
+ * @param {Array} songs - Array of song objects
+ * @param {string} field - Field to sort by (title, performers, administrator)
+ * @param {string} direction - Sort direction (asc, desc)
+ * @returns {Array} Sorted array of songs
+ */
+function sortSongs(songs, field = currentSortField, direction = currentSortDirection) {
+  console.log(`Sorting songs by ${field} in ${direction} order`);
+  
+  // Update current sort state
+  currentSortField = field;
+  currentSortDirection = direction;
+  
+  // Create a copy of the array to avoid modifying the original
+  const sortedSongs = [...songs];
+  
+  // Sort the array
+  sortedSongs.sort((a, b) => {
+    let valueA = String(a[field] || '').toLowerCase();
+    let valueB = String(b[field] || '').toLowerCase();
+    
+    // For title field, remove leading "A ", "An ", "The " for sorting
+    if (field === 'title') {
+      valueA = valueA.replace(/^(the|a|an)\s+/i, '');
+      valueB = valueB.replace(/^(the|a|an)\s+/i, '');
+    }
+    
+    // Compare the values
+    if (valueA < valueB) {
+      return direction === 'asc' ? -1 : 1;
+    }
+    if (valueA > valueB) {
+      return direction === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
+  
+  return sortedSongs;
+}
+
 /**
  * Render the table with the provided data
  * @param {Array} songs - Array of song objects
  */
 function renderTable(songs) {
   console.log("Song count: " + songs.length);
+  
+  // Sort the songs by title (default)
+  const sortedSongs = sortSongs(songs);
   
   // Get or create the tbody element
   let tbody = songsTable.querySelector('tbody');
@@ -29,11 +77,11 @@ function renderTable(songs) {
   
   // Calculate pagination
   const start = currentPage * rowsPerPage;
-  const end = Math.min(start + rowsPerPage, songs.length);
-  const pageData = songs.slice(start, end);
+  const end = Math.min(start + rowsPerPage, sortedSongs.length);
+  const pageData = sortedSongs.slice(start, end);
   
   // Update pagination info and buttons
-  window.tablePagination.updateDesktopPagination(songs, start, end);
+  window.tablePagination.updateDesktopPagination(sortedSongs, start, end);
   
   // Add each song to the table
   pageData.forEach(song => {
@@ -62,6 +110,9 @@ function renderTable(songs) {
 function renderMobileList(songs) {
   if (!mobileList) return;
   
+  // Sort the songs by title (default)
+  const sortedSongs = sortSongs(songs);
+  
   mobileList.innerHTML = '';
   
   // Get pagination info from the pagination module
@@ -70,19 +121,19 @@ function renderMobileList(songs) {
   
   // Calculate pagination
   const start = currentPage * rowsPerPage;
-  const end = Math.min(start + rowsPerPage, songs.length);
-  const pageData = songs.slice(start, end);
+  const end = Math.min(start + rowsPerPage, sortedSongs.length);
+  const pageData = sortedSongs.slice(start, end);
   
   // Add pagination info
-  if (songs.length > rowsPerPage) {
+  if (sortedSongs.length > rowsPerPage) {
     const paginationInfo = document.createElement('li');
     paginationInfo.className = 'song-list-pagination-info text-center text-sm text-gray-600 mb-2';
-    paginationInfo.textContent = `Showing ${start + 1}-${end} of ${songs.length} songs`;
+    paginationInfo.textContent = `Showing ${start + 1}-${end} of ${sortedSongs.length} songs`;
     mobileList.appendChild(paginationInfo);
   }
   
   // Update pagination buttons
-  window.tablePagination.updateMobilePagination(songs, start, end);
+  window.tablePagination.updateMobilePagination(sortedSongs, start, end);
   
   // Render each song in the mobile list
   pageData.forEach(song => {
@@ -150,4 +201,5 @@ function showError(message) {
 // Export functions to global scope
 window.renderTable = renderTable;
 window.renderMobileList = renderMobileList;
-window.showTableError = showError; 
+window.showTableError = showError;
+window.sortSongs = sortSongs; 
