@@ -3,9 +3,16 @@
  * Manages pagination controls for song tables
  */
 
-// Pagination configuration
-const DESKTOP_ROWS_PER_PAGE = 25;
-const MOBILE_ROWS_PER_PAGE = 10;
+// Pagination configuration - get from global config or use defaults
+let DESKTOP_ROWS_PER_PAGE = (window.tbConfig && window.tbConfig.pagination && window.tbConfig.pagination.desktop) 
+  ? window.tbConfig.pagination.desktop.defaultRowsPerPage 
+  : 15;
+  
+const MOBILE_ROWS_PER_PAGE = (window.tbConfig && window.tbConfig.pagination && window.tbConfig.pagination.mobile) 
+  ? window.tbConfig.pagination.mobile.defaultRowsPerPage 
+  : 10;
+
+console.log('Table pagination initialized with:', { desktop: DESKTOP_ROWS_PER_PAGE, mobile: MOBILE_ROWS_PER_PAGE });
 
 // Current page state
 let currentDesktopPage = 0;
@@ -25,6 +32,77 @@ function initPagination(songData) {
   // Initialize pagination elements
   initDesktopPagination();
   initMobilePagination();
+  
+  // Initialize rows per page control
+  initRowsPerPageControl();
+}
+
+/**
+ * Initialize rows per page dropdown
+ */
+function initRowsPerPageControl() {
+  console.log('Initializing rows per page controls, default value:', DESKTOP_ROWS_PER_PAGE);
+  
+  // Get all rows-per-page selectors using class
+  const selectors = Array.from(document.querySelectorAll('.rows-per-page-select'));
+  
+  // If we have valid selectors, set them up
+  if (selectors.length > 0) {
+    console.log(`Found ${selectors.length} rows-per-page selectors`);
+    
+    // Get the default value from config
+    const defaultValue = (window.tbConfig && window.tbConfig.pagination && window.tbConfig.pagination.desktop) 
+      ? window.tbConfig.pagination.desktop.defaultRowsPerPage 
+      : DESKTOP_ROWS_PER_PAGE;
+    
+    // Set initial values for all selectors
+    selectors.forEach(selector => {
+      console.log('Setting selector value to:', defaultValue);
+      selector.value = defaultValue.toString();
+    });
+    
+    // Add change event listener to each selector
+    selectors.forEach(selector => {
+      selector.addEventListener('change', function() {
+        const newRowsPerPage = parseInt(this.value, 10);
+        console.log('Rows per page changed to:', newRowsPerPage);
+        
+        // Update all other selectors to match
+        selectors.forEach(otherSelector => {
+          if (otherSelector !== this) {
+            otherSelector.value = newRowsPerPage.toString();
+          }
+        });
+        
+        // Change the rows per page
+        changeRowsPerPage(newRowsPerPage);
+      });
+    });
+  } else {
+    console.warn('No rows-per-page selectors found');
+  }
+}
+
+/**
+ * Change the number of rows per page
+ * @param {number} newRowsPerPage - The new number of rows per page
+ */
+function changeRowsPerPage(newRowsPerPage) {
+  if (!isNaN(newRowsPerPage) && newRowsPerPage > 0) {
+    // Calculate current position to maintain approximate scroll position
+    const currentPosition = currentDesktopPage * DESKTOP_ROWS_PER_PAGE;
+    
+    // Update rows per page
+    DESKTOP_ROWS_PER_PAGE = newRowsPerPage;
+    
+    // Calculate new page based on current position
+    currentDesktopPage = Math.floor(currentPosition / DESKTOP_ROWS_PER_PAGE);
+    
+    // Re-render the table with new pagination
+    if (filteredSongData && window.renderTable) {
+      window.renderTable(filteredSongData);
+    }
+  }
 }
 
 /**
@@ -272,5 +350,7 @@ window.tablePagination = {
   getCurrentDesktopPage,
   getDesktopRowsPerPage,
   getCurrentMobilePage,
-  getMobileRowsPerPage
+  getMobileRowsPerPage,
+  initRowsPerPageControl,
+  changeRowsPerPage
 }; 

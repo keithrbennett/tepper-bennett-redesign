@@ -470,35 +470,68 @@
 
     <!-- External Scripts -->
     <script src="js/lib/js-yaml.min.js"></script>
+    <script src="js/config.js"></script>
     <script src="js/url-handler.js"></script>
     <script src="js/collapsible.js"></script>
     <script src="js/table-renderer.js"></script>
     <script src="js/table-pagination.js"></script>
     <script src="js/search-handler.js"></script>
-    <script src="js/data-loader.js"></script>
+    
+    <!-- Templates -->
+    <template id="rows-per-page-template">
+        <div class="rows-per-page-control">
+            <label for="rows-per-page">Rows per page:</label>
+            <select class="rows-per-page-select form-select ml-2 p-1 border border-gray-300 rounded">
+                <!-- Options will be populated dynamically from config -->
+            </select>
+        </div>
+    </template>
+    
     <script>
-        // Verify js-yaml loading
+        // Initialize rows per page controls from template
         document.addEventListener('DOMContentLoaded', function() {
-            if (!window.jsyaml) {
-                console.error('CRITICAL ERROR: js-yaml is not loaded correctly!');
-                // Display error in song tables
-                const songsTable = document.getElementById('songs-table');
-                if (songsTable && songsTable.querySelector('tbody')) {
-                    songsTable.querySelector('tbody').innerHTML = `
-                        <tr>
-                            <td colspan="4" class="py-4 text-center text-red-600">
-                                <div>
-                                    <p class="font-bold">Error loading YAML library</p>
-                                    <p class="text-sm">Please check console for details</p>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
+            const template = document.getElementById('rows-per-page-template');
+            if (template) {
+                // Get options from config
+                const options = window.tbConfig?.pagination?.desktop?.rowsPerPageOptions || [10, 15, 20, 25, 40, 100];
+                const defaultValue = window.tbConfig?.pagination?.desktop?.defaultRowsPerPage || 15;
+                
+                // Create option elements
+                const createOptions = (select) => {
+                    options.forEach(value => {
+                        const option = document.createElement('option');
+                        option.value = value;
+                        option.textContent = value;
+                        if (value === defaultValue) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                };
+                
+                // Upper pagination control
+                const upperPageInfo = document.querySelector('#upper-pagination .page-info');
+                if (upperPageInfo) {
+                    const upperControl = template.content.cloneNode(true);
+                    const select = upperControl.querySelector('select');
+                    select.id = 'rows-per-page';
+                    createOptions(select);
+                    upperPageInfo.appendChild(upperControl);
                 }
-            } else {
-                console.log('js-yaml loaded successfully, version:', window.jsyaml.version);
+                
+                // Lower pagination control
+                const lowerPageInfo = document.querySelector('#lower-pagination .page-info');
+                if (lowerPageInfo) {
+                    const lowerControl = template.content.cloneNode(true);
+                    const select = lowerControl.querySelector('select');
+                    select.id = 'lower-rows-per-page';
+                    createOptions(select);
+                    lowerPageInfo.appendChild(lowerControl);
+                }
             }
         });
     </script>
+    
+    <script src="js/data-loader.js"></script>
 </body>
 </html> 

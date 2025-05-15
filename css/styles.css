@@ -261,4 +261,28 @@
 .scroll-to-top:hover {
   opacity: 1;
   background-color: #B8860B;
+}
+
+.rows-per-page-control {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.rows-per-page-control label {
+  margin-right: 0.5rem;
+}
+
+.rows-per-page-control select {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.page-info {
+  display: flex;
+  flex-direction: column;
 } 
