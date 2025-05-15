@@ -1,6 +1,6 @@
 /**
  * URL handler for Tepper & Bennett
- * Manages URL hash behavior
+ * Manages URL hash behavior and scroll functionality
  */
 
 // Initialize scroll handler (IIFE to avoid global namespace pollution)
@@ -63,9 +63,56 @@
     return true;
   }
   
+  // Setup scroll-to-top button functionality
+  function setupScrollToTop() {
+    const scrollToTopButton = document.getElementById('scroll-to-top');
+    if (!scrollToTopButton) return;
+    
+    // Function to toggle button visibility
+    function toggleScrollButton() {
+      // Show button when scrolled down more than 300px
+      if (window.pageYOffset > 300) {
+        scrollToTopButton.classList.add('visible');
+      } else {
+        scrollToTopButton.classList.remove('visible');
+      }
+    }
+    
+    // Scroll to top with smooth behavior
+    scrollToTopButton.addEventListener('click', function() {
+      // First clear any hash in the URL to maintain clean state
+      if (window.location.hash && history.pushState) {
+        history.pushState(null, null, window.location.pathname + window.location.search);
+      }
+      
+      // Scroll to top with smooth behavior
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // Add scroll event listener with throttling for better performance
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+      if (!scrollTimeout) {
+        scrollTimeout = setTimeout(function() {
+          toggleScrollButton();
+          scrollTimeout = null;
+        }, 100);
+      }
+    });
+    
+    // Initial check
+    toggleScrollButton();
+  }
+  
   // Handle hash links and section expansion
   document.addEventListener('DOMContentLoaded', function() {
     log('DOMContentLoaded event fired');
+    
+    // Setup scroll-to-top button
+    setupScrollToTop();
     
     // Handle hash in URL (expand sections or navigate)
     if (window.location.hash) {
