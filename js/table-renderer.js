@@ -123,7 +123,7 @@ function renderTable(songlist) {
   // First page button
   const firstButton = document.createElement('button');
   firstButton.innerHTML = '&laquo;';
-  firstButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded';
+  firstButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 rounded';
   firstButton.addEventListener('click', () => {
     if (currentPage !== 0) {
       currentPage = 0;
@@ -135,7 +135,7 @@ function renderTable(songlist) {
   // Previous page button
   const prevButton = document.createElement('button');
   prevButton.innerHTML = '&lsaquo;';
-  prevButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded';
+  prevButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 rounded';
   prevButton.addEventListener('click', () => {
     if (currentPage > 0) {
       currentPage--;
@@ -163,7 +163,7 @@ function renderTable(songlist) {
     for (let i = startPage; i <= endPage; i++) {
       const pageButton = document.createElement('button');
       pageButton.textContent = i + 1;
-      pageButton.className = `pagination-button page-number ${i === currentPage ? 'bg-navy text-white' : 'bg-gray-200 hover:bg-gray-300'} px-3 py-1 rounded`;
+      pageButton.className = `pagination-button page-number ${i === currentPage ? 'bg-navy text-white' : 'bg-gray-200 hover:bg-gray-300'} rounded`;
       pageButton.addEventListener('click', () => {
         currentPage = i;
         updateTableDisplay(songlist);
@@ -177,7 +177,7 @@ function renderTable(songlist) {
   // Next page button
   const nextButton = document.createElement('button');
   nextButton.innerHTML = '&rsaquo;';
-  nextButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded';
+  nextButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 rounded';
   nextButton.addEventListener('click', () => {
     if (currentPage < totalPages - 1) {
       currentPage++;
@@ -189,7 +189,7 @@ function renderTable(songlist) {
   // Last page button
   const lastButton = document.createElement('button');
   lastButton.innerHTML = '&raquo;';
-  lastButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded';
+  lastButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 rounded';
   lastButton.addEventListener('click', () => {
     currentPage = totalPages - 1;
     updateTableDisplay(songlist);
