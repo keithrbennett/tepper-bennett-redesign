@@ -1,0 +1,169 @@
+/* Styles pour les indicateurs de tri sur les en-têtes de colonnes */
+th[data-field] .sort-indicator {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin-left: 0.25em;
+}
+
+th.sort-asc .sort-indicator::after {
+  content: '\25B2'; /* triangle haut */
+  font-size: 0.8em;
+}
+
+th.sort-desc .sort-indicator::after {
+  content: '\25BC'; /* triangle bas */
+  font-size: 0.8em;
+}
+
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pagination-button {
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-button a {
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  display: block;
+  color: #333;
+}
+
+.pagination-button.active {
+  background-color: #1A305E; /* Navy blue color */
+  color: white;
+}
+
+.pagination-button.active a {
+  color: white;
+}
+
+.pagination-button:not(.active):hover {
+  background-color: #e2e8f0;
+}
+
+.pagination-info {
+  padding: 0.5rem;
+  color: #4a5568;
+}
+
+.page-size-selector {
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.page-size-selector select {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+}
+
+.pagination-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* Mobile pagination styles */
+@media (max-width: 768px) {
+  .pagination {
+    flex-direction: column;
+  }
+  
+  .page-size-selector {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+  
+  .pagination-info {
+    margin: 0.5rem 0;
+  }
+}
+
+/* Song List Table Styles */
+#songlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+#songlist-table th {
+  position: relative;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+#songlist-table th[data-sort]:hover {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#songlist-table th[data-sort]::after {
+  content: "";
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-left: 0.5rem;
+  opacity: 0.5;
+}
+
+#songlist-table th.sort-asc::after {
+  content: "▲";
+  opacity: 1;
+}
+
+#songlist-table th.sort-desc::after {
+  content: "▼";
+  opacity: 1;
+}
+
+#songlist-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+#songlist-table tbody tr:hover {
+  background-color: rgba(26, 48, 94, 0.05);
+}
+
+#songlist-table .youtubeUrl a {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+}
+
+#songlist-table .youtubeUrl a:hover {
+  background-color: rgba(220, 38, 38, 0.1);
+  transform: scale(1.2);
+}
+
+/* Search Input Styles */
+.search {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.search:focus {
+  outline: none;
+  border-color: #1A305E;
+  box-shadow: 0 0 0 3px rgba(26, 48, 94, 0.2);
+} 
