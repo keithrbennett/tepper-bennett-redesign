@@ -422,7 +422,7 @@
                     
                     <p>For licensing songs administered by Chappell & Co., Inc. (Warner Chappell Music), please contact <a href="mailto:filmtvlicensing@warnerchappell.com" class="site-link">filmtvlicensing@warnerchappell.com</a>.</p>
                     
-                    <p>For licensing songs administered by Universal Music Publishing Group (UMPG), please visit <a href="http://www.umusicpub.com/us/license-request" class="site-link">http://www.umusicpub.com/us/license-request</a>.</p>
+                    <p>For licensing songs administered by Universal Music Publishing Group (UMPG), please visit <a href="https://www.umusicpub.com/us/license-request" class="site-link">https://www.umusicpub.com/us/license-request</a>.</p>
                     
                     <p>For other questions or comments, feel free to contact us at <a href="mailto:info@tepper-bennett.com" class="site-link">info@tepper-bennett.com</a>.</p>
                     
@@ -451,7 +451,6 @@
     <script src="js/table-renderer.js"></script>
     <script src="js/table-pagination.js"></script>
     <script src="js/search-handler.js"></script>
-    <script src="js/debug.js"></script>
     <script src="js/section-handler.js"></script>
     
     <!-- Debug Script -->
@@ -461,7 +460,7 @@
             const elvisHeading = document.getElementById('elvis-heading');
             if (elvisHeading) {
                 // This is a capturing phase listener that runs before the regular click handler
-                elvisHeading.addEventListener('click', function(e) {
+                elvisHeading.addEventListener('click', function() {
                     console.log('[INLINE DEBUG] Elvis heading clicked via addEventListener');
                     console.log('Current aria-expanded:', this.getAttribute('aria-expanded'));
                     
@@ -480,8 +479,8 @@
     <!-- Templates -->
     <template id="rows-per-page-template">
         <div class="rows-per-page-control">
-            <label for="rows-per-page">Rows per page:</label>
-            <select class="rows-per-page-select form-select ml-2 p-1 border border-gray-300 rounded">
+            <label for="rows-per-page-select">Rows per page:</label>
+            <select id="rows-per-page-select" class="rows-per-page-select form-select ml-2 p-1 border border-gray-300 rounded">
                 <!-- Options will be populated dynamically from config -->
             </select>
         </div>
@@ -509,22 +508,14 @@
                     });
                 };
                 
-                // Upper pagination control
-                const upperPageInfo = document.querySelector('#upper-pagination .page-info');
-                if (upperPageInfo) {
-                    const upperControl = template.content.cloneNode(true);
-                    const select = upperControl.querySelector('select');
-                    select.id = 'rows-per-page';
-                    createOptions(select);
-                    upperPageInfo.appendChild(upperControl);
-                }
-                
                 // Lower pagination control
                 const lowerPageInfo = document.querySelector('#lower-pagination .page-info');
                 if (lowerPageInfo) {
                     const lowerControl = template.content.cloneNode(true);
                     const select = lowerControl.querySelector('select');
-                    select.id = 'lower-rows-per-page';
+                    select.id = 'rows-per-page-select';
+                    const label = lowerControl.querySelector('label');
+                    label.setAttribute('for', 'rows-per-page-select');
                     createOptions(select);
                     lowerPageInfo.appendChild(lowerControl);
                 }

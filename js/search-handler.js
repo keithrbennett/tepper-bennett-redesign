@@ -160,9 +160,6 @@ function updateSearchIndicator(searchTerm, resultCount) {
  * @param {string} searchTerm - The search term that yielded no results
  */
 function showNoResults(searchTerm) {
-  // Get fresh DOM references
-  const searchInput = document.querySelector('#songlist-listjs-container .search');
-  
   // Show no results in desktop table
   const songlistTable = document.getElementById('songlist-table');
   if (songlistTable) {

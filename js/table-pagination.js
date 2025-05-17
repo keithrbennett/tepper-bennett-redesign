@@ -247,10 +247,8 @@ function updateDesktopPagination(songlist, start, end) {
 /**
  * Update mobile pagination buttons
  * @param {Array} songlist - Full array of songlist
- * @param {number} start - Start index
- * @param {number} end - End index
  */
-function updateMobilePagination(songlist, start, end) {
+function updateMobilePagination(songlist) {
   const prevButton = document.getElementById('mobile-prev-page');
   const nextButton = document.getElementById('mobile-next-page');
   
