@@ -5,10 +5,10 @@
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Data loader: starting');
-  
+
   // Flag to track initial page load
   window.initialLoadComplete = false;
-  
+
   // Reference to the tables
   const songlistTable = document.getElementById('songlist-table');
   const elvisTable = document.getElementById('elvis-table');
@@ -16,14 +16,14 @@ document.addEventListener('DOMContentLoaded', function() {
     console.error('Songs table not found');
     return;
   }
-  
+
   // Store data references
   let loadedSongData = null;
   let elvisSongData = null;
   window.loadedSongData = null;
   let listJsInstance = null;
   let elvisListJsInstance = null;
-  
+
   // Show loading indicator for main song list
   const tbody = songlistTable?.querySelector('tbody');
   if (tbody) {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </tr>
     `;
   }
-  
+
   // Show loading indicator for Elvis table if it exists
   const elvisTbody = elvisTable?.querySelector('tbody');
   if (elvisTbody) {
@@ -51,14 +51,14 @@ document.addEventListener('DOMContentLoaded', function() {
       </tr>
     `;
   }
-  
+
   // Check if fetch is supported
   if (!window.fetch) {
     console.error('Fetch API is not supported in this browser');
     showError('Your browser does not support modern web features required by this application. Please use a current version of Chrome, Firefox, Safari, or Edge.');
     return;
   }
-  
+
   // Utility functions (from song-utils.js)
   /**
    * Creates a mapping of song codes to organization codes
@@ -68,14 +68,14 @@ document.addEventListener('DOMContentLoaded', function() {
   function createSongOrgMap(rightsAdminSongs) {
     console.log('Creating song organization map');
     const songOrgMap = {};
-    
+
     Object.keys(rightsAdminSongs).forEach(orgCode => {
       const songCodes = rightsAdminSongs[orgCode];
       songCodes.forEach(songCode => {
         songOrgMap[songCode] = orgCode;
       });
     });
-    
+
     console.log('Song organization map created with', Object.keys(songOrgMap).length, 'entries');
     return songOrgMap;
   }
@@ -94,12 +94,12 @@ document.addEventListener('DOMContentLoaded', function() {
       const song = songsMap[play.song_code];
       // Ensure performer is always a string
       const performer = String(performersMap[play.performer_codes] || play.performer_codes || 'Unknown Performer');
-      
+
       // Get organization from the song organization map
       const orgCode = songOrgMap[play.song_code];
       // Ensure administrator is always a string
       const administrator = String(orgCode ? orgsMap[orgCode] : 'Unknown');
-      
+
       return {
         title: String(song ? song.name : play.song_code || 'Unknown Title'),
         performers: performer,
@@ -108,26 +108,26 @@ document.addEventListener('DOMContentLoaded', function() {
       };
     });
   }
-  
+
   // Simplify to use just one known path instead of trying multiple paths
   const dataPath = 'data/'; // This is the standard location relative to serving root
-  
+
   console.log('Using data path:', dataPath);
   console.log('Current location:', window.location.href);
-  
+
   // List of files to load
   const fileNames = [
     'song-plays.yml',
-    'elvis-songs.yml', 
+    'elvis-songs.yml',
     'non-elvis-songs.yml',
     'performers.yml',
     'organizations.yml',
     'rights-admin-songs.yml'
   ];
-  
+
   // Load the data
   loadSongData();
-  
+
   /**
    * Main function to load song data
    */
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log('jsyaml version:', window.jsyaml.version);
     }
     console.log('==========================');
-    
+
     // Load data using fetch
     loadData()
       .catch(error => {
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showError(`Failed to load data: ${error.message}. Please check that you're accessing this site through a web server.`);
       });
   }
-  
+
   /**
    * Load data using fetch API
    */
@@ -157,30 +157,30 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Loading data via fetch from', dataPath);
     return loadAllFiles(dataPath);
   }
-  
+
   /**
    * Load all files using the specified path
    */
   function loadAllFiles(basePath) {
     console.log(`Attempting to load files from ${basePath}`);
-    
+
     const loadPromises = fileNames.map(fileName => {
       const fullPath = basePath + fileName;
       console.log(`Loading ${fullPath}`);
-      
+
       return loadYamlFile(fullPath)
         .catch(error => {
           console.error(`Error loading ${fullPath}:`, error);
           throw new Error(`Failed to load ${fileName}: ${error.message}`);
         });
     });
-    
+
     return Promise.all(loadPromises)
       .then(([songPlays, elvisSongs, nonElvisSongs, performers, organizations, rightsAdminSongs]) => {
         if (!songPlays || !songPlays.length) {
           throw new Error('Song plays data is empty or invalid');
         }
-        
+
         console.log('All files loaded successfully:');
         console.log('- song-plays.yml:', songPlays.length, 'entries');
         console.log('- elvis-songs.yml:', elvisSongs.length, 'entries');
@@ -188,114 +188,132 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('- performers.yml:', performers.length, 'entries');
         console.log('- organizations.yml:', organizations.length, 'entries');
         console.log('- rights-admin-songs.yml:', Object.keys(rightsAdminSongs).length, 'organizations');
-        
+
         processSongData(songPlays, elvisSongs, nonElvisSongs, performers, organizations, rightsAdminSongs);
         return true;
       });
   }
-  
+
   /**
    * Process the loaded data and render the table
    */
   function processSongData(songPlays, elvisSongs, nonElvisSongs, performers, organizations, rightsAdminSongs) {
     console.log('All YAML files successfully loaded');
-    
+
     // Create maps for easier lookup
     const performersMap = {};
     performers.forEach(performer => {
       performersMap[performer.code] = performer.name;
     });
-    
+
     const orgsMap = {};
     organizations.forEach(org => {
       orgsMap[org.code] = org.name;
     });
-    
+
     // Create song organization map using the local utility function
     const songOrgMap = createSongOrgMap(rightsAdminSongs);
-    
+
     // Combine song data
     const allSonglist = [...elvisSongs, ...nonElvisSongs];
     const songlistMap = {};
     allSonglist.forEach(song => {
       songlistMap[song.code] = song;
     });
-    
+
     // Process song data using the local utility function
     const songlistData = processTableData(songPlays, songlistMap, performersMap, orgsMap, songOrgMap);
-    
+
     console.log(`Song data processed: ${songlistData.length} songs`);
-    
+
     // Filter for Elvis songs only
     const elvisSongData = songlistData.filter(song => {
       // Check if the performer is Elvis or includes Elvis (for duets)
-      return song.performers === 'Elvis Presley' || 
+      return song.performers === 'Elvis Presley' ||
              song.performers.toLowerCase().includes('elvis') ||
-             (Array.isArray(song.performers) && 
-              song.performers.some(performer => 
-                performer === 'Elvis Presley' || 
+             (Array.isArray(song.performers) &&
+              song.performers.some(performer =>
+                performer === 'Elvis Presley' ||
                 performer.toLowerCase().includes('elvis')
               ));
     });
-    
+
     console.log(`Elvis song data filtered: ${elvisSongData.length} songs`);
-    
+
     // Store the processed data for reuse
     loadedSongData = songlistData;
     window.loadedSongData = songlistData;
-    
+
     // Initialize List.js for both tables
     initializeListJs(songlistData);
     initializeElvisListJs(elvisSongData);
   }
-  
+
   /**
-   * Initialize List.js with song data
-   * @param {Array} songData - Processed song data
+   * Initializes a List.js table with song data based on provided configuration.
+   * @param {Object} config - Configuration object for the table.
+   * @param {string} config.containerId - The ID of the container element.
+   * @param {string} config.searchPlaceholder - The placeholder text for the search input.
+   * @param {string} config.tableId - The ID for the table element.
+   * @param {Array<Object>} config.tableHeaders - Array of header objects { text: string, sort: string | null }.
+   * @param {Array<string>} config.valueNames - Array of value names for List.js.
+   * @param {string} config.itemTemplate - The HTML template string for a List.js item row.
+   * @param {Array} config.songData - Processed song data for the table.
+   * @param {boolean} [config.callUpdateUI=false] - Whether to call the updateUI function after initialization.
+   * @param {string} [config.headingId] - The ID of the section heading for expansion listener.
+   * @param {string} [config.originalHeadingText] - The original text of the section heading.
    */
-  function initializeListJs(songData) {
-    console.log('Initializing List.js with', songData.length, 'songs');
-    
+  function initializeSongTable(config) {
+    console.log(`Initializing List.js table for container: ${config.containerId} with ${config.songData.length} songs`);
+
     // Wait for DOM to be fully ready
     setTimeout(() => {
       try {
         // Get the container element
-        const container = document.getElementById('songlist-listjs-container');
+        const container = document.getElementById(config.containerId);
         if (!container) {
-          console.error('Container element not found');
-          showError('Table container element not found');
+          console.error(`Container element not found: ${config.containerId}`);
+          if (config.containerId === 'songlist-listjs-container') {
+             showError('Table container element not found');
+          }
           return;
         }
-        
+
         // Check if List.js library is available
         if (typeof window.List !== 'function') {
           console.error('List.js library not loaded');
-          showError('Required library List.js is not loaded. Please check your internet connection and reload the page.');
+           if (config.containerId === 'songlist-listjs-container') {
+             showError('Required library List.js is not loaded. Please check your internet connection and reload the page.');
+           }
           return;
         }
-        
+
+        // Build table headers HTML
+        const theadHtml = config.tableHeaders.map(header => {
+          const sortAttr = header.sort ? `data-sort="${header.sort}"` : '';
+          const textAlignClass = header.sort ? 'text-left' : 'text-center'; // Default non-sortable to center
+          return `<th class="py-3 px-4 ${textAlignClass} ${header.sort ? 'sort' : ''}" ${sortAttr}>${header.text}</th>`;
+        }).join('');
+
         // Completely recreate the table structure for List.js
         container.innerHTML = `
           <div class="list-controls mb-4">
-            <input class="search form-control w-full p-3 border border-gray-300 rounded-md" 
-              placeholder="Search songs, performers, and administrators, e.g.: elvis" 
-              aria-label="Search songs">
+            <input class="search form-control w-full p-3 border border-gray-300 rounded-md"
+              placeholder="${config.searchPlaceholder}"
+              aria-label="${config.searchPlaceholder}">
           </div>
-          
-          <table id="songlist-table" class="min-w-full bg-white">
+
+          <table id="${config.tableId}" class="min-w-full bg-white">
             <thead class="bg-navy text-white">
               <tr>
-                <th class="py-3 px-4 text-left sort" data-sort="title">Title</th>
-                <th class="py-3 px-4 text-left sort" data-sort="performers">Performer(s)</th>
-                <th class="py-3 px-4 text-left sort" data-sort="administrator">Rights Administrator</th>
-                <th class="py-3 px-4 text-center">YouTube</th>
+                ${theadHtml}
               </tr>
             </thead>
             <tbody class="list">
               <!-- Table content will be populated by List.js -->
             </tbody>
           </table>
-          
+
           <div class="pagination-wrapper my-4">
             <div class="pagination-controls flex justify-between items-center">
               <div class="pagination"></div>
@@ -303,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
           </div>
         `;
-        
+
         // Add rows-per-page control
         const rowsPerPageContainer = container.querySelector('.rows-per-page-container');
         if (rowsPerPageContainer) {
@@ -313,24 +331,24 @@ document.addEventListener('DOMContentLoaded', function() {
             rowsPerPageContainer.appendChild(rowsPerPageControl);
           }
         }
-        
+
         // Convert the data for List.js
-        const listData = songData.map(song => ({
-          title: song.title || 'Unknown Title',
-          performers: song.performers || 'Unknown Performer',
-          administrator: song.administrator || 'Unknown',
-          youtube: `<a href="${song.youtubeUrl || '#'}" class="text-red-600 hover:text-red-800" target="_blank">▶</a>`
-        }));
-        
+        const listData = config.songData.map(song => {
+            const item = {};
+            config.valueNames.forEach(key => {
+                if (key === 'youtube') {
+                     item[key] = `<a href="${song.youtubeUrl || '#'}" class="text-red-600 hover:text-red-800" target="_blank">▶</a>`;
+                } else {
+                     item[key] = song[key] || ''; // Use empty string for missing data
+                }
+            });
+            return item;
+        });
+
         // Options for List.js
         const options = {
-          valueNames: ['title', 'performers', 'administrator', 'youtube'],
-          item: `<tr>
-                  <td class="title py-3 px-4"></td>
-                  <td class="performers py-3 px-4"></td>
-                  <td class="administrator py-3 px-4"></td>
-                  <td class="youtube py-3 px-4 text-center"></td>
-                </tr>`,
+          valueNames: config.valueNames,
+          item: config.itemTemplate,
           page: window.tbConfig?.pagination?.desktop?.defaultRowsPerPage || 15,
           pagination: {
             name: "pagination",
@@ -341,149 +359,198 @@ document.addEventListener('DOMContentLoaded', function() {
             right: 3
           }
         };
-        
+
         // Initialize List.js
         const list = new List(container, options, listData);
-        
+
         // Store reference for later use
-        listJsInstance = list;
-        
+        if (config.containerId === 'songlist-listjs-container') {
+            listJsInstance = list;
+        } else if (config.containerId === 'elvis-listjs-container') {
+            elvisListJsInstance = list;
+        }
+
+
         // Setup rows per page control
-        setupRowsPerPage();
-        
+        setupRowsPerPage(list, container);
+
         // Fix pagination to prevent scrolling to top
-        preventPaginationScroll();
-        
-        // Initial UI update
-        updateUI();
-        
+        preventPaginationScroll(container);
+
+        // Initial UI update (only for main song list)
+        if (config.callUpdateUI && config.headingId && config.containerId && config.originalHeadingText) {
+           updateUI(list, config.headingId, config.containerId, config.originalHeadingText);
+        }
+
         // Add event listener for List.js updates
         list.on('updated', function() {
-          console.log('List.js updated, refreshing UI');
-          updateUI();
-          
+          console.log(`List.js for ${config.containerId} updated`);
+          if (config.callUpdateUI && config.headingId && config.containerId && config.originalHeadingText) {
+             updateUI(list, config.headingId, config.containerId, config.originalHeadingText);
+          }
           // Re-apply pagination fix after list update
-          preventPaginationScroll();
+          preventPaginationScroll(container);
         });
-        
-        console.log('List.js initialized successfully with', list.size(), 'items');
+
+        console.log(`List.js initialized successfully for ${config.containerId} with`, list.size(), 'items');
+
+        // Listen for section expansion
+        if (config.headingId) {
+            const heading = document.getElementById(config.headingId);
+            if (heading) {
+              heading.addEventListener('click', function() {
+                const willBeExpanded = this.getAttribute('aria-expanded') === 'false';
+                console.log(`${config.headingId} section clicked, willBeExpanded:`, willBeExpanded);
+
+                if (willBeExpanded) {
+                  console.log(`${config.headingId} section will be expanded, updating List.js`);
+                  // Force List.js to recalculate layout when section is expanded
+                  setTimeout(() => {
+                    list.update(); // Use the local list instance
+                  }, 50);
+                }
+              });
+            }
+        }
+
       } catch (error) {
-        console.error('Error initializing List.js:', error);
-        showError(`Failed to initialize table: ${error.message}`);
+        console.error(`Error initializing List.js for ${config.containerId}:`, error);
+         if (config.containerId === 'songlist-listjs-container') {
+            showError(`Failed to initialize table: ${error.message}`);
+         }
       }
     }, 100); // Small delay to ensure DOM is ready
   }
-  
+
   /**
-   * Prevent pagination links from scrolling to top of page
+   * Initialize List.js with song data
+   * @param {Array} songData - Processed song data
    */
-  function preventPaginationScroll() {
+  function initializeListJs(songData) {
+    const config = {
+      containerId: 'songlist-listjs-container',
+      searchPlaceholder: 'Search songs, performers, and administrators, e.g.: elvis',
+      tableId: 'songlist-table',
+      tableHeaders: [
+        { text: 'Title', sort: 'title' },
+        { text: 'Performer(s)', sort: 'performers' },
+        { text: 'Rights Administrator', sort: 'administrator' },
+        { text: 'YouTube', sort: null }
+      ],
+      valueNames: ['title', 'performers', 'administrator', 'youtube'],
+      itemTemplate: `<tr>
+                      <td class="title py-3 px-4"></td>
+                      <td class="performers py-3 px-4"></td>
+                      <td class="administrator py-3 px-4"></td>
+                      <td class="youtube py-3 px-4 text-center"></td>
+                    </tr>`,
+      songData: songData,
+      callUpdateUI: true,
+      headingId: 'songlist-heading',
+      originalHeadingText: 'Song List'
+    };
+    initializeSongTable(config);
+  }
+
+  /**
+   * Prevent pagination links from scrolling to top of page for a specific table container.
+   * @param {HTMLElement} container - The container element for the table.
+   */
+  function preventPaginationScroll(container) {
     setTimeout(() => {
-      const paginationLinks = document.querySelectorAll('.pagination li a');
+      const paginationLinks = container.querySelectorAll('.pagination li a');
       paginationLinks.forEach(link => {
         if (!link._hasClickHandler) {
           link._hasClickHandler = true;
           link.addEventListener('click', function(e) {
-            // Prevent default anchor behavior that causes page scroll
             e.preventDefault();
-            
-            // The click will still bubble to List.js's handlers
-            // and trigger the page change correctly
           });
         }
       });
     }, 100);
   }
-  
+
   /**
-   * Setup rows per page dropdown to work with List.js
+   * Setup rows per page dropdown to work with a specific List.js instance.
+   * @param {List} listInstance - The List.js instance to control.
+   * @param {HTMLElement} container - The container element for the table.
    */
-  function setupRowsPerPage() {
-    const rowsPerPageSelects = document.querySelectorAll('.rows-per-page-select');
-    
-    if (!rowsPerPageSelects.length) {
-      console.warn('No rows-per-page-select elements found');
+  function setupRowsPerPage(listInstance, container) {
+    const rowsPerPageSelect = container.querySelector('.rows-per-page-select');
+
+    if (!rowsPerPageSelect) {
+      console.warn(`No rows-per-page-select element found in container: ${container.id}`);
       return;
     }
-    
+
     // Get options from config
     const options = window.tbConfig?.pagination?.desktop?.rowsPerPageOptions || [10, 15, 20, 50, 100];
     const defaultValue = window.tbConfig?.pagination?.desktop?.defaultRowsPerPage || 15;
-    
-    // Populate the selects with options
-    rowsPerPageSelects.forEach(select => {
-      // Clear existing options
-      select.innerHTML = '';
-      
-      // Add options from config
-      options.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option;
-        optionElement.textContent = option;
-        optionElement.selected = option === defaultValue;
-        select.appendChild(optionElement);
-      });
-      
-      // Add change event listener
-      select.addEventListener('change', function() {
-        const value = parseInt(this.value, 10);
-        if (listJsInstance && !isNaN(value)) {
-          // Update list.js page size
-          listJsInstance.page = value;
-          listJsInstance.update();
-          
-          // Update all other selects to match
-          rowsPerPageSelects.forEach(otherSelect => {
-            if (otherSelect !== this) {
-              otherSelect.value = value;
-            }
-          });
-          
-          console.log('Rows per page changed to', value);
-        }
-      });
+
+    // Populate the select with options
+    // Clear existing options
+    rowsPerPageSelect.innerHTML = '';
+
+    // Add options from config
+    options.forEach(option => {
+      const optionElement = document.createElement('option');
+      optionElement.value = option;
+      optionElement.textContent = option;
+      optionElement.selected = option === defaultValue;
+      rowsPerPageSelect.appendChild(optionElement);
     });
-    
-    console.log('Rows per page controls initialized');
+
+    // Add change event listener
+    rowsPerPageSelect.addEventListener('change', function() {
+      const value = parseInt(this.value, 10);
+      if (listInstance && !isNaN(value)) {
+        listInstance.page = value;
+        listInstance.update();
+        console.log(`Rows per page changed to ${value} for table in ${container.id}`);
+      }
+    });
+
+    console.log(`Rows per page control initialized for table in ${container.id}`);
   }
-  
+
   /**
-   * Update UI elements outside of List.js
+   * Update UI elements outside of List.js for a specific table.
+   * @param {List} listInstance - The List.js instance.
+   * @param {string} headingId - The ID of the section heading.
+   * @param {string} containerId - The ID of the table container.
+   * @param {string} originalHeadingText - The original text of the heading.
    */
-  function updateUI() {
-    if (!listJsInstance) return;
-    
-    // Update the songlist heading to indicate search state
-    const songlistHeading = document.getElementById('songlist-heading');
-    if (!songlistHeading) return;
-    
-    const totalItems = listJsInstance.matchingItems.length;
-    const searchValue = document.querySelector('#songlist-listjs-container .search')?.value || '';
-    const originalText = "Song List";
-    
+  function updateUI(listInstance, headingId, containerId, originalHeadingText) {
+    if (!listInstance) return;
+
+    // Update the heading to indicate search state
+    const heading = document.getElementById(headingId);
+    if (!heading) return;
+
+    const totalItems = listInstance.matchingItems.length;
+    const searchValue = document.querySelector(`#${containerId} .search`)?.value || '';
+    const originalText = originalHeadingText;
+
     if (searchValue && searchValue.trim() !== '') {
       // When showing search results
-      songlistHeading.innerHTML = `${originalText} <span class="text-sm ml-2 opacity-80 font-normal">(Showing ${totalItems} results for "${searchValue}")</span>`;
+      heading.innerHTML = `${originalText} <span class="text-sm ml-2 opacity-80 font-normal">(Showing ${totalItems} results for "${searchValue}")</span>`;
     } else {
       // When showing all items or reset
-      songlistHeading.innerHTML = originalText;
+      heading.innerHTML = originalText;
       // Restore toggle icon
       const toggleIcon = document.createElement('span');
       toggleIcon.className = 'toggle-icon';
       toggleIcon.setAttribute('aria-hidden', 'true');
-      toggleIcon.textContent = songlistHeading.getAttribute('aria-expanded') === 'true' ? '−' : '+';
-      songlistHeading.appendChild(toggleIcon);
+      toggleIcon.textContent = heading.getAttribute('aria-expanded') === 'true' ? '−' : '+';
+      heading.appendChild(toggleIcon);
     }
-    
-    // Add event listener to List.js updates
-    if (listJsInstance && !listJsInstance._boundUpdateEvent) {
-      listJsInstance.on('updated', function() {
-        updateUI();
-      });
-      listJsInstance._boundUpdateEvent = true;
-    }
+
+    // Add event listener to List.js updates if not already bound
+    // This part might need careful handling to avoid multiple bindings
+    // For now, we'll rely on the check within initializeSongTable
   }
-  
+
+
   /**
    * Load a YAML file
    * @param {string} url - URL of the YAML file
@@ -502,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!window.jsyaml) {
           throw new Error('js-yaml library is not loaded');
         }
-        
+
         try {
           const data = window.jsyaml.load(text);
           console.log(`File ${url} loaded successfully:`, data ? (Array.isArray(data) ? data.length : 'object') : 'empty', 'items');
@@ -513,7 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
   }
-  
+
   /**
    * Display an error message in the table
    * @param {string} message - Error message
@@ -533,7 +600,7 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
     }
   }
-  
+
   // Listen for section expansion
   const songlistHeading = document.getElementById('songlist-heading');
   if (songlistHeading) {
@@ -541,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Check if content is being expanded
       const willBeExpanded = this.getAttribute('aria-expanded') === 'false';
       console.log('Song List section clicked, willBeExpanded:', willBeExpanded);
-      
+
       if (willBeExpanded && listJsInstance) {
         console.log('Song List section will be expanded, updating List.js');
         // Force List.js to recalculate layout when section is expanded
@@ -551,7 +618,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-  
+
   // Handle responsive behavior
   window.addEventListener('resize', () => {
     if (listJsInstance) {
@@ -561,141 +628,38 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 100);
     }
   });
-  
+
   // Mark initial load as complete after a delay
   setTimeout(() => {
     window.initialLoadComplete = true;
     console.log('Initial page load completed, scroll behavior enabled');
   }, 1500);
-  
+
   /**
    * Initialize List.js for the Elvis songs table
    * @param {Array} elvisSongData - Filtered Elvis song data
    */
   function initializeElvisListJs(elvisSongData) {
-    console.log('Initializing Elvis List.js with', elvisSongData.length, 'songs');
-    
-    // Wait for DOM to be fully ready
-    setTimeout(() => {
-      try {
-        // Get the container element
-        const container = document.getElementById('elvis-listjs-container');
-        if (!container) {
-          console.error('Elvis container element not found');
-          return;
-        }
-        
-        // Check if List.js library is available
-        if (typeof window.List !== 'function') {
-          console.error('List.js library not loaded');
-          return;
-        }
-        
-        // Completely recreate the table structure for List.js
-        container.innerHTML = `
-          <div class="list-controls mb-4">
-            <input class="search form-control w-full p-3 border border-gray-300 rounded-md" 
-              placeholder="Search Elvis songs" 
-              aria-label="Search Elvis songs">
-          </div>
-          
-          <table id="elvis-table" class="min-w-full bg-white">
-            <thead class="bg-navy text-white">
-              <tr>
-                <th class="py-3 px-4 text-left sort" data-sort="title">Title</th>
-                <th class="py-3 px-4 text-left sort" data-sort="administrator">Rights Administrator</th>
-                <th class="py-3 px-4 text-center">YouTube</th>
-              </tr>
-            </thead>
-            <tbody class="list">
-              <!-- Table content will be populated by List.js -->
-            </tbody>
-          </table>
-          
-          <div class="pagination-wrapper my-4">
-            <div class="pagination-controls flex justify-between items-center">
-              <div class="pagination"></div>
-              <div class="rows-per-page-container"></div>
-            </div>
-          </div>
-        `;
-        
-        // Add rows-per-page control
-        const rowsPerPageContainer = container.querySelector('.rows-per-page-container');
-        if (rowsPerPageContainer) {
-          const template = document.getElementById('rows-per-page-template');
-          if (template) {
-            const rowsPerPageControl = template.content.cloneNode(true);
-            rowsPerPageContainer.appendChild(rowsPerPageControl);
-          }
-        }
-        
-        // Convert the data for List.js
-        const listData = elvisSongData.map(song => ({
-          title: song.title || 'Unknown Title',
-          administrator: song.administrator || 'Unknown',
-          youtube: `<a href="${song.youtubeUrl || '#'}" class="text-red-600 hover:text-red-800" target="_blank">▶</a>`
-        }));
-        
-        // Options for List.js
-        const options = {
-          valueNames: ['title', 'administrator', 'youtube'],
-          item: `<tr>
-                  <td class="title py-3 px-4"></td>
-                  <td class="administrator py-3 px-4"></td>
-                  <td class="youtube py-3 px-4 text-center"></td>
-                </tr>`,
-          page: window.tbConfig?.pagination?.desktop?.defaultRowsPerPage || 15,
-          pagination: {
-            name: "pagination",
-            paginationClass: "pagination",
-            outerWindow: 2,
-            innerWindow: 4,
-            left: 3,
-            right: 3
-          }
-        };
-        
-        // Initialize List.js
-        const list = new List(container, options, listData);
-        
-        // Store reference for later use
-        elvisListJsInstance = list;
-        
-        // Fix pagination to prevent scrolling to top
-        preventPaginationScroll();
-        
-        // Add event listener for List.js updates
-        list.on('updated', function() {
-          console.log('Elvis List.js updated');
-          
-          // Re-apply pagination fix after list update
-          preventPaginationScroll();
-        });
-        
-        console.log('Elvis List.js initialized successfully with', list.size(), 'items');
-        
-        // Listen for Elvis section expansion
-        const elvisHeading = document.getElementById('elvis-heading');
-        if (elvisHeading) {
-          elvisHeading.addEventListener('click', function() {
-            // Check if content is being expanded
-            const willBeExpanded = this.getAttribute('aria-expanded') === 'false';
-            console.log('Elvis section clicked, willBeExpanded:', willBeExpanded);
-            
-            if (willBeExpanded && elvisListJsInstance) {
-              console.log('Elvis section will be expanded, updating List.js');
-              // Force List.js to recalculate layout when section is expanded
-              setTimeout(() => {
-                elvisListJsInstance.update();
-              }, 50);
-            }
-          });
-        }
-        
-      } catch (error) {
-        console.error('Error initializing Elvis List.js:', error);
-      }
-    }, 100); // Small delay to ensure DOM is ready
+    const config = {
+      containerId: 'elvis-listjs-container',
+      searchPlaceholder: 'Search Elvis songs',
+      tableId: 'elvis-table',
+      tableHeaders: [
+        { text: 'Title', sort: 'title' },
+        { text: 'Rights Administrator', sort: 'administrator' },
+        { text: 'YouTube', sort: null }
+      ],
+      valueNames: ['title', 'administrator', 'youtube'],
+      itemTemplate: `<tr>
+                      <td class="title py-3 px-4"></td>
+                      <td class="administrator py-3 px-4"></td>
+                      <td class="youtube py-3 px-4 text-center"></td>
+                    </tr>`,
+      songData: elvisSongData,
+      callUpdateUI: false, // Don't call updateUI for Elvis table
+      headingId: 'elvis-heading',
+      originalHeadingText: 'Elvis Presley Songs'
+    };
+    initializeSongTable(config);
   }
 });
