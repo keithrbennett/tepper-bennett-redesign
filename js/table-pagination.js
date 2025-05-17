@@ -80,6 +80,28 @@ function initRowsPerPageControl() {
     });
   } else {
     console.warn('No rows-per-page selectors found');
+    
+    // Try to create the selectors dynamically if they don't exist
+    const paginationContainers = document.querySelectorAll('.pagination');
+    
+    if (paginationContainers.length > 0) {
+      console.log('Found pagination containers, attempting to create rows-per-page controls');
+      
+      // Force the table-renderer to redraw the tables, which will create the selectors
+      if (window.filteredSongData && typeof window.renderTable === 'function') {
+        console.log('Triggering table redraw to create pagination controls');
+        window.renderTable(window.filteredSongData);
+        
+        // Try again to find selectors after redraw
+        setTimeout(() => {
+          const newSelectors = Array.from(document.querySelectorAll('.rows-per-page-select'));
+          if (newSelectors.length > 0) {
+            console.log(`Created ${newSelectors.length} rows-per-page selectors successfully`);
+            initRowsPerPageControl(); // Re-initialize with the new selectors
+          }
+        }, 100);
+      }
+    }
   }
 }
 

@@ -17,17 +17,19 @@ function initSearch(songData) {
   originalSongData = songData;
   
   // Get DOM elements (they might not have been available during initial script load)
-  const searchInput = document.getElementById('songlist-search');
+  const searchInput = document.querySelector('#songlist-listjs-container .search');
   const searchButton = document.getElementById('search-button');
   
   // Set up event listeners
-  if (searchButton && searchInput) {
-    console.log('Search elements found, setting up listeners');
+  if (searchInput) {
+    console.log('Search input found, setting up listeners');
     
     // Search on button click
-    searchButton.addEventListener('click', function() {
-      performSearch();
-    });
+    if (searchButton) {
+      searchButton.addEventListener('click', function() {
+        performSearch();
+      });
+    }
     
     // Search on Enter key press
     searchInput.addEventListener('keyup', function(event) {
@@ -54,7 +56,7 @@ function initSearch(songData) {
  */
 function performSearch() {
   // Get fresh DOM reference
-  const searchInput = document.getElementById('songlist-search');
+  const searchInput = document.querySelector('#songlist-listjs-container .search');
   if (!searchInput) {
     console.error('Search input element not found');
     return;
@@ -159,7 +161,7 @@ function updateSearchIndicator(searchTerm, resultCount) {
  */
 function showNoResults(searchTerm) {
   // Get fresh DOM references
-  const searchInput = document.getElementById('songlist-search');
+  const searchInput = document.querySelector('#songlist-listjs-container .search');
   
   // Show no results in desktop table
   const songlistTable = document.getElementById('songlist-table');
@@ -220,7 +222,7 @@ function resetSearch() {
   if (!originalSongData) return;
   
   // Get fresh DOM reference
-  const searchInput = document.getElementById('songlist-search');
+  const searchInput = document.querySelector('#songlist-listjs-container .search');
   if (searchInput) {
     searchInput.value = '';
   }
@@ -232,6 +234,7 @@ function resetSearch() {
     console.warn('tablePagination not available');
   }
   
+  // Update table views
   if (window.renderTable) {
     window.renderTable(originalSongData);
   } else {

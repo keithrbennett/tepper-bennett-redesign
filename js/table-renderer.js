@@ -30,16 +30,17 @@ function sortSonglist(songlist, field = currentSortField, direction = currentSor
   
   // Sort the array
   sortedSonglist.sort((a, b) => {
+    // Get the values to compare, defaulting to empty string if undefined
     let valueA = String(a[field] || '').toLowerCase();
     let valueB = String(b[field] || '').toLowerCase();
     
-    // For title field, remove leading "A ", "An ", "The " for sorting
+    // For title field, remove leading articles for better sorting
     if (field === 'title') {
       valueA = valueA.replace(/^(the|a|an)\s+/i, '');
       valueB = valueB.replace(/^(the|a|an)\s+/i, '');
     }
     
-    // Compare the values
+    // Simple alphabetical comparison
     if (valueA < valueB) {
       return direction === 'asc' ? -1 : 1;
     }
@@ -94,10 +95,10 @@ function renderTable(songlist) {
   const totalItems = songlist.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   if (currentPage >= totalPages && totalPages > 0) {
-    currentPage = totalPages - 1;
+    currentPage = Math.max(0, totalPages - 1);
   }
   
-  // Create or update pagination
+  // Create or update pagination container
   let paginationDiv = container.querySelector('.pagination');
   if (!paginationDiv) {
     paginationDiv = document.createElement('div');
@@ -108,127 +109,208 @@ function renderTable(songlist) {
   }
   
   // Add styles to pagination container
-  paginationDiv.classList.add('flex', 'justify-center', 'items-center', 'my-4', 'flex-wrap', 'gap-2');
+  paginationDiv.classList.add('flex', 'flex-col', 'gap-4', 'my-4');
   
-  // Create pagination info element
-  const paginationInfo = document.createElement('div');
-  paginationInfo.className = 'pagination-info text-sm text-gray-600 mx-4';
-  paginationDiv.appendChild(paginationInfo);
+  // Create structured pagination elements
+  // 1. Upper pagination
+  const upperPagination = document.createElement('div');
+  upperPagination.id = 'upper-pagination';
+  upperPagination.className = 'desktop-pagination';
   
-  // Create pagination buttons
-  const paginationButtons = document.createElement('div');
-  paginationButtons.className = 'pagination-buttons flex flex-wrap gap-1';
-  paginationDiv.appendChild(paginationButtons);
+  // Upper pagination info
+  const upperPageInfo = document.createElement('div');
+  upperPageInfo.id = 'upper-desktop-page-info';
+  upperPageInfo.className = 'page-info';
+  upperPagination.appendChild(upperPageInfo);
   
-  // First page button
-  const firstButton = document.createElement('button');
-  firstButton.innerHTML = '&laquo;';
-  firstButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 rounded';
-  firstButton.addEventListener('click', () => {
+  // Upper pagination controls
+  const upperPageControls = document.createElement('div');
+  upperPageControls.className = 'page-controls';
+  
+  // Create upper pagination buttons
+  const upperFirstButton = document.createElement('button');
+  upperFirstButton.id = 'upper-desktop-first-page';
+  upperFirstButton.className = 'btn btn-sm btn-navy pagination-button';
+  upperFirstButton.innerHTML = '&laquo;';
+  upperPageControls.appendChild(upperFirstButton);
+  
+  const upperPrevButton = document.createElement('button');
+  upperPrevButton.id = 'upper-desktop-prev-page';
+  upperPrevButton.className = 'btn btn-sm btn-navy pagination-button';
+  upperPrevButton.innerHTML = '&lsaquo;';
+  upperPageControls.appendChild(upperPrevButton);
+  
+  const upperNextButton = document.createElement('button');
+  upperNextButton.id = 'upper-desktop-next-page';
+  upperNextButton.className = 'btn btn-sm btn-navy pagination-button';
+  upperNextButton.innerHTML = '&rsaquo;';
+  upperPageControls.appendChild(upperNextButton);
+  
+  const upperLastButton = document.createElement('button');
+  upperLastButton.id = 'upper-desktop-last-page';
+  upperLastButton.className = 'btn btn-sm btn-navy pagination-button';
+  upperLastButton.innerHTML = '&raquo;';
+  upperPageControls.appendChild(upperLastButton);
+  
+  upperPagination.appendChild(upperPageControls);
+  paginationDiv.appendChild(upperPagination);
+  
+  // 2. Lower pagination
+  const lowerPagination = document.createElement('div');
+  lowerPagination.id = 'lower-pagination';
+  lowerPagination.className = 'desktop-pagination';
+  
+  // Lower pagination info
+  const lowerPageInfo = document.createElement('div');
+  lowerPageInfo.id = 'desktop-page-info';
+  lowerPageInfo.className = 'page-info';
+  lowerPagination.appendChild(lowerPageInfo);
+  
+  // Lower pagination controls
+  const lowerPageControls = document.createElement('div');
+  lowerPageControls.className = 'page-controls';
+  
+  // Create lower pagination buttons
+  const lowerFirstButton = document.createElement('button');
+  lowerFirstButton.id = 'desktop-first-page';
+  lowerFirstButton.className = 'btn btn-sm btn-navy pagination-button';
+  lowerFirstButton.innerHTML = '&laquo;';
+  lowerPageControls.appendChild(lowerFirstButton);
+  
+  const lowerPrevButton = document.createElement('button');
+  lowerPrevButton.id = 'desktop-prev-page';
+  lowerPrevButton.className = 'btn btn-sm btn-navy pagination-button';
+  lowerPrevButton.innerHTML = '&lsaquo;';
+  lowerPageControls.appendChild(lowerPrevButton);
+  
+  const lowerNextButton = document.createElement('button');
+  lowerNextButton.id = 'desktop-next-page';
+  lowerNextButton.className = 'btn btn-sm btn-navy pagination-button';
+  lowerNextButton.innerHTML = '&rsaquo;';
+  lowerPageControls.appendChild(lowerNextButton);
+  
+  const lowerLastButton = document.createElement('button');
+  lowerLastButton.id = 'desktop-last-page';
+  lowerLastButton.className = 'btn btn-sm btn-navy pagination-button';
+  lowerLastButton.innerHTML = '&raquo;';
+  lowerPageControls.appendChild(lowerLastButton);
+  
+  lowerPagination.appendChild(lowerPageControls);
+  paginationDiv.appendChild(lowerPagination);
+  
+  // Create "rows per page" controls from the template
+  const template = document.getElementById('rows-per-page-template');
+  if (template) {
+    // Get options from config
+    const options = window.tbConfig?.pagination?.desktop?.rowsPerPageOptions || [10, 15, 20, 25, 40, 100];
+    const defaultValue = window.tbConfig?.pagination?.desktop?.defaultRowsPerPage || 15;
+    
+    // Create option elements
+    const createOptions = (select) => {
+      options.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        if (value === defaultValue) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      });
+    };
+    
+    // Upper pagination control
+    const upperControl = template.content.cloneNode(true);
+    const upperSelect = upperControl.querySelector('select');
+    upperSelect.id = 'rows-per-page';
+    upperSelect.className = 'rows-per-page-select form-select ml-2 p-1 border border-gray-300 rounded';
+    createOptions(upperSelect);
+    upperPageInfo.appendChild(upperControl);
+    
+    // Lower pagination control
+    const lowerControl = template.content.cloneNode(true);
+    const lowerSelect = lowerControl.querySelector('select');
+    lowerSelect.id = 'lower-rows-per-page';
+    lowerSelect.className = 'rows-per-page-select form-select ml-2 p-1 border border-gray-300 rounded';
+    createOptions(lowerSelect);
+    lowerPageInfo.appendChild(lowerControl);
+  }
+  
+  // Set up pagination button event listeners
+  // Upper pagination
+  upperFirstButton.addEventListener('click', () => {
     if (currentPage !== 0) {
       currentPage = 0;
       updateTableDisplay(songlist);
     }
   });
-  paginationButtons.appendChild(firstButton);
   
-  // Previous page button
-  const prevButton = document.createElement('button');
-  prevButton.innerHTML = '&lsaquo;';
-  prevButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 rounded';
-  prevButton.addEventListener('click', () => {
+  upperPrevButton.addEventListener('click', () => {
     if (currentPage > 0) {
       currentPage--;
       updateTableDisplay(songlist);
     }
   });
-  paginationButtons.appendChild(prevButton);
   
-  // Create function to generate page number buttons
-  function createPageNumberButtons() {
-    // Remove existing page number buttons
-    const pageButtons = paginationButtons.querySelectorAll('.page-number');
-    pageButtons.forEach(btn => btn.remove());
-    
-    // Calculate visible page range (show up to 5 pages)
-    let startPage = Math.max(0, currentPage - 2);
-    let endPage = Math.min(totalPages - 1, startPage + 4);
-    
-    // Adjust range if near the end
-    if (endPage - startPage < 4 && startPage > 0) {
-      startPage = Math.max(0, endPage - 4);
-    }
-    
-    // Create page buttons
-    for (let i = startPage; i <= endPage; i++) {
-      const pageButton = document.createElement('button');
-      pageButton.textContent = i + 1;
-      pageButton.className = `pagination-button page-number ${i === currentPage ? 'bg-navy text-white' : 'bg-gray-200 hover:bg-gray-300'} rounded`;
-      pageButton.addEventListener('click', () => {
-        currentPage = i;
-        updateTableDisplay(songlist);
-      });
-      
-      // Insert before next button
-      paginationButtons.insertBefore(pageButton, nextButton);
-    }
-  }
-  
-  // Next page button
-  const nextButton = document.createElement('button');
-  nextButton.innerHTML = '&rsaquo;';
-  nextButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 rounded';
-  nextButton.addEventListener('click', () => {
+  upperNextButton.addEventListener('click', () => {
     if (currentPage < totalPages - 1) {
       currentPage++;
       updateTableDisplay(songlist);
     }
   });
-  paginationButtons.appendChild(nextButton);
   
-  // Last page button
-  const lastButton = document.createElement('button');
-  lastButton.innerHTML = '&raquo;';
-  lastButton.className = 'pagination-button bg-gray-200 hover:bg-gray-300 rounded';
-  lastButton.addEventListener('click', () => {
-    currentPage = totalPages - 1;
-    updateTableDisplay(songlist);
+  upperLastButton.addEventListener('click', () => {
+    if (currentPage < totalPages - 1) {
+      currentPage = totalPages - 1;
+      updateTableDisplay(songlist);
+    }
   });
-  paginationButtons.appendChild(lastButton);
   
-  // Create page size selector
-  const pageSizeSelector = document.createElement('div');
-  pageSizeSelector.className = 'page-size-selector ml-4';
-  pageSizeSelector.innerHTML = `
-    <label for="page-size" class="text-sm text-gray-600 mr-2">Rows per page:</label>
-    <select id="page-size" class="border rounded px-2 py-1 text-sm">
-      <option value="10">10</option>
-      <option value="15" selected>15</option>
-      <option value="25">25</option>
-      <option value="50">50</option>
-      <option value="100">100</option>
-    </select>
-  `;
-  paginationDiv.appendChild(pageSizeSelector);
+  // Lower pagination
+  lowerFirstButton.addEventListener('click', () => {
+    if (currentPage !== 0) {
+      currentPage = 0;
+      updateTableDisplay(songlist);
+    }
+  });
   
-  // Ensure the correct option is selected based on current itemsPerPage
-  const pageSizeSelect = pageSizeSelector.querySelector('select');
-  if (pageSizeSelect) {
-    const options = pageSizeSelect.querySelectorAll('option');
-    options.forEach(option => {
-      if (parseInt(option.value) === itemsPerPage) {
-        option.selected = true;
-      } else {
-        option.selected = false;
-      }
-    });
-    
-    pageSizeSelect.addEventListener('change', function() {
+  lowerPrevButton.addEventListener('click', () => {
+    if (currentPage > 0) {
+      currentPage--;
+      updateTableDisplay(songlist);
+    }
+  });
+  
+  lowerNextButton.addEventListener('click', () => {
+    if (currentPage < totalPages - 1) {
+      currentPage++;
+      updateTableDisplay(songlist);
+    }
+  });
+  
+  lowerLastButton.addEventListener('click', () => {
+    if (currentPage < totalPages - 1) {
+      currentPage = totalPages - 1;
+      updateTableDisplay(songlist);
+    }
+  });
+  
+  // Initialize "rows per page" controls
+  const rowsPerPageSelects = document.querySelectorAll('.rows-per-page-select');
+  rowsPerPageSelects.forEach(select => {
+    select.addEventListener('change', function() {
       itemsPerPage = parseInt(this.value, 10);
       currentPage = 0; // Reset to first page
+      
+      // Update all selectors to the same value
+      rowsPerPageSelects.forEach(otherSelect => {
+        if (otherSelect !== this) {
+          otherSelect.value = this.value;
+        }
+      });
+      
       updateTableDisplay(songlist);
     });
-  }
+  });
   
   // Function to update table display based on current page
   function updateTableDisplay(data) {
@@ -259,31 +341,61 @@ function renderTable(songlist) {
     // Update pagination info
     const start = totalRows === 0 ? 0 : startIndex + 1;
     const end = Math.min(totalRows, endIndex);
-    paginationInfo.textContent = `Showing ${start}-${end} of ${totalRows} songs`;
+    
+    // Create page info text
+    let pageInfoText;
+    if (totalRows <= itemsPerPage) {
+      pageInfoText = `Showing all ${totalRows} song${totalRows !== 1 ? 's' : ''}`;
+    } else {
+      pageInfoText = `Page ${currentPage + 1} of ${totalPages} (${start}-${end} of ${totalRows} songs)`;
+    }
+    
+    // Update both upper and lower pagination info
+    upperPageInfo.textContent = pageInfoText;
+    lowerPageInfo.textContent = pageInfoText;
+    
+    // Re-append the rows-per-page controls after updating text
+    const upperSelect = document.getElementById('rows-per-page');
+    const lowerSelect = document.getElementById('lower-rows-per-page');
+    
+    if (upperSelect && upperSelect.parentElement) {
+      upperPageInfo.appendChild(upperSelect.parentElement);
+    }
+    
+    if (lowerSelect && lowerSelect.parentElement) {
+      lowerPageInfo.appendChild(lowerSelect.parentElement);
+    }
     
     // Update button states
-    firstButton.disabled = currentPage === 0;
-    prevButton.disabled = currentPage === 0;
-    nextButton.disabled = currentPage >= totalPages - 1;
-    lastButton.disabled = currentPage >= totalPages - 1;
+    const isFirstPage = currentPage === 0;
+    const isLastPage = currentPage >= totalPages - 1;
+    
+    // Upper pagination buttons
+    upperFirstButton.disabled = isFirstPage || totalRows <= itemsPerPage;
+    upperPrevButton.disabled = isFirstPage || totalRows <= itemsPerPage;
+    upperNextButton.disabled = isLastPage || totalRows <= itemsPerPage;
+    upperLastButton.disabled = isLastPage || totalRows <= itemsPerPage;
+    
+    // Lower pagination buttons
+    lowerFirstButton.disabled = isFirstPage || totalRows <= itemsPerPage;
+    lowerPrevButton.disabled = isFirstPage || totalRows <= itemsPerPage;
+    lowerNextButton.disabled = isLastPage || totalRows <= itemsPerPage;
+    lowerLastButton.disabled = isLastPage || totalRows <= itemsPerPage;
     
     // Visual indication of disabled state
-    [firstButton, prevButton, nextButton, lastButton].forEach(btn => {
+    [upperFirstButton, upperPrevButton, upperNextButton, upperLastButton,
+     lowerFirstButton, lowerPrevButton, lowerNextButton, lowerLastButton].forEach(btn => {
       if (btn.disabled) {
         btn.classList.add('opacity-50', 'cursor-not-allowed');
-        btn.classList.remove('hover:bg-gray-300');
+        btn.classList.remove('hover:bg-navy-light');
       } else {
         btn.classList.remove('opacity-50', 'cursor-not-allowed');
-        btn.classList.add('hover:bg-gray-300');
+        btn.classList.add('hover:bg-navy-light');
       }
     });
-    
-    // Update page number buttons
-    createPageNumberButtons();
   }
   
   // Initialize display
-  createPageNumberButtons();
   updateTableDisplay(songlist);
 }
 
