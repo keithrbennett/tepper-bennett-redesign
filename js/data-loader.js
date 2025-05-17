@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Song search elements
   const searchInput = document.getElementById('songs-search');
   const searchButton = document.getElementById('search-button');
-  const searchContainer = document.querySelector('.search-container');
   
   // Show loading indicator
   const tbody = songlistTable.querySelector('tbody');
