@@ -303,10 +303,10 @@ document.addEventListener('DOMContentLoaded', function() {
           pagination: {
             name: "pagination",
             paginationClass: "pagination",
-            outerWindow: 1,
-            innerWindow: 2,
-            left: 2,
-            right: 2
+            outerWindow: 2,
+            innerWindow: 4,
+            left: 3,
+            right: 3
           }
         };
         
