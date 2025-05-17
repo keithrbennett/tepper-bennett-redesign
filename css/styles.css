@@ -483,4 +483,35 @@
 /* Smoother transition for sticky titles */
 .collapsible-toggle {
   transition: background-color 0.2s, box-shadow 0.2s, position 0s;
+}
+
+/* Sortable table styles */
+th[data-sort] {
+  position: relative;
+  cursor: pointer;
+  padding-right: 25px !important; /* Make space for the indicator */
+}
+
+th[data-sort]:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+th[data-sort]::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+th.sort-asc::after {
+  content: '▲';
+  opacity: 1;
+}
+
+th.sort-desc::after {
+  content: '▼';
+  opacity: 1;
 } 

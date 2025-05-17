@@ -138,6 +138,10 @@ document.addEventListener('DOMContentLoaded', function() {
   let loadedSongData = null;
   let filteredSongData = null;
   
+  // Expose data to global scope for sorting
+  window.loadedSongData = null;
+  window.filteredSongData = null;
+  
   // Load the data
   loadSongData();
   
@@ -243,6 +247,10 @@ document.addEventListener('DOMContentLoaded', function() {
     loadedSongData = songlistData;
     filteredSongData = songlistData;
     
+    // Also assign to window for global access
+    window.loadedSongData = songlistData;
+    window.filteredSongData = songlistData;
+    
     // Initialize pagination module
     if (window.tablePagination) {
       window.tablePagination.initPagination(songlistData);
@@ -267,6 +275,12 @@ document.addEventListener('DOMContentLoaded', function() {
       window.renderMobileList(songlistData);
     } else {
       renderMobileList(songlistData);
+    }
+    
+    // Initialize sortable headers
+    if (typeof window.initSortableHeaders === 'function') {
+      console.log('Initializing sortable headers');
+      window.initSortableHeaders();
     }
   }
   
@@ -347,6 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentPage = 0;
                     currentDesktopPage = 0;
                     filteredSongData = songData;
+                    window.filteredSongData = songData;
                     renderTable(songData);
                     renderMobileList(songData);
                   });
@@ -373,6 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   currentPage = 0;
                   currentDesktopPage = 0;
                   filteredSongData = songData;
+                  window.filteredSongData = songData;
                   renderTable(songData);
                   renderMobileList(songData);
                 });
@@ -384,6 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
           currentPage = 0;
           currentDesktopPage = 0;
           filteredSongData = filteredData;
+          window.filteredSongData = filteredData;
           renderTable(filteredData);
           renderMobileList(filteredData);
         }
@@ -395,6 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
       currentPage = 0;
       currentDesktopPage = 0;
       filteredSongData = songData;
+      window.filteredSongData = songData;
       renderTable(songData);
       renderMobileList(songData);
     }

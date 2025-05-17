@@ -302,6 +302,9 @@ function renderTable(songlist) {
   
   // Initialize display
   updateTableDisplay(songlist);
+  
+  // Update sort indicators to show current sort state
+  updateSortIndicators();
 }
 
 /**
@@ -406,16 +409,19 @@ window.renderTable = renderTable;
 window.renderMobileList = renderMobileList;
 window.showTableError = showError;
 window.sortSonglist = sortSonglist;
+window.initSortableHeaders = initSortableHeaders;
 
 // Function to update sort indicators
 function updateSortIndicators() {
   const thead = songlistTable.querySelector('thead');
   if (!thead) return;
   const ths = thead.querySelectorAll('th');
+  console.log('Updating sort indicators, current field:', currentSortField, 'direction:', currentSortDirection);
   ths.forEach(th => {
     th.classList.remove('sort-asc', 'sort-desc');
-    const field = th.getAttribute('data-field');
+    const field = th.getAttribute('data-sort');
     if (field === currentSortField) {
+      console.log(`Adding sort class to ${field} header: ${currentSortDirection === 'asc' ? 'sort-asc' : 'sort-desc'}`);
       th.classList.add(currentSortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
     }
   });
@@ -425,25 +431,32 @@ function updateSortIndicators() {
 function initSortableHeaders() {
   const thead = songlistTable.querySelector('thead');
   if (!thead) return;
-  const ths = thead.querySelectorAll('th[data-field]');
+  
+  // Query for th elements with data-sort attribute instead of data-field
+  const ths = thead.querySelectorAll('th[data-sort]');
+  
   ths.forEach(th => {
     th.style.cursor = 'pointer';
     // Remove any previous click event to avoid stacking
     const newTh = th.cloneNode(true);
     th.parentNode.replaceChild(newTh, th);
   });
+  
   // Re-select after clone
-  const newThs = thead.querySelectorAll('th[data-field]');
+  const newThs = thead.querySelectorAll('th[data-sort]');
   newThs.forEach(th => {
     th.style.cursor = 'pointer';
     th.addEventListener('click', function () {
-      const field = th.getAttribute('data-field');
+      const field = th.getAttribute('data-sort');
       console.log('Header clicked:', field); // DEBUG LOG
+      
       if (!field) return;
+      
       let direction = 'asc';
       if (currentSortField === field) {
         direction = currentSortDirection === 'asc' ? 'desc' : 'asc';
       }
+      
       if (window.filteredSongData) {
         currentSortField = field;
         currentSortDirection = direction;
@@ -453,6 +466,7 @@ function initSortableHeaders() {
         currentSortDirection = direction;
         renderTable(sortSonglist(window.loadedSongData, field, direction));
       }
+      
       updateSortIndicators();
     });
   });
