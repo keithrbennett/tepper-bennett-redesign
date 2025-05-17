@@ -9,8 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Flag to track initial page load
   window.initialLoadComplete = false;
   
-  // Reference to the table
+  // Reference to the tables
   const songlistTable = document.getElementById('songlist-table');
+  const elvisTable = document.getElementById('elvis-table');
   if (!songlistTable) {
     console.error('Songs table not found');
     return;
@@ -18,17 +19,33 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Store data references
   let loadedSongData = null;
+  let elvisSongData = null;
   window.loadedSongData = null;
   let listJsInstance = null;
+  let elvisListJsInstance = null;
   
-  // Show loading indicator
-  const tbody = songlistTable.querySelector('tbody');
+  // Show loading indicator for main song list
+  const tbody = songlistTable?.querySelector('tbody');
   if (tbody) {
     tbody.innerHTML = `
       <tr>
         <td colspan="4" class="py-8 text-center">
           <div class="inline-block animate-pulse">
             <span class="inline-block">Loading song data...</span>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+  
+  // Show loading indicator for Elvis table if it exists
+  const elvisTbody = elvisTable?.querySelector('tbody');
+  if (elvisTbody) {
+    elvisTbody.innerHTML = `
+      <tr>
+        <td colspan="3" class="py-8 text-center">
+          <div class="inline-block animate-pulse">
+            <span class="inline-block">Loading Elvis song data...</span>
           </div>
         </td>
       </tr>
@@ -209,12 +226,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log(`Song data processed: ${songlistData.length} songs`);
     
+    // Filter for Elvis songs only
+    const elvisSongData = songlistData.filter(song => {
+      // Check if the performer is Elvis or includes Elvis (for duets)
+      return song.performers === 'Elvis Presley' || 
+             song.performers.toLowerCase().includes('elvis') ||
+             (Array.isArray(song.performers) && 
+              song.performers.some(performer => 
+                performer === 'Elvis Presley' || 
+                performer.toLowerCase().includes('elvis')
+              ));
+    });
+    
+    console.log(`Elvis song data filtered: ${elvisSongData.length} songs`);
+    
     // Store the processed data for reuse
     loadedSongData = songlistData;
     window.loadedSongData = songlistData;
     
-    // Initialize List.js
+    // Initialize List.js for both tables
     initializeListJs(songlistData);
+    initializeElvisListJs(elvisSongData);
   }
   
   /**
@@ -535,4 +567,135 @@ document.addEventListener('DOMContentLoaded', function() {
     window.initialLoadComplete = true;
     console.log('Initial page load completed, scroll behavior enabled');
   }, 1500);
-}); 
+  
+  /**
+   * Initialize List.js for the Elvis songs table
+   * @param {Array} elvisSongData - Filtered Elvis song data
+   */
+  function initializeElvisListJs(elvisSongData) {
+    console.log('Initializing Elvis List.js with', elvisSongData.length, 'songs');
+    
+    // Wait for DOM to be fully ready
+    setTimeout(() => {
+      try {
+        // Get the container element
+        const container = document.getElementById('elvis-listjs-container');
+        if (!container) {
+          console.error('Elvis container element not found');
+          return;
+        }
+        
+        // Check if List.js library is available
+        if (typeof window.List !== 'function') {
+          console.error('List.js library not loaded');
+          return;
+        }
+        
+        // Completely recreate the table structure for List.js
+        container.innerHTML = `
+          <div class="list-controls mb-4">
+            <input class="search form-control w-full p-3 border border-gray-300 rounded-md" 
+              placeholder="Search Elvis songs" 
+              aria-label="Search Elvis songs">
+          </div>
+          
+          <table id="elvis-table" class="min-w-full bg-white">
+            <thead class="bg-navy text-white">
+              <tr>
+                <th class="py-3 px-4 text-left sort" data-sort="title">Title</th>
+                <th class="py-3 px-4 text-left sort" data-sort="administrator">Rights Administrator</th>
+                <th class="py-3 px-4 text-center">YouTube</th>
+              </tr>
+            </thead>
+            <tbody class="list">
+              <!-- Table content will be populated by List.js -->
+            </tbody>
+          </table>
+          
+          <div class="pagination-wrapper my-4">
+            <div class="pagination-controls flex justify-between items-center">
+              <div class="pagination"></div>
+              <div class="rows-per-page-container"></div>
+            </div>
+          </div>
+        `;
+        
+        // Add rows-per-page control
+        const rowsPerPageContainer = container.querySelector('.rows-per-page-container');
+        if (rowsPerPageContainer) {
+          const template = document.getElementById('rows-per-page-template');
+          if (template) {
+            const rowsPerPageControl = template.content.cloneNode(true);
+            rowsPerPageContainer.appendChild(rowsPerPageControl);
+          }
+        }
+        
+        // Convert the data for List.js
+        const listData = elvisSongData.map(song => ({
+          title: song.title || 'Unknown Title',
+          administrator: song.administrator || 'Unknown',
+          youtube: `<a href="${song.youtubeUrl || '#'}" class="text-red-600 hover:text-red-800" target="_blank">▶</a>`
+        }));
+        
+        // Options for List.js
+        const options = {
+          valueNames: ['title', 'administrator', 'youtube'],
+          item: `<tr>
+                  <td class="title py-3 px-4"></td>
+                  <td class="administrator py-3 px-4"></td>
+                  <td class="youtube py-3 px-4 text-center"></td>
+                </tr>`,
+          page: window.tbConfig?.pagination?.desktop?.defaultRowsPerPage || 15,
+          pagination: {
+            name: "pagination",
+            paginationClass: "pagination",
+            outerWindow: 2,
+            innerWindow: 4,
+            left: 3,
+            right: 3
+          }
+        };
+        
+        // Initialize List.js
+        const list = new List(container, options, listData);
+        
+        // Store reference for later use
+        elvisListJsInstance = list;
+        
+        // Fix pagination to prevent scrolling to top
+        preventPaginationScroll();
+        
+        // Add event listener for List.js updates
+        list.on('updated', function() {
+          console.log('Elvis List.js updated');
+          
+          // Re-apply pagination fix after list update
+          preventPaginationScroll();
+        });
+        
+        console.log('Elvis List.js initialized successfully with', list.size(), 'items');
+        
+        // Listen for Elvis section expansion
+        const elvisHeading = document.getElementById('elvis-heading');
+        if (elvisHeading) {
+          elvisHeading.addEventListener('click', function() {
+            // Check if content is being expanded
+            const willBeExpanded = this.getAttribute('aria-expanded') === 'false';
+            console.log('Elvis section clicked, willBeExpanded:', willBeExpanded);
+            
+            if (willBeExpanded && elvisListJsInstance) {
+              console.log('Elvis section will be expanded, updating List.js');
+              // Force List.js to recalculate layout when section is expanded
+              setTimeout(() => {
+                elvisListJsInstance.update();
+              }, 50);
+            }
+          });
+        }
+        
+      } catch (error) {
+        console.error('Error initializing Elvis List.js:', error);
+      }
+    }, 100); // Small delay to ensure DOM is ready
+  }
+});

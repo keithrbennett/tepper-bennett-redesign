@@ -326,6 +326,26 @@
                         <p class="paragraph">Their collaborations with Elvis include memorable tracks like "G.I. Blues," "Hawaiian Sunset," "New Orleans," and "Song of the Shrimp." While some of these songs may not be among Elvis's most well-known hits, they showcase the versatility and prolific nature of Tepper and Bennett's songwriting abilities.</p>
                     </div>
                 </div>
+                
+                <div class="mt-8">
+                    <h3 class="heading-subsection">Elvis Song List</h3>
+                    <div id="elvis-listjs-container">
+                        <input class="search flex-grow p-3 border border-gray-300 rounded-md" placeholder="Search Elvis songs" aria-label="Search Elvis songs">
+                        <table id="elvis-table" class="min-w-full bg-white list">
+                            <thead class="bg-navy text-white">
+                                <tr>
+                                    <th class="py-3 px-4 text-left" data-sort="title">Title</th>
+                                    <th class="py-3 px-4 text-left" data-sort="administrator">Rights Administrator</th>
+                                    <th class="py-3 px-4 text-center">YouTube</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list">
+                                <!-- Table content will be populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                        <div class="pagination"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -535,4 +555,4 @@
     <!-- Add List.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
 </body>
-</html> 
+</html>
