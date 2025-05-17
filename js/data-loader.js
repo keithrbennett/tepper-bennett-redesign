@@ -16,35 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
   
-  // Mobile table pagination
-  const ROWS_PER_PAGE = 10;
-  let currentPage = 0;
-  
-  // Desktop table pagination
-  const DESKTOP_ROWS_PER_PAGE = 25;
-  let currentDesktopPage = 0;
-  
-  const mobileList = document.getElementById('mobile-songs-list');
-  const prevButton = document.getElementById('mobile-prev-page');
-  const nextButton = document.getElementById('mobile-next-page');
-  
-  // Desktop pagination elements
-  const desktopPrevButton = document.getElementById('desktop-prev-page');
-  const desktopNextButton = document.getElementById('desktop-next-page');
-  const desktopFirstButton = document.getElementById('desktop-first-page');
-  const desktopLastButton = document.getElementById('desktop-last-page');
-  const desktopPageInfo = document.getElementById('desktop-page-info');
-  
-  // Upper desktop pagination elements
-  const upperDesktopPrevButton = document.getElementById('upper-desktop-prev-page');
-  const upperDesktopNextButton = document.getElementById('upper-desktop-next-page');
-  const upperDesktopFirstButton = document.getElementById('upper-desktop-first-page');
-  const upperDesktopLastButton = document.getElementById('upper-desktop-last-page');
-  const upperDesktopPageInfo = document.getElementById('upper-desktop-page-info');
-  
-  // Song search elements
-  const searchInput = document.getElementById('songs-search');
-  const searchButton = document.getElementById('search-button');
+  // Store data references
+  let loadedSongData = null;
+  window.loadedSongData = null;
+  let listJsInstance = null;
   
   // Show loading indicator
   const tbody = songlistTable.querySelector('tbody');
@@ -132,14 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'organizations.yml',
     'rights-admin-songs.yml'
   ];
-  
-  // Store loaded song data for reuse
-  let loadedSongData = null;
-  let filteredSongData = null;
-  
-  // Expose data to global scope for sorting
-  window.loadedSongData = null;
-  window.filteredSongData = null;
   
   // Load the data
   loadSongData();
@@ -240,180 +207,248 @@ document.addEventListener('DOMContentLoaded', function() {
     // Process song data using the local utility function
     const songlistData = processTableData(songPlays, songlistMap, performersMap, orgsMap, songOrgMap);
     
-    console.log(`Song data processed: ${songlistData.length} songlist`);
+    console.log(`Song data processed: ${songlistData.length} songs`);
     
     // Store the processed data for reuse
     loadedSongData = songlistData;
-    filteredSongData = songlistData;
-    
-    // Also assign to window for global access
     window.loadedSongData = songlistData;
-    window.filteredSongData = songlistData;
     
-    // Initialize pagination module
-    if (window.tablePagination) {
-      window.tablePagination.initPagination(songlistData);
-    }
-    
-    // Initialize search handler with the song data
-    if (window.searchHandler) {
-      window.searchHandler.initSearch(songlistData);
-    } else {
-      // Fallback to legacy search if search handler module is not available
-      setupSearch(songlistData);
-    }
-    
-    // Render the table and mobile list
-    if (window.renderTable) {
-      window.renderTable(songlistData);
-    } else {
-      renderTable(songlistData);
-    }
-    
-    if (window.renderMobileList) {
-      window.renderMobileList(songlistData);
-    } else {
-      renderMobileList(songlistData);
-    }
-    
-    // Initialize sortable headers
-    if (typeof window.initSortableHeaders === 'function') {
-      console.log('Initializing sortable headers');
-      window.initSortableHeaders();
-    }
+    // Initialize List.js
+    initializeListJs(songlistData);
   }
   
   /**
-   * Set up search functionality
-   * @param {Array} songData - The full song data array
+   * Initialize List.js with song data
+   * @param {Array} songData - Processed song data
    */
-  function setupSearch(songData) {
-    console.log('Setting up search functionality');
-    // Only use the legacy search if the search handler module is not available
-    if (!window.searchHandler) {
-      console.log('Search handler module not found, using legacy search');
-      // Legacy search function as fallback
-      if (searchButton && searchInput) {
-        searchButton.addEventListener('click', function() {
-          performSearch(songData);
+  function initializeListJs(songData) {
+    console.log('Initializing List.js with', songData.length, 'songs');
+    
+    // Wait for DOM to be fully ready
+    setTimeout(() => {
+      try {
+        // Get the container element
+        const container = document.getElementById('songlist-listjs-container');
+        if (!container) {
+          console.error('Container element not found');
+          showError('Table container element not found');
+          return;
+        }
+        
+        // Check if List.js library is available
+        if (typeof window.List !== 'function') {
+          console.error('List.js library not loaded');
+          showError('Required library List.js is not loaded. Please check your internet connection and reload the page.');
+          return;
+        }
+        
+        // Completely recreate the table structure for List.js
+        container.innerHTML = `
+          <div class="list-controls mb-4">
+            <input class="search form-control w-full p-3 border border-gray-300 rounded-md" 
+              placeholder="Search songs, performers, and administrators, e.g.: elvis" 
+              aria-label="Search songs">
+          </div>
+          
+          <table id="songlist-table" class="min-w-full bg-white">
+            <thead class="bg-navy text-white">
+              <tr>
+                <th class="py-3 px-4 text-left sort" data-sort="title">Title</th>
+                <th class="py-3 px-4 text-left sort" data-sort="performers">Performer(s)</th>
+                <th class="py-3 px-4 text-left sort" data-sort="administrator">Rights Administrator</th>
+                <th class="py-3 px-4 text-center">YouTube</th>
+              </tr>
+            </thead>
+            <tbody class="list">
+              <!-- Table content will be populated by List.js -->
+            </tbody>
+          </table>
+          
+          <div class="pagination-wrapper my-4">
+            <div class="pagination-controls flex justify-between items-center">
+              <div class="pagination"></div>
+              <div class="rows-per-page-container"></div>
+            </div>
+          </div>
+        `;
+        
+        // Add rows-per-page control
+        const rowsPerPageContainer = container.querySelector('.rows-per-page-container');
+        if (rowsPerPageContainer) {
+          const template = document.getElementById('rows-per-page-template');
+          if (template) {
+            const rowsPerPageControl = template.content.cloneNode(true);
+            rowsPerPageContainer.appendChild(rowsPerPageControl);
+          }
+        }
+        
+        // Convert the data for List.js
+        const listData = songData.map(song => ({
+          title: song.title || 'Unknown Title',
+          performers: song.performers || 'Unknown Performer',
+          administrator: song.administrator || 'Unknown',
+          youtube: `<a href="${song.youtubeUrl || '#'}" class="text-red-600 hover:text-red-800" target="_blank">▶</a>`
+        }));
+        
+        // Options for List.js
+        const options = {
+          valueNames: ['title', 'performers', 'administrator', 'youtube'],
+          item: `<tr>
+                  <td class="title py-3 px-4"></td>
+                  <td class="performers py-3 px-4"></td>
+                  <td class="administrator py-3 px-4"></td>
+                  <td class="youtube py-3 px-4 text-center"></td>
+                </tr>`,
+          page: window.tbConfig?.pagination?.desktop?.defaultRowsPerPage || 15,
+          pagination: {
+            name: "pagination",
+            paginationClass: "pagination",
+            outerWindow: 1,
+            innerWindow: 2,
+            left: 2,
+            right: 2
+          }
+        };
+        
+        // Initialize List.js
+        const list = new List(container, options, listData);
+        
+        // Store reference for later use
+        listJsInstance = list;
+        
+        // Setup rows per page control
+        setupRowsPerPage();
+        
+        // Fix pagination to prevent scrolling to top
+        preventPaginationScroll();
+        
+        // Initial UI update
+        updateUI();
+        
+        // Add event listener for List.js updates
+        list.on('updated', function() {
+          console.log('List.js updated, refreshing UI');
+          updateUI();
+          
+          // Re-apply pagination fix after list update
+          preventPaginationScroll();
         });
         
-        // Add search on Enter key
-        searchInput.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') {
-            performSearch(songData);
-          }
-        });
+        console.log('List.js initialized successfully with', list.size(), 'items');
+      } catch (error) {
+        console.error('Error initializing List.js:', error);
+        showError(`Failed to initialize table: ${error.message}`);
       }
-    } else {
-      console.log('Search handler module found, skipping legacy search setup');
-    }
+    }, 100); // Small delay to ensure DOM is ready
   }
   
   /**
-   * Perform search on song data
-   * @param {Array} songData - The full song data array
+   * Prevent pagination links from scrolling to top of page
    */
-  function performSearch(songData) {
-    if (!searchInput) {
-      console.error('Search input element not found');
+  function preventPaginationScroll() {
+    setTimeout(() => {
+      const paginationLinks = document.querySelectorAll('.pagination li a');
+      paginationLinks.forEach(link => {
+        if (!link._hasClickHandler) {
+          link._hasClickHandler = true;
+          link.addEventListener('click', function(e) {
+            // Prevent default anchor behavior that causes page scroll
+            e.preventDefault();
+            
+            // The click will still bubble to List.js's handlers
+            // and trigger the page change correctly
+          });
+        }
+      });
+    }, 100);
+  }
+  
+  /**
+   * Setup rows per page dropdown to work with List.js
+   */
+  function setupRowsPerPage() {
+    const rowsPerPageSelects = document.querySelectorAll('.rows-per-page-select');
+    
+    if (!rowsPerPageSelects.length) {
+      console.warn('No rows-per-page-select elements found');
       return;
     }
     
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    console.log('Searching for:', searchTerm);
+    // Get options from config
+    const options = window.tbConfig?.pagination?.desktop?.rowsPerPageOptions || [10, 15, 20, 50, 100];
+    const defaultValue = window.tbConfig?.pagination?.desktop?.defaultRowsPerPage || 15;
     
-    if (searchTerm) {
-      try {
-        const filteredData = songData.filter(song => {
-          // Ensure all values are strings before calling toLowerCase()
-          const title = String(song.title || '').toLowerCase();
-          const performers = String(song.performers || '').toLowerCase();
-          const administrator = String(song.administrator || '').toLowerCase();
+    // Populate the selects with options
+    rowsPerPageSelects.forEach(select => {
+      // Clear existing options
+      select.innerHTML = '';
+      
+      // Add options from config
+      options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        optionElement.selected = option === defaultValue;
+        select.appendChild(optionElement);
+      });
+      
+      // Add change event listener
+      select.addEventListener('change', function() {
+        const value = parseInt(this.value, 10);
+        if (listJsInstance && !isNaN(value)) {
+          // Update list.js page size
+          listJsInstance.page = value;
+          listJsInstance.update();
           
-          return title.includes(searchTerm) || 
-                 performers.includes(searchTerm) || 
-                 administrator.includes(searchTerm);
-        });
-        
-        // Show "no results" if nothing found
-        if (filteredData.length === 0) {
-          if (songlistTable) {
-            const tbody = songlistTable.querySelector('tbody');
-            if (tbody) {
-              tbody.innerHTML = `
-                <tr>
-                  <td colspan="4" class="py-8 text-center">
-                    <div>
-                      <p>No songs found matching "${searchTerm}"</p>
-                      <button id="reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
-                    </div>
-                  </td>
-                </tr>
-              `;
-              
-              setTimeout(() => {
-                const resetButton = document.getElementById('reset-search');
-                if (resetButton) {
-                  resetButton.addEventListener('click', function() {
-                    searchInput.value = '';
-                    currentPage = 0;
-                    currentDesktopPage = 0;
-                    filteredSongData = songData;
-                    window.filteredSongData = songData;
-                    renderTable(songData);
-                    renderMobileList(songData);
-                  });
-                }
-              }, 0);
+          // Update all other selects to match
+          rowsPerPageSelects.forEach(otherSelect => {
+            if (otherSelect !== this) {
+              otherSelect.value = value;
             }
-          }
+          });
           
-          if (mobileList) {
-            mobileList.innerHTML = `
-              <li class="song-list-entry text-center py-4">
-                <div>
-                  <p>No songs found matching "${searchTerm}"</p>
-                  <button id="mobile-reset-search" class="btn btn-navy btn-sm mt-2">Show All Songs</button>
-                </div>
-              </li>
-            `;
-            
-            setTimeout(() => {
-              const mobileResetButton = document.getElementById('mobile-reset-search');
-              if (mobileResetButton) {
-                mobileResetButton.addEventListener('click', function() {
-                  searchInput.value = '';
-                  currentPage = 0;
-                  currentDesktopPage = 0;
-                  filteredSongData = songData;
-                  window.filteredSongData = songData;
-                  renderTable(songData);
-                  renderMobileList(songData);
-                });
-              }
-            }, 0);
-          }
-        } else {
-          // Reset pagination when searching
-          currentPage = 0;
-          currentDesktopPage = 0;
-          filteredSongData = filteredData;
-          window.filteredSongData = filteredData;
-          renderTable(filteredData);
-          renderMobileList(filteredData);
+          console.log('Rows per page changed to', value);
         }
-      } catch (error) {
-        console.error('Error during search:', error);
-      }
+      });
+    });
+    
+    console.log('Rows per page controls initialized');
+  }
+  
+  /**
+   * Update UI elements outside of List.js
+   */
+  function updateUI() {
+    if (!listJsInstance) return;
+    
+    // Update the songlist heading to indicate search state
+    const songlistHeading = document.getElementById('songlist-heading');
+    if (!songlistHeading) return;
+    
+    const totalItems = listJsInstance.matchingItems.length;
+    const searchValue = document.querySelector('#songlist-listjs-container .search')?.value || '';
+    const originalText = "Song List";
+    
+    if (searchValue && searchValue.trim() !== '') {
+      // When showing search results
+      songlistHeading.innerHTML = `${originalText} <span class="text-sm ml-2 opacity-80 font-normal">(Showing ${totalItems} results for "${searchValue}")</span>`;
     } else {
-      // Reset pagination when clearing search
-      currentPage = 0;
-      currentDesktopPage = 0;
-      filteredSongData = songData;
-      window.filteredSongData = songData;
-      renderTable(songData);
-      renderMobileList(songData);
+      // When showing all items or reset
+      songlistHeading.innerHTML = originalText;
+      // Restore toggle icon
+      const toggleIcon = document.createElement('span');
+      toggleIcon.className = 'toggle-icon';
+      toggleIcon.setAttribute('aria-hidden', 'true');
+      toggleIcon.textContent = songlistHeading.getAttribute('aria-expanded') === 'true' ? '−' : '+';
+      songlistHeading.appendChild(toggleIcon);
+    }
+    
+    // Add event listener to List.js updates
+    if (listJsInstance && !listJsInstance._boundUpdateEvent) {
+      listJsInstance.on('updated', function() {
+        updateUI();
+      });
+      listJsInstance._boundUpdateEvent = true;
     }
   }
   
@@ -459,257 +494,12 @@ document.addEventListener('DOMContentLoaded', function() {
             <div>
               <p class="font-bold">Error loading data</p>
               <p class="text-sm">${message}</p>
-              <p class="text-sm mt-2">Please make sure you're accessing this site through a web server (http://localhost:8000) and not directly from a file.</p>
+              <p class="text-sm mt-2">Please make sure you're accessing this site through a web server (http://localhost:8000 or https://localhost:8000) and not directly from a file.</p>
             </div>
           </td>
         </tr>
       `;
     }
-    
-    // Also show error in mobile view
-    if (mobileList) {
-      mobileList.innerHTML = `
-        <li class="song-list-entry text-center py-4 text-red-600">
-          <div>
-            <p class="font-bold">Error loading data</p>
-            <p class="text-sm">${message}</p>
-          </div>
-        </li>
-      `;
-    }
-  }
-  
-  /**
-   * Render the table with the provided data
-   * @param {Array} songs - Array of song objects
-   */
-  function renderTable(songs) {
-    console.log("Song count: " + songs.length);
-    
-    // Get or create the tbody element
-    let tbody = songlistTable.querySelector('tbody');
-    if (!tbody) {
-      tbody = document.createElement('tbody');
-      songlistTable.appendChild(tbody);
-    } else {
-      tbody.innerHTML = '';
-    }
-    
-    // Calculate pagination for desktop
-    const start = currentDesktopPage * DESKTOP_ROWS_PER_PAGE;
-    const end = Math.min(start + DESKTOP_ROWS_PER_PAGE, songs.length);
-    const pageData = songs.slice(start, end);
-    
-    // Update desktop pagination info and buttons
-    updateDesktopPagination(songs, start, end);
-    
-    // Add each song to the table
-    pageData.forEach(song => {
-      const row = document.createElement('tr');
-      row.className = 'border-b hover:bg-gray-50';
-      
-      row.innerHTML = `
-        <td class="py-3 px-4"><a href="#songs" class="site-link">${song.title || 'Unknown Title'}</a></td>
-        <td class="py-3 px-4">${song.performers || 'Unknown Performer'}</td>
-        <td class="py-3 px-4">${song.administrator || 'Unknown'}</td>
-        <td class="py-3 px-4 text-center">
-          <a href="${song.youtubeUrl || '#'}" target="_blank" class="text-red-600 hover:text-red-800">▶</a>
-        </td>
-      `;
-      
-      tbody.appendChild(row);
-    });
-    
-    console.log('Table rendered successfully');
-  }
-  
-  /**
-   * Update desktop pagination information and button states
-   * @param {Array} songs - Full array of songs (filtered or not)
-   * @param {number} start - Start index of current page
-   * @param {number} end - End index of current page
-   */
-  function updateDesktopPagination(songs, start, end) {
-    const totalPages = Math.ceil(songs.length / DESKTOP_ROWS_PER_PAGE);
-    const currentPageNumber = currentDesktopPage + 1;
-    const isFirstPage = currentDesktopPage === 0;
-    const isLastPage = end >= songs.length;
-    
-    // Create page info text
-    let pageInfoText;
-    if (songs.length <= DESKTOP_ROWS_PER_PAGE) {
-      pageInfoText = `Showing all ${songs.length} song${songs.length !== 1 ? 's' : ''}`;
-    } else {
-      pageInfoText = `Page ${currentPageNumber} of ${totalPages} (${start + 1}-${end} of ${songs.length} songs)`;
-    }
-    
-    // Update lower pagination controls
-    if (desktopPageInfo) {
-      desktopPageInfo.textContent = pageInfoText;
-      
-      // Update button states
-      if (desktopFirstButton) desktopFirstButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-      if (desktopPrevButton) desktopPrevButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-      if (desktopNextButton) desktopNextButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-      if (desktopLastButton) desktopLastButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-    }
-    
-    // Update upper pagination controls
-    if (upperDesktopPageInfo) {
-      upperDesktopPageInfo.textContent = pageInfoText;
-      
-      // Update button states
-      if (upperDesktopFirstButton) upperDesktopFirstButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-      if (upperDesktopPrevButton) upperDesktopPrevButton.disabled = isFirstPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-      if (upperDesktopNextButton) upperDesktopNextButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-      if (upperDesktopLastButton) upperDesktopLastButton.disabled = isLastPage || songs.length <= DESKTOP_ROWS_PER_PAGE;
-    }
-  }
-  
-  /**
-   * Function to render the mobile list
-   * @param {Array} songs - Array of song objects
-   */
-  function renderMobileList(songs) {
-    if (!mobileList) return;
-    
-    mobileList.innerHTML = '';
-    
-    const start = currentPage * ROWS_PER_PAGE;
-    const end = Math.min(start + ROWS_PER_PAGE, songs.length);
-    const pageData = songs.slice(start, end);
-    
-    // Add pagination info
-    if (songs.length > ROWS_PER_PAGE) {
-      const paginationInfo = document.createElement('li');
-      paginationInfo.className = 'song-list-pagination-info text-center text-sm text-gray-600 mb-2';
-      paginationInfo.textContent = `Showing ${start + 1}-${end} of ${songs.length} songs`;
-      mobileList.appendChild(paginationInfo);
-    }
-    
-    pageData.forEach(song => {
-      const listItem = document.createElement('li');
-      listItem.className = 'song-list-entry';
-      
-      // Truncate long texts for mobile
-      const truncateText = (text, maxLength = 20) => {
-        if (!text) return '';
-        if (text.length <= maxLength) return text;
-        return text.substring(0, maxLength - 3) + '...';
-      };
-      
-      const title = song.title;
-      const performers = truncateText(song.performers, 25);
-      const admin = song.administrator ? truncateText(song.administrator, 20) : '';
-      
-      listItem.innerHTML = `
-        <div class="mobile-song-title"><a href="#songs">${title}</a></div>
-        <div class="mobile-song-performers">${performers}</div>
-        <div class="mobile-song-details">
-          <div class="mobile-song-admin">${admin}</div>
-          <a href="${song.youtubeUrl}" target="_blank" class="listen-button">▶</a>
-        </div>
-      `;
-      
-      mobileList.appendChild(listItem);
-    });
-    
-    // Update pagination buttons
-    if (prevButton && nextButton) {
-      prevButton.disabled = currentPage === 0;
-      nextButton.disabled = (currentPage + 1) * ROWS_PER_PAGE >= songs.length;
-    }
-  }
-  
-  // Add event listeners for pagination
-  if (prevButton && nextButton) {
-    prevButton.addEventListener('click', () => {
-      if (currentPage > 0 && filteredSongData) {
-        currentPage--;
-        renderMobileList(filteredSongData);
-      }
-    });
-    
-    nextButton.addEventListener('click', () => {
-      if (filteredSongData && (currentPage + 1) * ROWS_PER_PAGE < filteredSongData.length) {
-        currentPage++;
-        renderMobileList(filteredSongData);
-      }
-    });
-  }
-  
-  // Add event listeners for desktop pagination
-  if (desktopPrevButton && desktopNextButton) {
-    desktopPrevButton.addEventListener('click', () => {
-      if (currentDesktopPage > 0 && filteredSongData) {
-        currentDesktopPage--;
-        renderTable(filteredSongData);
-      }
-    });
-    
-    desktopNextButton.addEventListener('click', () => {
-      if (filteredSongData && (currentDesktopPage + 1) * DESKTOP_ROWS_PER_PAGE < filteredSongData.length) {
-        currentDesktopPage++;
-        renderTable(filteredSongData);
-      }
-    });
-  }
-  
-  // Add event listeners for first and last page buttons
-  if (desktopFirstButton && desktopLastButton) {
-    desktopFirstButton.addEventListener('click', () => {
-      if (currentDesktopPage > 0 && filteredSongData) {
-        currentDesktopPage = 0;
-        renderTable(filteredSongData);
-      }
-    });
-    
-    desktopLastButton.addEventListener('click', () => {
-      if (filteredSongData) {
-        const lastPage = Math.max(0, Math.ceil(filteredSongData.length / DESKTOP_ROWS_PER_PAGE) - 1);
-        if (currentDesktopPage !== lastPage) {
-          currentDesktopPage = lastPage;
-          renderTable(filteredSongData);
-        }
-      }
-    });
-  }
-  
-  // Add event listeners for upper desktop pagination
-  if (upperDesktopPrevButton && upperDesktopNextButton) {
-    upperDesktopPrevButton.addEventListener('click', () => {
-      if (currentDesktopPage > 0 && filteredSongData) {
-        currentDesktopPage--;
-        renderTable(filteredSongData);
-      }
-    });
-    
-    upperDesktopNextButton.addEventListener('click', () => {
-      if (filteredSongData && (currentDesktopPage + 1) * DESKTOP_ROWS_PER_PAGE < filteredSongData.length) {
-        currentDesktopPage++;
-        renderTable(filteredSongData);
-      }
-    });
-  }
-  
-  // Add event listeners for upper first and last page buttons
-  if (upperDesktopFirstButton && upperDesktopLastButton) {
-    upperDesktopFirstButton.addEventListener('click', () => {
-      if (currentDesktopPage > 0 && filteredSongData) {
-        currentDesktopPage = 0;
-        renderTable(filteredSongData);
-      }
-    });
-    
-    upperDesktopLastButton.addEventListener('click', () => {
-      if (filteredSongData) {
-        const lastPage = Math.max(0, Math.ceil(filteredSongData.length / DESKTOP_ROWS_PER_PAGE) - 1);
-        if (currentDesktopPage !== lastPage) {
-          currentDesktopPage = lastPage;
-          renderTable(filteredSongData);
-        }
-      }
-    });
   }
   
   // Listen for section expansion
@@ -720,20 +510,23 @@ document.addEventListener('DOMContentLoaded', function() {
       const willBeExpanded = this.getAttribute('aria-expanded') === 'false';
       console.log('Song List section clicked, willBeExpanded:', willBeExpanded);
       
-      if (willBeExpanded && filteredSongData) {
-        console.log('Song List section will be expanded, rendering tables');
-        renderTable(filteredSongData);
-        renderMobileList(filteredSongData);
+      if (willBeExpanded && listJsInstance) {
+        console.log('Song List section will be expanded, updating List.js');
+        // Force List.js to recalculate layout when section is expanded
+        setTimeout(() => {
+          listJsInstance.update();
+        }, 50);
       }
     });
   }
   
   // Handle responsive behavior
   window.addEventListener('resize', () => {
-    if (window.innerWidth < 768 && mobileList && filteredSongData) {
-      renderMobileList(filteredSongData);
-    } else if (window.innerWidth >= 768 && songlistTable && filteredSongData) {
-      renderTable(filteredSongData);
+    if (listJsInstance) {
+      // Give the browser time to reflow then update List.js
+      setTimeout(() => {
+        listJsInstance.update();
+      }, 100);
     }
   });
   
