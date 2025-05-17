@@ -131,19 +131,13 @@ function changeRowsPerPage(newRowsPerPage) {
  * Initialize desktop pagination controls
  */
 function initDesktopPagination() {
-  // Lower desktop pagination elements
+  // Desktop pagination elements
   const desktopPrevButton = document.getElementById('desktop-prev-page');
   const desktopNextButton = document.getElementById('desktop-next-page');
   const desktopFirstButton = document.getElementById('desktop-first-page');
   const desktopLastButton = document.getElementById('desktop-last-page');
   
-  // Upper desktop pagination elements
-  const upperDesktopPrevButton = document.getElementById('upper-desktop-prev-page');
-  const upperDesktopNextButton = document.getElementById('upper-desktop-next-page');
-  const upperDesktopFirstButton = document.getElementById('upper-desktop-first-page');
-  const upperDesktopLastButton = document.getElementById('upper-desktop-last-page');
-  
-  // Add event listeners for lower desktop pagination
+  // Add event listeners for desktop pagination
   if (desktopPrevButton && desktopNextButton) {
     desktopPrevButton.addEventListener('click', () => {
       if (currentDesktopPage > 0 && filteredSongData) {
@@ -160,7 +154,7 @@ function initDesktopPagination() {
     });
   }
   
-  // Add event listeners for lower first and last page buttons
+  // Add event listeners for first and last page buttons
   if (desktopFirstButton && desktopLastButton) {
     desktopFirstButton.addEventListener('click', () => {
       if (currentDesktopPage > 0 && filteredSongData) {
@@ -170,43 +164,6 @@ function initDesktopPagination() {
     });
     
     desktopLastButton.addEventListener('click', () => {
-      if (filteredSongData) {
-        const lastPage = Math.max(0, Math.ceil(filteredSongData.length / DESKTOP_ROWS_PER_PAGE) - 1);
-        if (currentDesktopPage !== lastPage) {
-          currentDesktopPage = lastPage;
-          window.renderTable(filteredSongData);
-        }
-      }
-    });
-  }
-  
-  // Add event listeners for upper desktop pagination
-  if (upperDesktopPrevButton && upperDesktopNextButton) {
-    upperDesktopPrevButton.addEventListener('click', () => {
-      if (currentDesktopPage > 0 && filteredSongData) {
-        currentDesktopPage--;
-        window.renderTable(filteredSongData);
-      }
-    });
-    
-    upperDesktopNextButton.addEventListener('click', () => {
-      if (filteredSongData && (currentDesktopPage + 1) * DESKTOP_ROWS_PER_PAGE < filteredSongData.length) {
-        currentDesktopPage++;
-        window.renderTable(filteredSongData);
-      }
-    });
-  }
-  
-  // Add event listeners for upper first and last page buttons
-  if (upperDesktopFirstButton && upperDesktopLastButton) {
-    upperDesktopFirstButton.addEventListener('click', () => {
-      if (currentDesktopPage > 0 && filteredSongData) {
-        currentDesktopPage = 0;
-        window.renderTable(filteredSongData);
-      }
-    });
-    
-    upperDesktopLastButton.addEventListener('click', () => {
       if (filteredSongData) {
         const lastPage = Math.max(0, Math.ceil(filteredSongData.length / DESKTOP_ROWS_PER_PAGE) - 1);
         if (currentDesktopPage !== lastPage) {
@@ -250,17 +207,11 @@ function initMobilePagination() {
  */
 function updateDesktopPagination(songlist, start, end) {
   const desktopPageInfo = document.getElementById('desktop-page-info');
-  const upperDesktopPageInfo = document.getElementById('upper-desktop-page-info');
   
   const desktopFirstButton = document.getElementById('desktop-first-page');
   const desktopPrevButton = document.getElementById('desktop-prev-page');
   const desktopNextButton = document.getElementById('desktop-next-page');
   const desktopLastButton = document.getElementById('desktop-last-page');
-  
-  const upperDesktopFirstButton = document.getElementById('upper-desktop-first-page');
-  const upperDesktopPrevButton = document.getElementById('upper-desktop-prev-page');
-  const upperDesktopNextButton = document.getElementById('upper-desktop-next-page');
-  const upperDesktopLastButton = document.getElementById('upper-desktop-last-page');
   
   const totalPages = Math.ceil(songlist.length / DESKTOP_ROWS_PER_PAGE);
   const currentPageNumber = currentDesktopPage + 1;
@@ -275,7 +226,7 @@ function updateDesktopPagination(songlist, start, end) {
     pageInfoText = `Page ${currentPageNumber} of ${totalPages} (${start + 1}-${end} of ${songlist.length} songs)`;
   }
   
-  // Update lower pagination controls
+  // Update pagination controls
   if (desktopPageInfo) {
     desktopPageInfo.textContent = pageInfoText;
     
@@ -284,17 +235,12 @@ function updateDesktopPagination(songlist, start, end) {
     if (desktopPrevButton) desktopPrevButton.disabled = isFirstPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
     if (desktopNextButton) desktopNextButton.disabled = isLastPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
     if (desktopLastButton) desktopLastButton.disabled = isLastPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
-  }
-  
-  // Update upper pagination controls
-  if (upperDesktopPageInfo) {
-    upperDesktopPageInfo.textContent = pageInfoText;
     
-    // Update button states
-    if (upperDesktopFirstButton) upperDesktopFirstButton.disabled = isFirstPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
-    if (upperDesktopPrevButton) upperDesktopPrevButton.disabled = isFirstPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
-    if (upperDesktopNextButton) upperDesktopNextButton.disabled = isLastPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
-    if (upperDesktopLastButton) upperDesktopLastButton.disabled = isLastPage || songlist.length <= DESKTOP_ROWS_PER_PAGE;
+    // Re-append the rows-per-page control if necessary
+    const rowsPerPage = document.getElementById('rows-per-page');
+    if (rowsPerPage && rowsPerPage.parentElement && desktopPageInfo) {
+      desktopPageInfo.appendChild(rowsPerPage.parentElement);
+    }
   }
 }
 

@@ -111,51 +111,7 @@ function renderTable(songlist) {
   // Add styles to pagination container
   paginationDiv.classList.add('flex', 'flex-col', 'gap-4', 'my-4');
   
-  // Create structured pagination elements
-  // 1. Upper pagination
-  const upperPagination = document.createElement('div');
-  upperPagination.id = 'upper-pagination';
-  upperPagination.className = 'desktop-pagination';
-  
-  // Upper pagination info
-  const upperPageInfo = document.createElement('div');
-  upperPageInfo.id = 'upper-desktop-page-info';
-  upperPageInfo.className = 'page-info';
-  upperPagination.appendChild(upperPageInfo);
-  
-  // Upper pagination controls
-  const upperPageControls = document.createElement('div');
-  upperPageControls.className = 'page-controls';
-  
-  // Create upper pagination buttons
-  const upperFirstButton = document.createElement('button');
-  upperFirstButton.id = 'upper-desktop-first-page';
-  upperFirstButton.className = 'btn btn-sm btn-navy pagination-button';
-  upperFirstButton.innerHTML = '&laquo;';
-  upperPageControls.appendChild(upperFirstButton);
-  
-  const upperPrevButton = document.createElement('button');
-  upperPrevButton.id = 'upper-desktop-prev-page';
-  upperPrevButton.className = 'btn btn-sm btn-navy pagination-button';
-  upperPrevButton.innerHTML = '&lsaquo;';
-  upperPageControls.appendChild(upperPrevButton);
-  
-  const upperNextButton = document.createElement('button');
-  upperNextButton.id = 'upper-desktop-next-page';
-  upperNextButton.className = 'btn btn-sm btn-navy pagination-button';
-  upperNextButton.innerHTML = '&rsaquo;';
-  upperPageControls.appendChild(upperNextButton);
-  
-  const upperLastButton = document.createElement('button');
-  upperLastButton.id = 'upper-desktop-last-page';
-  upperLastButton.className = 'btn btn-sm btn-navy pagination-button';
-  upperLastButton.innerHTML = '&raquo;';
-  upperPageControls.appendChild(upperLastButton);
-  
-  upperPagination.appendChild(upperPageControls);
-  paginationDiv.appendChild(upperPagination);
-  
-  // 2. Lower pagination
+  // Create structured pagination elements - only lower pagination
   const lowerPagination = document.createElement('div');
   lowerPagination.id = 'lower-pagination';
   lowerPagination.className = 'desktop-pagination';
@@ -218,53 +174,16 @@ function renderTable(songlist) {
       });
     };
     
-    // Upper pagination control
-    const upperControl = template.content.cloneNode(true);
-    const upperSelect = upperControl.querySelector('select');
-    upperSelect.id = 'rows-per-page';
-    upperSelect.className = 'rows-per-page-select form-select ml-2 p-1 border border-gray-300 rounded';
-    createOptions(upperSelect);
-    upperPageInfo.appendChild(upperControl);
-    
     // Lower pagination control
     const lowerControl = template.content.cloneNode(true);
     const lowerSelect = lowerControl.querySelector('select');
-    lowerSelect.id = 'lower-rows-per-page';
+    lowerSelect.id = 'rows-per-page';
     lowerSelect.className = 'rows-per-page-select form-select ml-2 p-1 border border-gray-300 rounded';
     createOptions(lowerSelect);
     lowerPageInfo.appendChild(lowerControl);
   }
   
   // Set up pagination button event listeners
-  // Upper pagination
-  upperFirstButton.addEventListener('click', () => {
-    if (currentPage !== 0) {
-      currentPage = 0;
-      updateTableDisplay(songlist);
-    }
-  });
-  
-  upperPrevButton.addEventListener('click', () => {
-    if (currentPage > 0) {
-      currentPage--;
-      updateTableDisplay(songlist);
-    }
-  });
-  
-  upperNextButton.addEventListener('click', () => {
-    if (currentPage < totalPages - 1) {
-      currentPage++;
-      updateTableDisplay(songlist);
-    }
-  });
-  
-  upperLastButton.addEventListener('click', () => {
-    if (currentPage < totalPages - 1) {
-      currentPage = totalPages - 1;
-      updateTableDisplay(songlist);
-    }
-  });
-  
   // Lower pagination
   lowerFirstButton.addEventListener('click', () => {
     if (currentPage !== 0) {
@@ -350,31 +269,18 @@ function renderTable(songlist) {
       pageInfoText = `Page ${currentPage + 1} of ${totalPages} (${start}-${end} of ${totalRows} songs)`;
     }
     
-    // Update both upper and lower pagination info
-    upperPageInfo.textContent = pageInfoText;
+    // Update lower pagination info
     lowerPageInfo.textContent = pageInfoText;
     
-    // Re-append the rows-per-page controls after updating text
-    const upperSelect = document.getElementById('rows-per-page');
-    const lowerSelect = document.getElementById('lower-rows-per-page');
-    
-    if (upperSelect && upperSelect.parentElement) {
-      upperPageInfo.appendChild(upperSelect.parentElement);
-    }
-    
-    if (lowerSelect && lowerSelect.parentElement) {
-      lowerPageInfo.appendChild(lowerSelect.parentElement);
+    // Re-append the rows-per-page control after updating text
+    const rowsPerPage = document.getElementById('rows-per-page');
+    if (rowsPerPage && rowsPerPage.parentElement) {
+      lowerPageInfo.appendChild(rowsPerPage.parentElement);
     }
     
     // Update button states
     const isFirstPage = currentPage === 0;
     const isLastPage = currentPage >= totalPages - 1;
-    
-    // Upper pagination buttons
-    upperFirstButton.disabled = isFirstPage || totalRows <= itemsPerPage;
-    upperPrevButton.disabled = isFirstPage || totalRows <= itemsPerPage;
-    upperNextButton.disabled = isLastPage || totalRows <= itemsPerPage;
-    upperLastButton.disabled = isLastPage || totalRows <= itemsPerPage;
     
     // Lower pagination buttons
     lowerFirstButton.disabled = isFirstPage || totalRows <= itemsPerPage;
@@ -383,8 +289,7 @@ function renderTable(songlist) {
     lowerLastButton.disabled = isLastPage || totalRows <= itemsPerPage;
     
     // Visual indication of disabled state
-    [upperFirstButton, upperPrevButton, upperNextButton, upperLastButton,
-     lowerFirstButton, lowerPrevButton, lowerNextButton, lowerLastButton].forEach(btn => {
+    [lowerFirstButton, lowerPrevButton, lowerNextButton, lowerLastButton].forEach(btn => {
       if (btn.disabled) {
         btn.classList.add('opacity-50', 'cursor-not-allowed');
         btn.classList.remove('hover:bg-navy-light');
