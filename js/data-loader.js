@@ -109,21 +109,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Simplify to use just one known path instead of trying multiple paths
-  const dataPath = 'data/'; // This is the standard location relative to serving root
-
-  console.log('Using data path:', dataPath);
-  console.log('Current location:', window.location.href);
-
-  // List of files to load
+  // Use configuration from window.tbConfig
+  const dataPath = window.tbConfig?.data?.dataDir || 'data/';
+  const configuredFiles = window.tbConfig?.data?.files || {};
+  
+  // Ensure critical files are defined, provide defaults if not
   const fileNames = [
-    'song-plays.yml',
-    'elvis-songs.yml',
-    'non-elvis-songs.yml',
-    'performers.yml',
-    'organizations.yml',
-    'rights-admin-songs.yml'
+    configuredFiles.songPlays || 'song-plays.yml',
+    configuredFiles.elvisSongs || 'elvis-songs.yml',
+    configuredFiles.nonElvisSongs || 'non-elvis-songs.yml',
+    configuredFiles.performers || 'performers.yml',
+    configuredFiles.organizations || 'organizations.yml',
+    configuredFiles.rightsAdminSongs || 'rights-admin-songs.yml'
   ];
+
+  console.log('Using data path from config:', dataPath);
+  console.log('Using file names from config:', fileNames);
+  console.log('Current location:', window.location.href);
 
   // Load the data
   loadSongData();
