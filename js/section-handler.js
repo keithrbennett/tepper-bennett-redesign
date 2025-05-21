@@ -42,7 +42,7 @@ function toggleSectionStandard(toggle, forcedState) {
             if (toggle.getAttribute('aria-expanded') !== 'true') {
                 content.style.visibility = 'hidden';
             }
-        }, 300);
+        }, window.tbConfig?.animation?.shortDurationMs || 300);
     }
     return true;
 }
@@ -58,8 +58,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const success = toggleSectionStandard(toggle, true);
             if (success) {
                 setTimeout(() => {
-                    toggle.scrollIntoView({ behavior: 'auto', block: 'start' });
-                }, 30);
+                    if (typeof ScrollUtils !== 'undefined' && ScrollUtils.scrollToElement) {
+                        ScrollUtils.scrollToElement(toggle);
+                    } else {
+                        console.warn('[SECTION-HANDLER] ScrollUtils not available, falling back to simple scroll.');
+                        toggle.scrollIntoView({ behavior: 'auto', block: 'start' }); // Fallback
+                    }
+                }, 30); // Small delay for content to become visible before scrolling
                 return true;
             }
         }

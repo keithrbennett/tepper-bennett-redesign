@@ -43,11 +43,6 @@ window.tbConfig = {
     debounceMs: 300
   },
 
-  // Storage keys for localStorage
-  storageKeys: {
-    closedSections: 'tepperBennettClosedSections'
-  },
-
   // Animation and transition timings
   animation: {
     shortDurationMs: 300 // Used for collapsible section content visibility
