@@ -45,7 +45,13 @@ window.tbConfig = {
 
   // Animation and transition timings
   animation: {
-    shortDurationMs: 300 // Used for collapsible section content visibility
+    shortDurationMs: 300, // Used for collapsible section content visibility
+    pageLoadSectionDelayMs: 100 // Delay for expanding section on page load via URL
+  },
+
+  // UI element settings
+  ui: {
+    scrollToTopVisibilityOffsetPx: 300 // Scroll distance before scroll-to-top button appears
   }
 };
 

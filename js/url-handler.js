@@ -6,7 +6,7 @@
 // Initialize scroll handler (IIFE to avoid global namespace pollution)
 (function() {
   // Debug state - set to false for production
-  const DEBUG = false;
+  const DEBUG = window.tbConfig?.debug?.enabled || false;
   
   // Logger function that only logs when DEBUG is true
   function log(message, ...args) {
@@ -118,7 +118,7 @@
     // Function to toggle button visibility
     function toggleScrollButton() {
       // Show button when scrolled down more than 300px
-      if (window.pageYOffset > 300) {
+      if (window.pageYOffset > (window.tbConfig?.ui?.scrollToTopVisibilityOffsetPx || 300)) {
         scrollToTopButton.classList.add('visible');
       } else {
         scrollToTopButton.classList.remove('visible');
@@ -202,7 +202,7 @@
       // Always expand the section
       setTimeout(() => {
         expandAndScrollToSection(sectionId, true);
-      }, 100); // Small delay to ensure other DOM setup is complete
+      }, window.tbConfig?.animation?.pageLoadSectionDelayMs || 100); // Small delay to ensure other DOM setup is complete
     }
     
     // Handle clicks on anchor links to expand sections
