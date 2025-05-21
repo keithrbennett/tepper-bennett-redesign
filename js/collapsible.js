@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const collapseAllButton = document.getElementById('collapse-all');
     
     // Storage key for persistent state
-    const CLOSED_SECTIONS_KEY = 'tepperBennettClosedSections';
+    const CLOSED_SECTIONS_KEY = window.tbConfig?.storageKeys?.closedSections || 'tepperBennettClosedSections';
     
     // Helper functions for closed sections storage
     function getClosedSections() {
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         debugLog('ELVIS', 'Visibility set to hidden after timeout');
                     }
                 }
-            }, 300); // Match the CSS transition duration
+            }, window.tbConfig?.animation?.shortDurationMs || 300); // Match the CSS transition duration
         }
         
         // Check for Elvis-specific behavior after the operation
