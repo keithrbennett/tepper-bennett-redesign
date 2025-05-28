@@ -125,35 +125,16 @@ class FileWatcher(FileSystemEventHandler):
         self.file_to_watch = file_to_watch
         self.filename = os.path.basename(file_to_watch)
     
-    def flash_screen(self):
-        """Flash the screen with image or white color"""
-        # Convert image path to absolute path
-        abs_flash_image = os.path.abspath(FLASH_IMAGE) if os.path.exists(FLASH_IMAGE) else None
-        
-        # Create a temporary Swift script for fullscreen flash
+    def _execute_swift_code(self, swift_code, *args):
+        """Execute Swift code with optional arguments"""
         with tempfile.NamedTemporaryFile(mode='w', suffix='.swift', delete=False) as temp_script:
             temp_script_path = temp_script.name
+            temp_script.write(swift_code)
+            temp_script.flush()
             
-            if abs_flash_image and os.path.isfile(abs_flash_image):
-                # Flash with image
-                swift_code = SWIFT_FLASH_WITH_IMAGE
-                temp_script.write(swift_code)
-                temp_script.flush()
-                
-                # Run swift script with image path
-                subprocess.Popen([
-                    'swift', temp_script_path, abs_flash_image
-                ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            else:
-                # Flash with white color
-                swift_code = SWIFT_FLASH_WHITE
-                temp_script.write(swift_code)
-                temp_script.flush()
-                
-                # Run swift script
-                subprocess.Popen([
-                    'swift', temp_script_path
-                ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            # Run swift script with any provided arguments
+            cmd = ['swift', temp_script_path] + list(args)
+            subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         
         # Clean up after a moment
         def cleanup():
@@ -165,6 +146,18 @@ class FileWatcher(FileSystemEventHandler):
         
         cleanup_thread = threading.Thread(target=cleanup, daemon=True)
         cleanup_thread.start()
+    
+    def flash_screen(self):
+        """Flash the screen with image or white color"""
+        # Convert image path to absolute path
+        abs_flash_image = os.path.abspath(FLASH_IMAGE) if os.path.exists(FLASH_IMAGE) else None
+        
+        if abs_flash_image and os.path.isfile(abs_flash_image):
+            # Flash with image
+            self._execute_swift_code(SWIFT_FLASH_WITH_IMAGE, abs_flash_image)
+        else:
+            # Flash with white color
+            self._execute_swift_code(SWIFT_FLASH_WHITE)
     
     def on_created(self, event):
         if not event.is_directory and event.src_path.endswith(self.filename):
