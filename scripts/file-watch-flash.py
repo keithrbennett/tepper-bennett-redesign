@@ -59,24 +59,8 @@ from watchdog.events import FileSystemEventHandler
 FILE_TO_WATCH = ".cursor_response_complete"
 FLASH_IMAGE = os.path.expanduser("~/alfred-e-neuman.jpeg")
 
-class FileWatcher(FileSystemEventHandler):
-    def __init__(self, file_to_watch):
-        super().__init__()
-        self.file_to_watch = file_to_watch
-        self.filename = os.path.basename(file_to_watch)
-    
-    def flash_screen(self):
-        """Flash the screen with image or white color"""
-        # Convert image path to absolute path
-        abs_flash_image = os.path.abspath(FLASH_IMAGE) if os.path.exists(FLASH_IMAGE) else None
-        
-        # Create a temporary Swift script for fullscreen flash
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.swift', delete=False) as temp_script:
-            temp_script_path = temp_script.name
-            
-            if abs_flash_image and os.path.isfile(abs_flash_image):
-                # Flash with image
-                swift_code = '''
+# Swift code for flashing screen with image
+SWIFT_FLASH_WITH_IMAGE = '''
 import Cocoa
 
 let app = NSApplication.shared
@@ -108,16 +92,9 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 
 app.run()
 '''
-                temp_script.write(swift_code)
-                temp_script.flush()
-                
-                # Run swift script with image path
-                subprocess.Popen([
-                    'swift', temp_script_path, abs_flash_image
-                ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            else:
-                # Flash with white color
-                swift_code = '''
+
+# Swift code for flashing screen with white color
+SWIFT_FLASH_WHITE = '''
 import Cocoa
 
 let app = NSApplication.shared
@@ -141,6 +118,35 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 
 app.run()
 '''
+
+class FileWatcher(FileSystemEventHandler):
+    def __init__(self, file_to_watch):
+        super().__init__()
+        self.file_to_watch = file_to_watch
+        self.filename = os.path.basename(file_to_watch)
+    
+    def flash_screen(self):
+        """Flash the screen with image or white color"""
+        # Convert image path to absolute path
+        abs_flash_image = os.path.abspath(FLASH_IMAGE) if os.path.exists(FLASH_IMAGE) else None
+        
+        # Create a temporary Swift script for fullscreen flash
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.swift', delete=False) as temp_script:
+            temp_script_path = temp_script.name
+            
+            if abs_flash_image and os.path.isfile(abs_flash_image):
+                # Flash with image
+                swift_code = SWIFT_FLASH_WITH_IMAGE
+                temp_script.write(swift_code)
+                temp_script.flush()
+                
+                # Run swift script with image path
+                subprocess.Popen([
+                    'swift', temp_script_path, abs_flash_image
+                ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            else:
+                # Flash with white color
+                swift_code = SWIFT_FLASH_WHITE
                 temp_script.write(swift_code)
                 temp_script.flush()
                 
