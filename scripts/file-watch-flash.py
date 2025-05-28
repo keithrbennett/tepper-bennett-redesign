@@ -159,25 +159,22 @@ class FileWatcher(FileSystemEventHandler):
             # Flash with white color
             self._execute_swift_code(SWIFT_FLASH_WHITE)
     
-    def on_created(self, event):
+    def _handle_file_event(self, event, event_type, should_flash=False):
+        """Handle file events with common logic"""
         if not event.is_directory and event.src_path.endswith(self.filename):
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            print(f"{timestamp} - File CREATED: {event.src_path}")
-            self.flash_screen()
+            print(f"{timestamp} - File {event_type}: {event.src_path}")
+            if should_flash:
+                self.flash_screen()
+    
+    def on_created(self, event):
+        self._handle_file_event(event, "CREATED", should_flash=True)
     
     def on_deleted(self, event):
-        if not event.is_directory and event.src_path.endswith(self.filename):
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            print(f"{timestamp} - File DELETED: {event.src_path}")
-            # Uncomment to flash on deletion
-            # self.flash_screen()
-    
+        self._handle_file_event(event, "DELETED", should_flash=False)
+
     def on_modified(self, event):
-        if not event.is_directory and event.src_path.endswith(self.filename):
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            print(f"{timestamp} - File MODIFIED: {event.src_path}")
-            # Flash on modification since file creation shows up as modification
-            # self.flash_screen()
+        self._handle_file_event(event, "MODIFIED", should_flash=False)
 
 def main():
     # Create the directory for the file if it doesn't exist
