@@ -1,6 +1,6 @@
 /**
  * URL handler for Tepper & Bennett
- * Manages URL hash behavior and scroll functionality
+ * Manages clean URL paths and scroll functionality
  */
 
 // Initialize scroll handler (IIFE to avoid global namespace pollution)
@@ -15,79 +15,71 @@
     }
   }
   
-  log('Initializing URL handler');
+  log('Initializing URL handler for clean paths');
   
-  // Helper function to expand a section and scroll to it
-  function expandAndScrollToSection(sectionId, shouldScroll = true) {
-    console.log('expandAndScrollToSection called with sectionId:', sectionId);
-    
-    // Handle both formats of IDs (with and without -heading suffix)
-    let headingId = sectionId;
-    if (!headingId.endsWith('-heading')) {
-      // If the ID doesn't end with -heading, assume it's a section ID and append -heading
-      headingId = `${sectionId}-heading`;
-    } else {
-      // If it already has -heading, extract the section ID
-      sectionId = headingId.replace('-heading', '');
-    }
-    
-    // First, get the section heading
-    const sectionHeading = document.getElementById(headingId);
-    if (!sectionHeading) {
-      console.log(`Could not find heading with ID: ${headingId}`);
+  // Function to check if a path corresponds to a valid section (sync with section-handler.js)
+  function isValidSectionPath(pathId) {
+    // Skip common browser requests that aren't sections
+    const invalidPaths = ['favicon.ico', 'robots.txt', 'sitemap.xml', 'apple-touch-icon.png'];
+    if (invalidPaths.includes(pathId)) {
       return false;
     }
     
-    // If toggleSection function is available from collapsible.js, use it
-    if (typeof window.tb === 'object' && typeof window.tb.toggleSection === 'function') {
-      // Use the centralized toggle function
-      const success = window.tb.toggleSection(sectionHeading, true);
-      
-      // Scroll to the section if needed
-      if (success && shouldScroll) {
-        scrollToSection(sectionId, sectionHeading);
-      }
-      
-      return success;
+    // Skip paths with file extensions
+    if (pathId.includes('.')) {
+      return false;
     }
     
-    // Fallback implementation if the centralized toggle function is not available
-    // Expand the section if it's not already expanded
-    if (sectionHeading.getAttribute('aria-expanded') === 'false') {
-      sectionHeading.setAttribute('aria-expanded', 'true');
-      sectionHeading.querySelector('.toggle-icon').textContent = '−';
-      
-      const content = document.getElementById(`${sectionId}-content`);
-      if (content) {
-        content.classList.add('open');
-        content.classList.remove('section-initially-closed');
-        
-        // Explicitly set visibility and display properties
-        content.style.visibility = 'visible';
-        content.style.maxHeight = 'none';
-        content.style.opacity = '1';
-        content.style.display = 'block';
-      }
-      
-      // Also update the collapsible.js state
-      try {
-        const closedSectionsSet = new Set(JSON.parse(localStorage.getItem('tepperBennettClosedSections') || '[]'));
-        closedSectionsSet.delete(sectionId);
-        localStorage.setItem('tepperBennettClosedSections', JSON.stringify(Array.from(closedSectionsSet)));
-      } catch (e) {
-        if (DEBUG) console.error('Error updating closed sections:', e);
-      }
+    // Check if there's actually a corresponding section
+    const headingId = pathId.endsWith('-heading') ? pathId : `${pathId}-heading`;
+    const hasHeading = document.getElementById(headingId);
+    const hasContent = document.getElementById(`${pathId}-content`) || document.getElementById(`${pathId.replace('-heading', '')}-content`);
+    
+    return !!(hasHeading || hasContent);
+  }
+
+  // Helper function to trigger expansion of a section and scroll to it
+  function expandAndScrollToSection(sectionIdFromUrl, shouldScroll = true) {
+    console.log('[URL-HANDLER] expandAndScrollToSection called with sectionIdFromUrl:', sectionIdFromUrl, 'shouldScroll:', shouldScroll);
+    
+    // Validate that this is a real section path, not favicon.ico or other browser requests
+    if (!isValidSectionPath(sectionIdFromUrl)) {
+      console.log('[URL-HANDLER] Invalid section path detected, skipping:', sectionIdFromUrl);
+      return false;
     }
     
-    // Scroll to section if needed
-    if (shouldScroll) {
-      scrollToSection(sectionId, sectionHeading);
-    }
+    // Normalize the sectionId: remove "-heading" if present, as paths are clean
+    const cleanSectionId = sectionIdFromUrl.replace('-heading', '');
+    console.log('[URL-HANDLER] Clean section ID:', cleanSectionId);
     
-    return true;
+    let success = false;
+    // Use the global expandSectionById from section-handler.js if available
+    if (typeof window.expandSectionById === 'function') {
+      console.log('[URL-HANDLER] Calling window.expandSectionById with:', cleanSectionId);
+      // section-handler's expandSectionById handles its own scrolling after expansion
+      success = window.expandSectionById(cleanSectionId, true); // Pass true for fromURLHandler
+      console.log('[URL-HANDLER] window.expandSectionById returned:', success);
+    } else {
+      console.warn('[URL Handler] window.expandSectionById is not defined. Section may not expand/scroll correctly.');
+      // As a minimal fallback, try to scroll to the element if it exists and shouldScroll is true.
+      // This part is mostly a safety net.
+      const targetElement = document.getElementById(cleanSectionId) || document.getElementById(`${cleanSectionId}-heading`);
+      if (targetElement && shouldScroll) {
+        if (typeof ScrollUtils !== 'undefined' && ScrollUtils.scrollToElement) {
+          ScrollUtils.scrollToElement(targetElement);
+          success = true;
+        } else {
+          targetElement.scrollIntoView({ behavior: 'auto', block: 'start' });
+          success = true;
+        }
+      }
+    }
+    console.log('[URL-HANDLER] expandAndScrollToSection returning:', success);
+    return success;
   }
   
-  // Helper function to scroll to a section
+  // Helper function to scroll to a section (Retained for potential fallback in expandAndScrollToSection)
+  // Note: section-handler.js's expandSectionById should manage primary scrolling.
   function scrollToSection(sectionId, sectionHeading) {
     // Try to find the section element directly
     const target = document.getElementById(sectionId);
@@ -164,11 +156,11 @@
     toggleScrollButton();
   }
   
-  // Handle hash links and section expansion
+  // Handle path-based navigation and section expansion
   document.addEventListener('DOMContentLoaded', function() {
     log('DOMContentLoaded event fired');
     
-    // Debug: Log all section headings and content elements
+    // Debug: Log all section elements (keeping for diagnostics)
     if (DEBUG) {
       console.log('=== DEBUG: Checking all section elements ===');
       const sections = document.querySelectorAll('section[id]');
@@ -194,56 +186,44 @@
     // Setup scroll-to-top button
     setupScrollToTop();
     
-    // Handle hash in URL (expand sections or navigate)
-    if (window.location.hash) {
-      const sectionId = window.location.hash.substring(1);
-      log('Hash detected in URL:', sectionId);
+    // Handle initial path in URL (expand sections)
+    const initialPath = window.location.pathname;
+    if (initialPath && initialPath !== '/') {
+      const sectionIdFromPath = initialPath.substring(1); // Remove leading '/'
+      log('Path detected in URL on load:', sectionIdFromPath);
       
-      // Always expand the section
-      setTimeout(() => {
-        expandAndScrollToSection(sectionId, true);
-      }, window.tbConfig?.animation?.pageLoadSectionDelayMs || 100); // Small delay to ensure other DOM setup is complete
+      // Only proceed if it's a valid section path
+      if (isValidSectionPath(sectionIdFromPath)) {
+        setTimeout(() => {
+          expandAndScrollToSection(sectionIdFromPath, true);
+        }, window.tbConfig?.animation?.pageLoadSectionDelayMs || 100); 
+      } else {
+        log('Invalid section path on load, ignoring:', sectionIdFromPath);
+      }
     }
     
-    // Handle clicks on anchor links to expand sections
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        const targetId = this.getAttribute('href').substring(1);
-        if (DEBUG) {
-          console.log('Clicked link with href:', this.getAttribute('href'));
-          console.log('Target ID:', targetId);
-        }
-        
-        if (!targetId) return;
-        
-        // Prevent default browser scroll behavior so we can control it
-        e.preventDefault();
-        
-        // Update the URL hash without causing scroll
-        if (history.pushState) {
-          history.pushState(null, null, `#${targetId}`);
-          if (DEBUG) {
-            console.log('Updated URL hash to:', `#${targetId}`);
-          }
-        } else {
-          // Fallback for older browsers
-          window.location.hash = targetId;
-        }
-        
-        // Expand the section and scroll to it
-        const result = expandAndScrollToSection(targetId, true);
-        if (DEBUG) {
-          console.log('expandAndScrollToSection result:', result);
-        }
-      });
-    });
+    // Click handling for a[href^="#"] removed as section-handler.js now handles a[href^="/"]
   });
   
-  // Also handle popstate (back/forward buttons)
-  window.addEventListener('popstate', function() {
-    if (window.location.hash) {
-      const sectionId = window.location.hash.substring(1);
-      expandAndScrollToSection(sectionId, true);
+  // Also handle popstate (back/forward buttons) for path changes
+  window.addEventListener('popstate', function(event) {
+    log('popstate event fired. New path:', window.location.pathname, 'State:', event.state);
+    const currentPath = window.location.pathname;
+    if (currentPath && currentPath !== '/') {
+      const sectionIdFromPath = currentPath.substring(1); // Remove leading '/'
+      log('popstate: Path detected:', sectionIdFromPath);
+      
+      // Only proceed if it's a valid section path
+      if (isValidSectionPath(sectionIdFromPath)) {
+        expandAndScrollToSection(sectionIdFromPath, true);
+      } else {
+        log('popstate: Invalid section path, ignoring:', sectionIdFromPath);
+      }
+    } else {
+      log('popstate: Path is / (root). No specific section to expand from URL handler.');
+      // If the path is now '/', section-handler.js's toggleSectionStandard should have handled collapsing
+      // the previously active section when it updated the URL to '/'.
+      // No explicit collapse action needed here unless specific state dictates it.
     }
   });
 })(); 

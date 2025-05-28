@@ -402,14 +402,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (heading) {
               heading.addEventListener('click', function() {
                 const willBeExpanded = this.getAttribute('aria-expanded') === 'false';
-                console.log(`${config.headingId} section clicked, willBeExpanded:`, willBeExpanded);
 
                 if (willBeExpanded) {
-                  console.log(`${config.headingId} section will be expanded, updating List.js`);
                   // Force List.js to recalculate layout when section is expanded
                   setTimeout(() => {
                     list.update(); // Use the local list instance
                   }, 50);
+                  
+                  // Add scrolling after section expansion
+                  ScrollUtils.scrollAfterExpansion(this);
                 }
               });
             }
@@ -609,10 +610,8 @@ document.addEventListener('DOMContentLoaded', function() {
     songlistHeading.addEventListener('click', function() {
       // Check if content is being expanded
       const willBeExpanded = this.getAttribute('aria-expanded') === 'false';
-      console.log('Song List section clicked, willBeExpanded:', willBeExpanded);
 
       if (willBeExpanded && listJsInstance) {
-        console.log('Song List section will be expanded, updating List.js');
         // Force List.js to recalculate layout when section is expanded
         setTimeout(() => {
           listJsInstance.update();
@@ -634,7 +633,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Mark initial load as complete after a delay
   setTimeout(() => {
     window.initialLoadComplete = true;
-    console.log('Initial page load completed, scroll behavior enabled');
   }, 1500);
 
   /**

@@ -9,7 +9,7 @@ const SCROLL_SETTINGS = {
   behavior: 'auto',
   
   // Scroll offset for headers (in pixels)
-  headerOffset: -10,
+  headerOffset: 0,
   
   // Timeout durations (in milliseconds)
   timeouts: {
@@ -24,18 +24,20 @@ const ScrollUtils = {
   scrollToElement: function(element) {
     if (!element) return;
     
-    // Direct, immediate scrolling without any animation
+    // Use smooth scrolling for better user experience
     element.scrollIntoView({
-      behavior: SCROLL_SETTINGS.behavior,
+      behavior: 'smooth',
       block: 'start'
     });
     
-    // Apply header offset if needed, also immediately
+    // Apply header offset if needed, with a small delay to let the scroll start
     if (SCROLL_SETTINGS.headerOffset !== 0) {
-      window.scrollBy({
-        top: SCROLL_SETTINGS.headerOffset,
-        behavior: SCROLL_SETTINGS.behavior
-      });
+      setTimeout(() => {
+        window.scrollBy({
+          top: SCROLL_SETTINGS.headerOffset,
+          behavior: 'smooth'
+        });
+      }, 100);
     }
   },
   
@@ -46,5 +48,21 @@ const ScrollUtils = {
       top: 0,
       behavior: SCROLL_SETTINGS.behavior
     });
+  },
+
+  // Helper function to scroll to an element after section expansion
+  // This consolidates the repeated pattern from section-handler.js and data-loader.js
+  scrollAfterExpansion: function(triggerElement, delay) {
+    const scrollDelay = delay || window.tbConfig?.animation?.shortDurationMs || 300;
+    setTimeout(() => {
+      const sectionContainer = triggerElement.closest('.section-container');
+      const targetElement = sectionContainer || triggerElement;
+      
+      if (typeof ScrollUtils !== 'undefined' && ScrollUtils.scrollToElement) {
+        ScrollUtils.scrollToElement(targetElement);
+      } else {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, scrollDelay + 100);
   }
 }; 

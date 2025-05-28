@@ -5,16 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tepper & Bennett - Masters of American Song</title>
     
+    <!-- Prevent favicon.ico requests that cause issues -->
+    <link rel="icon" href="data:,">
+    
     <!-- Google Fonts - Fixed CORS issues -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS (compiled) -->
-    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="/home.css">
     <!-- External stylesheets -->
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/mobile.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="stylesheet" href="/css/main.css">
     
     <!-- Initial state script to prevent content flash -->
     <script>
@@ -107,25 +110,25 @@
             <nav class="mb-8">
                 <ul class="list-none">
                     <li class="mb-4 md:mb-7">
-                        <a href="#legacy-heading" class="nav-link">The Legacy</a>
+                        <a href="/legacy" class="nav-link">The Legacy</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#songlist-heading" class="nav-link">Song List</a>
+                        <a href="/songlist" class="nav-link">Song List</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#genres-heading" class="nav-link">Genres</a>
+                        <a href="/genres" class="nav-link">Genres</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#elvis-heading" class="nav-link">Elvis</a>
+                        <a href="/elvis" class="nav-link">Elvis</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#resources-heading" class="nav-link">Resources</a>
+                        <a href="/resources" class="nav-link">Resources</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#reports-heading" class="nav-link">Reports</a>
+                        <a href="/reports" class="nav-link">Reports</a>
                     </li>
                     <li class="mb-4 md:mb-7">
-                        <a href="#inquiries-heading" class="nav-link">Inquiries</a>
+                        <a href="/inquiries" class="nav-link">Inquiries</a>
                     </li>
                 </ul>
             </nav>
@@ -464,11 +467,11 @@
     </a>
 
     <!-- External Scripts -->
-    <script src="js/lib/js-yaml.min.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/scroll-settings.js"></script>
-    <script src="js/url-handler.js"></script>
-    <script src="js/section-handler.js"></script>
+    <script src="/js/lib/js-yaml.min.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/scroll-settings.js"></script>
+    <script src="/js/url-handler.js"></script>
+    <script src="/js/section-handler.js"></script>
     
     <!-- Debug Script -->
     <script>
@@ -540,7 +543,7 @@
         });
     </script>
     
-    <script src="js/data-loader.js"></script>
+    <script src="/js/data-loader.js"></script>
     <script>
       // Make sure sortable headers are reset after data loading
       document.addEventListener('DOMContentLoaded', function() {

@@ -1,5 +1,28 @@
 // Define globally so it's accessible everywhere
-function toggleSectionStandard(toggle, forcedState) {
+let isUpdatingFromURL = false; // Flag to prevent infinite loops
+
+// Function to check if a path corresponds to a valid section
+function isValidSectionPath(pathId) {
+    // Skip common browser requests that aren't sections
+    const invalidPaths = ['favicon.ico', 'robots.txt', 'sitemap.xml', 'apple-touch-icon.png'];
+    if (invalidPaths.includes(pathId)) {
+        return false;
+    }
+    
+    // Skip paths with file extensions
+    if (pathId.includes('.')) {
+        return false;
+    }
+    
+    // Check if there's actually a corresponding section
+    const headingId = pathId.endsWith('-heading') ? pathId : `${pathId}-heading`;
+    const hasHeading = document.getElementById(headingId);
+    const hasContent = document.getElementById(`${pathId}-content`) || document.getElementById(`${pathId.replace('-heading', '')}-content`);
+    
+    return !!(hasHeading || hasContent);
+}
+
+function toggleSectionStandard(toggle, forcedState, fromURLHandler = false) {
     if (!toggle || !toggle.id || !toggle.id.endsWith('-heading')) {
         console.error('[SECTION-HANDLER] Invalid toggle element:', toggle);
         return false;
@@ -14,7 +37,7 @@ function toggleSectionStandard(toggle, forcedState) {
     // Get current state and determine action
     const isCurrentlyExpanded = toggle.getAttribute('aria-expanded') === 'true';
     const willBeExpanded = (forcedState !== undefined) ? forcedState : !isCurrentlyExpanded;
-    console.log(`[SECTION-HANDLER] ${sectionId} section will be ${willBeExpanded ? 'expanded' : 'collapsed'}`);
+    
     // Update toggle button
     toggle.setAttribute('aria-expanded', willBeExpanded);
     const toggleIcon = toggle.querySelector('.toggle-icon');
@@ -29,14 +52,18 @@ function toggleSectionStandard(toggle, forcedState) {
         content.style.maxHeight = 'none';
         content.style.opacity = '1';
         content.style.display = 'block';
-        history.replaceState(null, null, `#${sectionId}-heading`);
+        // Update URL only if not coming from URL handler and URL doesn't match
+        if (!fromURLHandler && !isUpdatingFromURL && window.location.pathname !== `/${sectionId}`) {
+             history.pushState({ sectionId: sectionId }, '', `/${sectionId}`);
+        }
     } else {
         // Collapsing section
         content.classList.remove('open');
         content.style.maxHeight = '0';
         content.style.opacity = '0';
-        if (window.location.hash === `#${sectionId}-heading`) {
-            history.replaceState(null, null, window.location.pathname);
+        // If collapsing the section currently in URL, navigate to root
+        if (!fromURLHandler && !isUpdatingFromURL && window.location.pathname === `/${sectionId}`) {
+            history.pushState(null, '', '/');
         }
         setTimeout(() => {
             if (toggle.getAttribute('aria-expanded') !== 'true') {
@@ -50,26 +77,30 @@ window.toggleSectionStandard = toggleSectionStandard;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Function to expand a section by ID
-    function expandSectionById(sectionId) {
+    function expandSectionById(sectionId, fromURLHandler = false) {
         if (!sectionId) return false;
+        
         const headingId = sectionId.endsWith('-heading') ? sectionId : `${sectionId}-heading`;
         const toggle = document.getElementById(headingId);
+        
         if (toggle) {
-            const success = toggleSectionStandard(toggle, true);
+            if (fromURLHandler) {
+                isUpdatingFromURL = true;
+            }
+            const success = toggleSectionStandard(toggle, true, fromURLHandler);
+            if (fromURLHandler) {
+                setTimeout(() => { isUpdatingFromURL = false; }, 50);
+            }
             if (success) {
-                setTimeout(() => {
-                    if (typeof ScrollUtils !== 'undefined' && ScrollUtils.scrollToElement) {
-                        ScrollUtils.scrollToElement(toggle);
-                    } else {
-                        console.warn('[SECTION-HANDLER] ScrollUtils not available, falling back to simple scroll.');
-                        toggle.scrollIntoView({ behavior: 'auto', block: 'start' }); // Fallback
-                    }
-                }, 30); // Small delay for content to become visible before scrolling
+                ScrollUtils.scrollAfterExpansion(toggle);
                 return true;
             }
         }
         return false;
     }
+    // Make expandSectionById globally accessible for url-handler.js
+    window.expandSectionById = expandSectionById;
+
     // Setup all section toggles
     const toggles = document.querySelectorAll('.collapsible-toggle');
     toggles.forEach((toggle) => {
@@ -78,12 +109,22 @@ document.addEventListener('DOMContentLoaded', function() {
         clone.addEventListener('click', function(e) {
             e.stopPropagation();
             e.preventDefault();
-            toggleSectionStandard(this);
+            const success = toggleSectionStandard(this);
+            
+            // If section was expanded, scroll to it after animation completes
+            if (success && this.getAttribute('aria-expanded') === 'true') {
+                ScrollUtils.scrollAfterExpansion(this);
+            }
         });
         clone.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                toggleSectionStandard(this);
+                const success = toggleSectionStandard(this);
+                
+                // If section was expanded, scroll to it after animation completes
+                if (success && this.getAttribute('aria-expanded') === 'true') {
+                    ScrollUtils.scrollAfterExpansion(this);
+                }
             }
         });
     });
@@ -103,24 +144,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     // Handle navigation links that point to sections
-    const navLinks = document.querySelectorAll('a[href^="#"]');
+    const navLinks = document.querySelectorAll('a[href^="/"]');
     navLinks.forEach(link => {
-        const targetId = link.getAttribute('href').substring(1);
-        if (targetId && (targetId.endsWith('-heading') || document.getElementById(`${targetId}-heading`))) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                expandSectionById(targetId);
-            });
+        const path = link.getAttribute('href');
+        if (path.startsWith('/') && !path.includes(':')) { 
+            const targetId = path.substring(1);
+            if (targetId && isValidSectionPath(targetId)) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sectionToExpand = document.getElementById(`${targetId}-heading`) ? targetId : (document.getElementById(targetId) ? targetId.replace('-heading','') : null);
+                    if (sectionToExpand) {
+                        if (window.location.pathname !== `/${sectionToExpand}`) {
+                            history.pushState({ sectionId: sectionToExpand }, '', `/${sectionToExpand}`);
+                        }
+                        expandSectionById(sectionToExpand, true); 
+                    }
+                });
+            }
         }
     });
-    // Check URL hash to open appropriate section
-    if (window.location.hash) {
-        const hashId = window.location.hash.substring(1);
-        if (hashId) {
+
+    // Check URL path to open appropriate section on load
+    const currentPath = window.location.pathname;
+    if (currentPath && currentPath !== '/') {
+        const pathId = currentPath.substring(1);
+        if (pathId && isValidSectionPath(pathId)) {
             setTimeout(() => {
-                expandSectionById(hashId);
-            }, 100);
+                expandSectionById(pathId);
+            }, window.tbConfig?.animation?.pageLoadSectionDelayMs || 100); // Use config for delay
         }
     }
-    console.log('[SECTION-HANDLER] Standardized section handler initialized successfully');
+
+
 }); 
