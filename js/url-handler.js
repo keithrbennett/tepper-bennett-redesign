@@ -78,30 +78,6 @@
     return success;
   }
   
-  // Helper function to scroll to a section (Retained for potential fallback in expandAndScrollToSection)
-  // Note: section-handler.js's expandSectionById should manage primary scrolling.
-  function scrollToSection(sectionId, sectionHeading) {
-    // Try to find the section element directly
-    const target = document.getElementById(sectionId);
-    
-    // Use ScrollUtils if available
-    if (typeof ScrollUtils !== 'undefined' && ScrollUtils.scrollToElement) {
-      if (target) {
-        ScrollUtils.scrollToElement(target);
-      } else if (sectionHeading) {
-        ScrollUtils.scrollToElement(sectionHeading);
-      }
-    } else {
-      // Fallback if ScrollUtils is not available
-      const scrollBehavior = typeof SCROLL_SETTINGS !== 'undefined' ? SCROLL_SETTINGS.behavior : 'auto';
-      if (target) {
-        target.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
-      } else if (sectionHeading) {
-        sectionHeading.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
-      }
-    }
-  }
-  
   // Setup scroll-to-top button functionality
   function setupScrollToTop() {
     const scrollToTopButton = document.getElementById('scroll-to-top');

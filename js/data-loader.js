@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Store data references
   let loadedSongData = null;
-  let elvisSongData = null;
   window.loadedSongData = null;
   let listJsInstance = null;
   let elvisListJsInstance = null;
