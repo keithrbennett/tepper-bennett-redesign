@@ -57,10 +57,10 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 FILE_TO_WATCH = ".cursor_response_complete"
-FLASH_IMAGE = os.path.expanduser("~/alfred-e-neuman.jpeg")
+FLASH_IMAGE = os.path.expanduser("~/system-flash-image.jpg")
 
-# Swift code for flashing screen with image
-SWIFT_FLASH_WITH_IMAGE = '''
+# Swift code for flashing screen (parameterized for image or white)
+SWIFT_FLASH_CODE = '''
 import Cocoa
 
 let app = NSApplication.shared
@@ -76,44 +76,27 @@ window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow))
 window.isOpaque = true
 window.ignoresMouseEvents = true
 
+// Check if we have an image path argument
 if let imagePath = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : nil,
    let image = NSImage(contentsOfFile: imagePath) {
     let imageView = NSImageView(frame: window.contentView!.bounds)
     imageView.image = image
     imageView.imageScaling = .scaleProportionallyUpOrDown
     window.contentView?.addSubview(imageView)
-}
-
-window.makeKeyAndOrderFront(nil)
-DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-    window.close()
-    app.terminate(nil)
-}
-
-app.run()
-'''
-
-# Swift code for flashing screen with white color
-SWIFT_FLASH_WHITE = '''
-import Cocoa
-
-let app = NSApplication.shared
-let window = NSWindow(
-    contentRect: NSScreen.main!.frame,
-    styleMask: [.borderless],
-    backing: .buffered,
-    defer: false
-)
-
-window.backgroundColor = NSColor.white
-window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow)))
-window.isOpaque = true
-window.ignoresMouseEvents = true
-window.makeKeyAndOrderFront(nil)
-
-DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-    window.close()
-    app.terminate(nil)
+    
+    // Show image for longer duration
+    window.makeKeyAndOrderFront(nil)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        window.close()
+        app.terminate(nil)
+    }
+} else {
+    // Show white flash for shorter duration
+    window.makeKeyAndOrderFront(nil)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        window.close()
+        app.terminate(nil)
+    }
 }
 
 app.run()
@@ -154,10 +137,10 @@ class FileWatcher(FileSystemEventHandler):
         
         if abs_flash_image and os.path.isfile(abs_flash_image):
             # Flash with image
-            self._execute_swift_code(SWIFT_FLASH_WITH_IMAGE, abs_flash_image)
+            self._execute_swift_code(SWIFT_FLASH_CODE, abs_flash_image)
         else:
             # Flash with white color
-            self._execute_swift_code(SWIFT_FLASH_WHITE)
+            self._execute_swift_code(SWIFT_FLASH_CODE)
     
     def _handle_file_event(self, event, event_type, should_flash=False):
         """Handle file events with common logic"""
