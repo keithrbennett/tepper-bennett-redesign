@@ -75,6 +75,8 @@ SWIFT_FLASH_CODE = '''
 import Cocoa
 
 let app = NSApplication.shared
+app.setActivationPolicy(.regular)
+
 let window = NSWindow(
     contentRect: NSScreen.main!.frame,
     styleMask: [.borderless],
@@ -89,7 +91,7 @@ window.ignoresMouseEvents = true
 
 // Check if we have an image path argument
 if let imagePath = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : nil,
-   let image = NSImage(contentsOfFile: imagePath) {
+   let image = NSImage(contentsOfFile: imagePath) {{
     let imageView = NSImageView(frame: window.contentView!.bounds)
     imageView.image = image
     imageView.imageScaling = .scaleProportionallyUpOrDown
@@ -97,13 +99,15 @@ if let imagePath = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : 
     
     // Show image for longer duration
     window.makeKeyAndOrderFront(nil)
+    app.activate(ignoringOtherApps: true)
     DispatchQueue.main.asyncAfter(deadline: .now() + {IMAGE_DURATION}) {{
         window.close()
         app.terminate(nil)
     }}
-} else {{
+}} else {{
     // Show white flash for shorter duration
     window.makeKeyAndOrderFront(nil)
+    app.activate(ignoringOtherApps: true)
     DispatchQueue.main.asyncAfter(deadline: .now() + {WHITE_DURATION}) {{
         window.close()
         app.terminate(nil)
@@ -148,10 +152,25 @@ class FileWatcher(FileSystemEventHandler):
     def _execute_swift_code(self, *args):
         """Execute Swift code with optional arguments"""
         try:
+            # First check if swift is available
+            swift_check = subprocess.run(['which', 'swift'], capture_output=True, text=True)
+            if swift_check.returncode != 0:
+                logging.error("Swift compiler not found. Please install Xcode command line tools.")
+                return
+            
             with temporary_swift_file(SWIFT_FLASH_CODE) as temp_script_path:
                 cmd = ['swift', temp_script_path] + list(args)
                 logging.debug(f"Executing Swift command: {' '.join(cmd)}")
-                subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                # Use Popen to avoid blocking, but capture stderr temporarily to check for immediate errors
+                proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+                # Give it a moment to start and check for immediate errors
+                try:
+                    stdout, stderr = proc.communicate(timeout=0.1)
+                    if stderr:
+                        logging.error(f"Swift execution error: {stderr}")
+                except subprocess.TimeoutExpired:
+                    # This is expected - the Swift app is running
+                    logging.debug("Swift app started successfully")
         except Exception as e:
             logging.error(f"Error executing Swift code: {e}")
     
