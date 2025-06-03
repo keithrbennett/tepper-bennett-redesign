@@ -51,93 +51,21 @@ for better portability while maintaining the same core functionality.
 
 import os
 import time
-import tempfile
 import subprocess
-import threading
 import argparse
 import logging
 from pathlib import Path
 from datetime import datetime
-from contextlib import contextmanager
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # Default configuration
 DEFAULT_FILE_TO_WATCH = ".cursor_response_complete"
 DEFAULT_FLASH_IMAGE = "~/system-flash-image.jpg"
-IMAGE_DURATION = 0.5
-WHITE_DURATION = 0.1
-CLEANUP_DELAY = 1.5
 
-# Swift code for flashing screen (parameterized for image or white)
-SWIFT_FLASH_CODE = '''
-import Cocoa
-
-let app = NSApplication.shared
-app.setActivationPolicy(.regular)
-
-let window = NSWindow(
-    contentRect: NSScreen.main!.frame,
-    styleMask: [.borderless],
-    backing: .buffered,
-    defer: false
-)
-
-window.backgroundColor = NSColor.white
-window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow)))
-window.isOpaque = true
-window.ignoresMouseEvents = true
-
-// Check if we have an image path argument
-if let imagePath = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : nil,
-   let image = NSImage(contentsOfFile: imagePath) {{
-    let imageView = NSImageView(frame: window.contentView!.bounds)
-    imageView.image = image
-    imageView.imageScaling = .scaleProportionallyUpOrDown
-    window.contentView?.addSubview(imageView)
-    
-    // Show image for longer duration
-    window.makeKeyAndOrderFront(nil)
-    app.activate(ignoringOtherApps: true)
-    DispatchQueue.main.asyncAfter(deadline: .now() + {IMAGE_DURATION}) {{
-        window.close()
-        app.terminate(nil)
-    }}
-}} else {{
-    // Show white flash for shorter duration
-    window.makeKeyAndOrderFront(nil)
-    app.activate(ignoringOtherApps: true)
-    DispatchQueue.main.asyncAfter(deadline: .now() + {WHITE_DURATION}) {{
-        window.close()
-        app.terminate(nil)
-    }}
-}}
-
-app.run()
-'''.format(IMAGE_DURATION=IMAGE_DURATION, WHITE_DURATION=WHITE_DURATION)
-
-@contextmanager
-def temporary_swift_file(swift_code):
-    """Context manager for creating and cleaning up temporary Swift files"""
-    temp_script = None
-    try:
-        temp_script = tempfile.NamedTemporaryFile(mode='w', suffix='.swift', delete=False)
-        temp_script.write(swift_code)
-        temp_script.flush()
-        yield temp_script.name
-    finally:
-        if temp_script:
-            temp_script.close()
-            # Schedule cleanup
-            def cleanup():
-                time.sleep(CLEANUP_DELAY)
-                try:
-                    os.unlink(temp_script.name)
-                except OSError as e:
-                    logging.debug(f"Could not remove temporary file {temp_script.name}: {e}")
-            
-            cleanup_thread = threading.Thread(target=cleanup, daemon=True)
-            cleanup_thread.start()
+# Get the directory where this script is located
+SCRIPT_DIR = Path(__file__).parent
+SWIFT_SCRIPT_PATH = SCRIPT_DIR / "flash_screen.swift"
 
 class FileWatcher(FileSystemEventHandler):
     def __init__(self, file_to_watch, flash_image):
@@ -147,6 +75,7 @@ class FileWatcher(FileSystemEventHandler):
         self.flash_image = os.path.expanduser(flash_image)
         logging.info(f"Watching file: {self.file_to_watch}")
         logging.info(f"Flash image: {self.flash_image}")
+        logging.info(f"Swift script: {SWIFT_SCRIPT_PATH}")
     
     def _execute_swift_code(self, *args):
         """Execute Swift code with optional arguments"""
@@ -157,19 +86,23 @@ class FileWatcher(FileSystemEventHandler):
                 logging.error("Swift compiler not found. Please install Xcode command line tools.")
                 return
             
-            with temporary_swift_file(SWIFT_FLASH_CODE) as temp_script_path:
-                cmd = ['swift', temp_script_path] + list(args)
-                logging.debug(f"Executing Swift command: {' '.join(cmd)}")
-                # Use Popen to avoid blocking, but capture stderr temporarily to check for immediate errors
-                proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
-                # Give it a moment to start and check for immediate errors
-                try:
-                    stdout, stderr = proc.communicate(timeout=0.1)
-                    if stderr:
-                        logging.error(f"Swift execution error: {stderr}")
-                except subprocess.TimeoutExpired:
-                    # This is expected - the Swift app is running
-                    logging.debug("Swift app started successfully")
+            # Check if our Swift script exists
+            if not SWIFT_SCRIPT_PATH.exists():
+                logging.error(f"Swift script not found: {SWIFT_SCRIPT_PATH}")
+                return
+            
+            cmd = ['swift', str(SWIFT_SCRIPT_PATH)] + list(args)
+            logging.debug(f"Executing Swift command: {' '.join(cmd)}")
+            # Use Popen to avoid blocking, but capture stderr temporarily to check for immediate errors
+            proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+            # Give it a moment to start and check for immediate errors
+            try:
+                stdout, stderr = proc.communicate(timeout=0.1)
+                if stderr:
+                    logging.error(f"Swift execution error: {stderr}")
+            except subprocess.TimeoutExpired:
+                # This is expected - the Swift app is running
+                logging.debug("Swift app started successfully")
         except Exception as e:
             logging.error(f"Error executing Swift code: {e}")
     
