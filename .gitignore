@@ -1,3 +1,9 @@
-.idea/
+.claude/
+.cursor_response_complete
+.cursor/
 .venv/
-
+bin/
+.idea/
+lib/
+node_modules/
+pyvenv.cfg
