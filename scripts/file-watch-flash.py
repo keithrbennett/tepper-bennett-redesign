@@ -35,10 +35,7 @@ USAGE:
 3. The script will start monitoring and print status messages
 4. Press Ctrl+C to stop the monitoring
 
-CONFIGURATION:
-- FILE_TO_WATCH: The file to monitor (configurable via --file)
-- FLASH_IMAGE: Path to custom flash image (configurable via --image)
-- Flash durations: Defined in the platform-specific flash script (macOS: 0.5s for image, 0.1s for white flash)
+The flash durations are currently defined in the platform-specific flash script and not yet configurable.
 
 EVENTS:
 - FILE CREATED: Triggers screen flash (active)
