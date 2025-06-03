@@ -50,7 +50,6 @@ for better portability while maintaining the same core functionality.
 """
 
 import os
-import sys
 import time
 import tempfile
 import subprocess
@@ -251,8 +250,8 @@ def main():
     file_path = Path(args.file)
     file_path.parent.mkdir(parents=True, exist_ok=True)
     
-    # Create the file if it doesn't exist (watchdog needs it to exist)
-    file_path.touch(exist_ok=True)
+    # Delete the file if it exists to ensure only freshly CREATED events are handled
+    file_path.unlink(missing_ok=True)
     
     print(f"Watching for changes to: {args.file}")
     print(f"Flash image: {args.image}")
