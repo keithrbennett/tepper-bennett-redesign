@@ -11,12 +11,13 @@ WHAT IT DOES:
 - Watches for changes to `.cursor_response_complete` file in the current directory
 - Flashes the screen with a fullscreen image or white color when the file is created
 - Optionally flashes on file deletion or modification (currently commented out)
-- Uses Swift code to create a temporary fullscreen window for the flash effect
+- Uses a separate platform-specific flash script to create the fullscreen flash effect
 
 DEPENDENCIES:
 - Python 3.6+
 - watchdog library: Install with `pip install watchdog`
-- macOS with Swift compiler (for the screen flash functionality)
+- Platform-specific flash script (must be executable and in the same directory as this Python script)
+  - macOS: Requires Swift compiler for the included flash_screen script
 - Optional: Image file for custom flash image
 
 USAGE:
@@ -37,12 +38,19 @@ USAGE:
 CONFIGURATION:
 - FILE_TO_WATCH: The file to monitor (configurable via --file)
 - FLASH_IMAGE: Path to custom flash image (configurable via --image)
-- Flash durations: 0.5s for image, 0.1s for white flash
+- Flash durations: Defined in the platform-specific flash script (macOS: 0.5s for image, 0.1s for white flash)
 
 EVENTS:
 - FILE CREATED: Triggers screen flash (active)
 - FILE DELETED: Prints message only (flash commented out)
 - FILE MODIFIED: Prints message only (flash commented out)
+
+ARCHITECTURE:
+- Python script handles file monitoring using the watchdog library
+- Platform-specific flash script handles the actual screen flash visual effect
+- The Python script executes the flash script when flash events occur
+- The watched file is deleted on startup to ensure only fresh CREATED events trigger flashes
+- Different platforms can provide their own flash script implementation without modifying Python code
 
 This is a Python translation of the original bash script 'file-watch-flash' that used
 fswatch for file monitoring. The Python version uses the cross-platform watchdog library
@@ -65,7 +73,7 @@ DEFAULT_FLASH_IMAGE = "~/system-flash-image.jpg"
 
 # Get the directory where this script is located
 SCRIPT_DIR = Path(__file__).parent
-SWIFT_SCRIPT_PATH = SCRIPT_DIR / "flash_screen.swift"
+FLASH_SCRIPT_PATH = SCRIPT_DIR / "flash_screen"
 
 class FileWatcher(FileSystemEventHandler):
     def __init__(self, file_to_watch, flash_image):
@@ -75,45 +83,44 @@ class FileWatcher(FileSystemEventHandler):
         self.flash_image = os.path.expanduser(flash_image)
         logging.info(f"Watching file: {self.file_to_watch}")
         logging.info(f"Flash image: {self.flash_image}")
-        logging.info(f"Swift script: {SWIFT_SCRIPT_PATH}")
+        logging.info(f"Flash script: {FLASH_SCRIPT_PATH}")
     
-    def _execute_swift_code(self, *args):
-        """Execute Swift code with optional arguments"""
+    def _execute_flash_script(self, *args):
+        """Execute flash script with optional arguments"""
         try:
-            # First check if swift is available
-            swift_check = subprocess.run(['which', 'swift'], capture_output=True, text=True)
-            if swift_check.returncode != 0:
-                logging.error("Swift compiler not found. Please install Xcode command line tools.")
+            # Check if our flash script exists
+            if not FLASH_SCRIPT_PATH.exists():
+                logging.error(f"Flash script not found: {FLASH_SCRIPT_PATH}")
                 return
             
-            # Check if our Swift script exists
-            if not SWIFT_SCRIPT_PATH.exists():
-                logging.error(f"Swift script not found: {SWIFT_SCRIPT_PATH}")
+            # Make sure the script is executable
+            if not os.access(FLASH_SCRIPT_PATH, os.X_OK):
+                logging.error(f"Flash script is not executable: {FLASH_SCRIPT_PATH}")
                 return
             
-            cmd = ['swift', str(SWIFT_SCRIPT_PATH)] + list(args)
-            logging.debug(f"Executing Swift command: {' '.join(cmd)}")
+            cmd = [str(FLASH_SCRIPT_PATH)] + list(args)
+            logging.debug(f"Executing flash command: {' '.join(cmd)}")
             # Use Popen to avoid blocking, but capture stderr temporarily to check for immediate errors
             proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
             # Give it a moment to start and check for immediate errors
             try:
                 stdout, stderr = proc.communicate(timeout=0.1)
                 if stderr:
-                    logging.error(f"Swift execution error: {stderr}")
+                    logging.error(f"Flash script execution error: {stderr}")
             except subprocess.TimeoutExpired:
-                # This is expected - the Swift app is running
-                logging.debug("Swift app started successfully")
+                # This is expected - the flash app is running
+                logging.debug("Flash script started successfully")
         except Exception as e:
-            logging.error(f"Error executing Swift code: {e}")
+            logging.error(f"Error executing flash script: {e}")
     
     def flash_screen(self):
         """Flash the screen with image or white color"""
         if os.path.isfile(self.flash_image):
             logging.debug(f"Flashing with image: {self.flash_image}")
-            self._execute_swift_code(os.path.abspath(self.flash_image))
+            self._execute_flash_script(os.path.abspath(self.flash_image))
         else:
             logging.debug("Flashing with white color")
-            self._execute_swift_code()
+            self._execute_flash_script()
     
     def _handle_file_event(self, event, event_type, should_flash=False):
         """Handle file events with common logic"""

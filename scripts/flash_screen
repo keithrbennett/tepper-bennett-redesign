@@ -8,7 +8,8 @@ func showHelp() {
 Flash Screen - Screen Flash Utility
 
 USAGE:
-    swift flash_screen.swift [IMAGE_PATH]
+    ./flash_screen [IMAGE_PATH]
+    swift flash_screen [IMAGE_PATH]
 
 ARGUMENTS:
     IMAGE_PATH    Optional path to image file to display during flash
@@ -22,8 +23,9 @@ DESCRIPTION:
     The flash window appears at maximum window level and ignores mouse events.
 
 EXAMPLES:
-    swift flash_screen.swift                          # White flash
-    swift flash_screen.swift ~/Pictures/flash.jpg     # Image flash
+    ./flash_screen                             # White flash
+    ./flash_screen ~/Pictures/flash.jpg       # Image flash
+    swift flash_screen /path/to/image.png     # Image flash with swift command
 
 OPTIONS:
     -h, --help    Show this help message and exit
