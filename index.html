@@ -161,7 +161,10 @@
         
         <!-- Right Photo Section -->
         <div class="w-full md:w-2/3 h-64 md:h-screen bg-navy bg-center bg-no-repeat relative">
-            <img src="images/hero-bg.jpg" alt="Roy C. Bennett & Sid Tepper" class="w-full h-full object-contain" id="hero-bg-img" />
+            <picture>
+                <source srcset="images/hero-bg.webp" type="image/webp">
+                <img src="images/hero-bg-optimized.jpg" alt="Roy C. Bennett & Sid Tepper" class="w-full h-full object-contain" loading="eager" id="hero-bg-img" />
+            </picture>
         </div>
     </section>
 
