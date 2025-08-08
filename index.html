@@ -161,7 +161,7 @@
         
         <!-- Right Photo Section -->
         <div class="w-full md:w-2/3 h-64 md:h-screen bg-navy bg-center bg-no-repeat relative">
-            <img src="images/hero-bg.jpg" alt="Roy C. Bennett & Sid Tepper" class="w-full h-full object-contain" onerror="this.src='https://placehold.co/800x600/1A305E/FFFFFF?text=Tepper+%26+Bennett'" />
+            <img src="images/hero-bg.jpg" alt="Roy C. Bennett & Sid Tepper" class="w-full h-full object-contain" id="hero-bg-img" />
         </div>
     </section>
 
@@ -324,7 +324,7 @@
                     <div class="md:w-1/2">
                         <picture>
     <source srcset="images/elvis-chante-tepper-bennett.webp" type="image/webp">
-    <img src="images/elvis-chante-tepper-bennett-optimized.jpg" alt="Elvis Presley performing a Tepper and Bennett song" class="w-full h-auto rounded-lg shadow-md object-cover" loading="eager" onerror="this.src='https://placehold.co/600x400/1A305E/FFFFFF?text=Elvis+Presley'" />
+    <img src="images/elvis-chante-tepper-bennett-optimized.jpg" alt="Elvis Presley performing a Tepper and Bennett song" class="w-full h-auto rounded-lg shadow-md object-cover" loading="eager" id="elvis-img" />
 </picture>
                     </div>
                     <div class="md:w-1/2 space-y-4">
@@ -553,6 +553,22 @@
         if (typeof initSortableHeaders === 'function') {
           initSortableHeaders();
         }
+      });
+    </script>
+    
+    <script>
+      function setupImageErrorHandler(imageId, titleText) {
+        const img = document.getElementById(imageId);
+        if (img) {
+          img.onerror = function() {
+            this.src = `https://placehold.co/800x600/1A305E/FFFFFF?text=${encodeURIComponent(titleText)}`;
+          };
+        }
+      }
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        setupImageErrorHandler('hero-bg-img', 'Tepper+%26+Bennett');
+        setupImageErrorHandler('elvis-img', 'Elvis+Presley');
       });
     </script>
     <!-- Add List.js CDN -->
