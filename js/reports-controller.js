@@ -56,95 +56,32 @@ class ReportsController {
   }
 
   async showReportsIndex() {
-    // Show the modal with reports list
-    this.showReportsModal();
+    // Populate the inline reports list
+    this.populateReportsList();
   }
 
-  showReportsModal() {
-    // Remove any existing modal
-    const existingModal = document.getElementById('reports-modal');
-    if (existingModal) {
-      existingModal.remove();
-    }
+  populateReportsList() {
+    const reportsList = document.getElementById('reports-list');
+    if (!reportsList) return;
 
-    // Debug: check if we have reports data
-    console.log('Reports metadata:', Object.keys(this.reportsMetadata));
-    console.log('Number of reports:', Object.entries(this.reportsMetadata).length);
-    
-    // Create the actual reports modal
-    const modalHTML = `
-      <div id="reports-modal" style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-      ">
-        <div style="
-          background: white;
-          border-radius: 8px;
-          max-width: 900px;
-          max-height: 80vh;
-          width: 100%;
-          overflow-y: auto;
-          padding: 30px;
-          position: relative;
-        ">
-          <button 
-            onclick="reportsController.closeReportsModal()"
-            style="
-              position: absolute;
-              top: 15px;
-              right: 15px;
-              background: none;
-              border: none;
-              font-size: 24px;
-              cursor: pointer;
-              color: #666;
-            "
-          >
-            ×
-          </button>
-          
-          <h1 class="text-3xl font-bold text-gray-900 mb-6">Available Reports</h1>
-          <p class="text-gray-600 mb-8">Click on any report title below to view:</p>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            ${Object.entries(this.reportsMetadata).map(([key, metadata]) => `
-              <div style="
-                background: #f9fafb;
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                padding: 20px;
-                transition: all 0.2s;
-              " class="hover:shadow-md">
-                <h3 class="text-xl font-semibold text-gray-900 mb-3">
-                  <a 
-                    href="javascript:void(0)" 
-                    onclick="reportsController.showReportInModal('${key}')"
-                    class="text-blue-600 hover:text-blue-800 transition-colors duration-200 underline cursor-pointer"
-                  >
-                    ${metadata.title}
-                  </a>
-                </h3>
-                <p class="text-sm text-gray-500 mb-4">Click the title above to view</p>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      </div>
+    // Create simple text links for each report
+    const listHTML = `
+      <ul class="space-y-1">
+        ${Object.entries(this.reportsMetadata).map(([key, metadata]) => `
+          <li>
+            <a 
+              href="javascript:void(0)" 
+              onclick="reportsController.showReportInline('${key}')"
+              class="text-blue-600 hover:text-blue-800 transition-colors duration-200 underline"
+            >
+              ${metadata.title}
+            </a>
+          </li>
+        `).join('')}
+      </ul>
     `;
 
-    // Add modal to the page
-    console.log('Adding modal to page...');
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    console.log('Modal should now be visible');
+    reportsList.innerHTML = listHTML;
   }
 
   closeReportsModal() {
@@ -166,47 +103,15 @@ class ReportsController {
     }
   }
 
-  async showReportInModal(reportType) {
+  async showReportInline(reportType) {
     const metadata = this.reportsMetadata[reportType];
     if (!metadata) return;
 
-    const modal = document.getElementById('reports-modal');
-    if (!modal) return;
+    const reportContent = document.getElementById('report-content');
+    if (!reportContent) return;
 
     // Show loading state
-    modal.innerHTML = `
-      <div style="
-        background: white;
-        border-radius: 8px;
-        max-width: 1200px;
-        max-height: 90vh;
-        width: 100%;
-        overflow-y: auto;
-        padding: 30px;
-        position: relative;
-      ">
-        <button 
-          onclick="reportsController.closeReportsModal()"
-          style="
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-          "
-        >
-          ×
-        </button>
-        
-        <div style="text-align: center; padding: 50px;">
-          <div style="border: 4px solid #f3f4f6; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
-          <p style="margin-top: 20px; color: #6b7280;">Loading report...</p>
-        </div>
-      </div>
-    `;
+    reportContent.innerHTML = '<p class="text-gray-600">Loading report...</p>';
 
     try {
       // Populate the report with data
@@ -215,134 +120,64 @@ class ReportsController {
       this.currentFormat = 'html';
       
       const reportHTML = `
-        <div style="
-          background: white;
-          border-radius: 8px;
-          max-width: 1200px;
-          max-height: 90vh;
-          width: 100%;
-          overflow-y: auto;
-          padding: 30px;
-          position: relative;
-        ">
-          <button 
-            onclick="reportsController.closeReportsModal()"
-            style="
-              position: absolute;
-              top: 15px;
-              right: 15px;
-              background: none;
-              border: none;
-              font-size: 24px;
-              cursor: pointer;
-              color: #666;
-            "
-          >
-            ×
-          </button>
-          
-          <button 
-            onclick="reportsController.showReportsModal()"
-            style="
-              margin-bottom: 20px;
-              background: #6b7280;
-              color: white;
-              border: none;
-              padding: 8px 16px;
-              border-radius: 4px;
-              cursor: pointer;
-            "
-          >
-            ← Back to Reports
-          </button>
-          
-          <h1 class="text-3xl font-bold text-gray-900 mb-6">Report: ${metadata.title}</h1>
-          
-          <div style="margin-bottom: 20px;">
-            <span style="margin-right: 10px; font-weight: 500;">Format:</span>
-            ${['html', 'text', 'json', 'yaml'].map(format => `
-              <button 
-                onclick="reportsController.changeFormatInModal('${format}')"
-                style="
-                  margin-right: 5px;
-                  padding: 6px 12px;
-                  border: 1px solid #d1d5db;
-                  border-radius: 4px;
-                  cursor: pointer;
-                  background: ${this.currentFormat === format ? '#3b82f6' : '#fff'};
-                  color: ${this.currentFormat === format ? '#fff' : '#374151'};
-                "
-              >
-                ${format.toUpperCase()}
-              </button>
-            `).join('')}
+        <div class="mt-6 p-6 bg-gray-50 rounded-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-2xl font-bold text-gray-900">Report: ${metadata.title}</h3>
+            <div>
+              <span class="mr-2 font-medium">Format:</span>
+              ${['html', 'text', 'json', 'yaml'].map(format => `
+                <button 
+                  onclick="reportsController.changeFormatInline('${format}')"
+                  class="mr-2 px-3 py-1 text-sm border rounded-md cursor-pointer ${this.currentFormat === format ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}"
+                >
+                  ${format.toUpperCase()}
+                </button>
+              `).join('')}
+            </div>
           </div>
           
-          <div style="border: 1px solid #e5e7eb; border-radius: 4px; padding: 20px; background: #f9fafb;">
-            <div id="report-content">
+          <div class="border border-gray-200 rounded-md p-4 bg-white">
+            <div id="report-content-html">
               ${this.currentReport.content(this.currentFormat)}
             </div>
           </div>
         </div>
       `;
 
-      modal.innerHTML = reportHTML;
+      reportContent.innerHTML = reportHTML;
 
     } catch (error) {
       console.error('Error loading report:', error);
-      modal.innerHTML = `
-        <div style="
-          background: white;
-          border-radius: 8px;
-          max-width: 600px;
-          padding: 30px;
-          position: relative;
-        ">
-          <button 
-            onclick="reportsController.closeReportsModal()"
-            style="
-              position: absolute;
-              top: 15px;
-              right: 15px;
-              background: none;
-              border: none;
-              font-size: 24px;
-              cursor: pointer;
-              color: #666;
-            "
-          >
-            ×
-          </button>
-          
-          <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 4px; padding: 16px;">
-            <h2 style="color: #dc2626; margin: 0 0 8px 0;">Error Loading Report</h2>
-            <p style="color: #991b1b; margin: 0;">There was an error loading the report. Please try again later.</p>
-          </div>
+      reportContent.innerHTML = `
+        <div class="mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
+          <h3 class="text-lg font-semibold text-red-800 mb-2">Error Loading Report</h3>
+          <p class="text-red-700">There was an error loading the report. Please try again later.</p>
         </div>
       `;
     }
   }
 
-  changeFormatInModal(format) {
+  changeFormatInline(format) {
     this.currentFormat = format;
     
     // Update button states
-    document.querySelectorAll('#reports-modal button').forEach(button => {
+    document.querySelectorAll('button[onclick*="changeFormatInline"]').forEach(button => {
       const onclick = button.getAttribute('onclick');
-      if (onclick && onclick.includes('changeFormatInModal')) {
-        const buttonFormat = onclick.match(/changeFormatInModal\('([^']+)'\)/)[1];
-        if (buttonFormat === format) {
-          button.style.background = '#3b82f6';
-          button.style.color = '#fff';
-        } else {
-          button.style.background = '#fff';
-          button.style.color = '#374151';
+      if (onclick) {
+        const match = onclick.match(/changeFormatInline\('([^']+)'\)/);
+        if (match) {
+          const buttonFormat = match[1];
+          if (buttonFormat === format) {
+            button.className = 'mr-2 px-3 py-1 text-sm border rounded-md cursor-pointer bg-blue-600 text-white';
+          } else {
+            button.className = 'mr-2 px-3 py-1 text-sm border rounded-md cursor-pointer bg-white text-gray-700 hover:bg-gray-100';
+          }
         }
       }
     });
 
     // Update content
-    const contentDiv = document.getElementById('report-content');
+    const contentDiv = document.getElementById('report-content-html');
     if (contentDiv && this.currentReport) {
       contentDiv.innerHTML = this.currentReport.content(format);
     }
@@ -475,6 +310,27 @@ class ReportsController {
 // Initialize the reports controller
 const reportsController = new ReportsController();
 
+// Auto-populate reports list when DOM is loaded and when reports section expands
+document.addEventListener('DOMContentLoaded', function() {
+  // Try to populate reports list immediately
+  setTimeout(() => {
+    reportsController.populateReportsList();
+  }, 100);
+  
+  // Also listen for when the reports section gets expanded
+  const reportsHeading = document.getElementById('reports-heading');
+  if (reportsHeading) {
+    reportsHeading.addEventListener('click', function() {
+      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        setTimeout(() => {
+          reportsController.populateReportsList();
+        }, 50);
+      }
+    });
+  }
+});
+
 // Add CSS for spinner animation
 const style = document.createElement('style');
 style.textContent = `
@@ -493,12 +349,8 @@ document.addEventListener('click', function(event) {
     event.stopPropagation();
     event.stopImmediatePropagation();
     
-    // Store scroll position before any action
-    const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-    window._preReportsScrollPosition = scrollPosition;
-    
-    // Call the modal function
-    reportsController.showReportsModal();
+    // Call the inline populate function
+    reportsController.populateReportsList();
     
     return false;
   }
