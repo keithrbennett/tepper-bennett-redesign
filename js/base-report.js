@@ -3,6 +3,7 @@
  * JavaScript equivalent of Rails BaseReport
  */
 
+
 class BaseReport {
   constructor(reportType) {
     this.reportType = reportType;

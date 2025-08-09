@@ -1,6 +1,7 @@
 // Define globally so it's accessible everywhere
 let isUpdatingFromURL = false; // Flag to prevent infinite loops
 
+
 // Function to check if a path corresponds to a valid section
 function isValidSectionPath(pathId) {
     // Skip common browser requests that aren't sections
@@ -52,18 +53,18 @@ function toggleSectionStandard(toggle, forcedState, fromURLHandler = false) {
         content.style.maxHeight = 'none';
         content.style.opacity = '1';
         content.style.display = 'block';
-        // Update URL only if not coming from URL handler and URL doesn't match
-        if (!fromURLHandler && !isUpdatingFromURL && window.location.pathname !== `/${sectionId}`) {
-             history.pushState({ sectionId: sectionId }, '', `/${sectionId}`);
+        // Update URL hash only if not coming from URL handler
+        if (!fromURLHandler && !isUpdatingFromURL && window.location.hash !== `#${sectionId}`) {
+            window.location.hash = sectionId;
         }
     } else {
         // Collapsing section
         content.classList.remove('open');
         content.style.maxHeight = '0';
         content.style.opacity = '0';
-        // If collapsing the section currently in URL, navigate to root
-        if (!fromURLHandler && !isUpdatingFromURL && window.location.pathname === `/${sectionId}`) {
-            history.pushState(null, '', '/');
+        // If collapsing the section currently in hash, clear hash
+        if (!fromURLHandler && !isUpdatingFromURL && window.location.hash === `#${sectionId}`) {
+            window.location.hash = '';
         }
         setTimeout(() => {
             if (toggle.getAttribute('aria-expanded') !== 'true') {

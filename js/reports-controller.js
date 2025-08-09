@@ -3,6 +3,7 @@
  * JavaScript-based reporting system adapted from Rails architecture
  */
 
+
 class ReportsController {
   constructor() {
     this.reportsMetadata = this.initializeReportsMetadata();
@@ -11,14 +12,14 @@ class ReportsController {
   }
 
   initializeReportsMetadata() {
-    return {
+    const metadata = {
       'all': {
         title: 'All Data',
         report: new AllDataReport()
       },
       'songs': {
         title: 'Songs',
-        report: new CodeNameReport('songs', 'elvis-songs.yml')
+        report: new SongsReport()
       },
       'performers': {
         title: 'Performers',
@@ -53,6 +54,7 @@ class ReportsController {
         report: new SongGenresReport()
       }
     };
+    return metadata;
   }
 
   async showReportsIndex() {
@@ -62,7 +64,10 @@ class ReportsController {
 
   populateReportsList() {
     const reportsList = document.getElementById('reports-list');
-    if (!reportsList) return;
+    
+    if (!reportsList) {
+      return;
+    }
 
     // Create simple text links for each report
     const listHTML = `
@@ -128,7 +133,12 @@ class ReportsController {
               ${['html', 'text', 'json', 'yaml'].map(format => `
                 <button 
                   onclick="reportsController.changeFormatInline('${format}')"
-                  class="mr-2 px-3 py-1 text-sm border rounded-md cursor-pointer ${this.currentFormat === format ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}"
+                  class="mr-2 px-3 py-1 text-sm font-medium border rounded-md cursor-pointer"
+                  style="${this.currentFormat === format ? 
+                    'background-color: #2563eb; color: white; border-color: #2563eb;' : 
+                    'background-color: white; color: #374151; border-color: #d1d5db;'}"
+                  onmouseover="${this.currentFormat === format ? '' : `this.style.backgroundColor='#f9fafb'; this.style.borderColor='#9ca3af';`}"
+                  onmouseout="${this.currentFormat === format ? '' : `this.style.backgroundColor='white'; this.style.borderColor='#d1d5db';`}"
                 >
                   ${format.toUpperCase()}
                 </button>
@@ -168,9 +178,19 @@ class ReportsController {
         if (match) {
           const buttonFormat = match[1];
           if (buttonFormat === format) {
-            button.className = 'mr-2 px-3 py-1 text-sm border rounded-md cursor-pointer bg-blue-600 text-white';
+            // Active button - blue background, white text
+            button.style.backgroundColor = '#2563eb';
+            button.style.color = 'white';
+            button.style.borderColor = '#2563eb';
+            button.onmouseover = '';
+            button.onmouseout = '';
           } else {
-            button.className = 'mr-2 px-3 py-1 text-sm border rounded-md cursor-pointer bg-white text-gray-700 hover:bg-gray-100';
+            // Inactive button - white background, gray text
+            button.style.backgroundColor = 'white';
+            button.style.color = '#374151';
+            button.style.borderColor = '#d1d5db';
+            button.onmouseover = 'this.style.backgroundColor=\"#f9fafb\"; this.style.borderColor=\"#9ca3af\";';
+            button.onmouseout = 'this.style.backgroundColor=\"white\"; this.style.borderColor=\"#d1d5db\";';
           }
         }
       }
@@ -341,6 +361,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+
 // Add global event prevention for report-related clicks
 document.addEventListener('click', function(event) {
   // If clicking on the "Open Reports" button, prevent default and handle manually
@@ -371,4 +392,5 @@ document.addEventListener('click', function(event) {
     }
   }
 }, true);
+
 

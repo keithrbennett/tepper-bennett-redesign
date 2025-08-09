@@ -3,6 +3,7 @@
  * Shows comprehensive data across all entities
  */
 
+
 class AllDataReport extends BaseReport {
   constructor() {
     super('all');
@@ -197,6 +198,95 @@ class AllDataReport extends BaseReport {
             yaml += `    movie: ${item.movie}\n`;
           }
         });
+      }
+    });
+    
+    return `<pre><code>${yaml}</code></pre>`;
+  }
+}
+
+/**
+ * Songs Report - JavaScript report for all songs (Elvis and non-Elvis)
+ * Combines data from both elvis-songs.yml and non-elvis-songs.yml
+ */
+
+class SongsReport extends BaseReport {
+  constructor() {
+    super('songs');
+    this.records = [];
+  }
+
+  async populate() {
+    try {
+      // Load both Elvis and non-Elvis songs
+      const elvisSongs = await this.loadDataFromYAML('elvis-songs.yml');
+      const nonElvisSongs = await this.loadDataFromYAML('non-elvis-songs.yml');
+      
+      // Combine all songs
+      this.records = [...elvisSongs, ...nonElvisSongs];
+      this.tuples = this.records.map(record => [record.code, record.name, record.movie || '']);
+    } catch (error) {
+      console.error('Error populating SongsReport:', error);
+      this.records = [];
+      this.tuples = [];
+    }
+  }
+
+  toHTML() {
+    const tableId = 'songs-report-table';
+    const columnHeadings = ['Code', 'Name', 'Movie'];
+    
+    if (this.records.length === 0) {
+      return '<p class="text-gray-500">No songs data available for this report.</p>';
+    }
+
+    return this.createTable(this.tuples, columnHeadings, tableId);
+  }
+
+  toText() {
+    if (this.records.length === 0) {
+      return 'No songs data available for this report.';
+    }
+
+    let output = 'SONGS REPORT\n';
+    output += '=' .repeat(50) + '\n\n';
+    
+    const maxWidth = Math.max(...this.records.map(r => r.code.length));
+    
+    this.records.forEach(record => {
+      output += `${record.code.padEnd(maxWidth)}  ${record.name}`;
+      if (record.movie) {
+        output += ` (${record.movie})`;
+      }
+      output += '\n';
+    });
+    
+    output += `\nTotal: ${this.records.length} songs\n`;
+    return `<pre><code>${this.escapeHTML(output)}</code></pre>`;
+  }
+
+  toJSON() {
+    return `<pre><code>${JSON.stringify({
+      report_type: this.reportType,
+      total_count: this.records.length,
+      records: this.records
+    }, null, 2)}</code></pre>`;
+  }
+
+  toYAML() {
+    if (this.records.length === 0) {
+      return `<pre><code>report_type: ${this.reportType}\ntotal_count: 0\nrecords: []</code></pre>`;
+    }
+
+    let yaml = `report_type: ${this.reportType}\n`;
+    yaml += `total_count: ${this.records.length}\n`;
+    yaml += 'records:\n';
+    
+    this.records.forEach(record => {
+      yaml += `  - code: ${record.code}\n`;
+      yaml += `    name: ${record.name}\n`;
+      if (record.movie) {
+        yaml += `    movie: ${record.movie}\n`;
       }
     });
     
