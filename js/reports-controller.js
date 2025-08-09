@@ -66,13 +66,13 @@ class ReportsController {
 
     // Create simple text links for each report
     const listHTML = `
-      <ul class="space-y-1">
+      <ul class="space-y-4">
         ${Object.entries(this.reportsMetadata).map(([key, metadata]) => `
           <li>
             <a 
               href="javascript:void(0)" 
               onclick="reportsController.showReportInline('${key}')"
-              class="text-blue-600 hover:text-blue-800 transition-colors duration-200 underline"
+              class="text-xl font-bold text-indigo-700 hover:text-indigo-900 hover:bg-indigo-50 transition-all duration-200 px-3 py-2 rounded-md block"
             >
               ${metadata.title}
             </a>
