@@ -426,11 +426,20 @@
                 <span class="toggle-icon" aria-hidden="true">+</span>
             </h2>
             <div id="reports-content" class="collapsible-content" role="region" aria-labelledby="reports-heading">
-                <p class="paragraph-spaced">
-                    Under construction...please visit
-                    <a href="https://www.tepper-bennett.com/reports" class="site-link">https://www.tepper-bennett.com/reports</a>
-                    for now for reports.
-                </p>
+                <div id="reports-container">
+                    <p class="paragraph-spaced">
+                        Welcome to the comprehensive reports section. Here you can explore detailed information about Tepper & Bennett songs, performers, genres, and more.
+                    </p>
+                    <p class="paragraph-spaced">
+                        Click the button below to open the reports interface in a modal window.
+                    </p>
+                    <button 
+                        id="show-reports-index" 
+                        class="btn btn-navy mt-4"
+                        onclick="reportsController.showReportsIndex()">
+                        Open Reports
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -576,5 +585,10 @@
     </script>
     <!-- Add List.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+    
+    <!-- Reports System Scripts -->
+    <script src="/js/base-report.js"></script>
+    <script src="/js/specific-reports.js"></script>
+    <script src="/js/reports-controller.js"></script>
 </body>
 </html>
