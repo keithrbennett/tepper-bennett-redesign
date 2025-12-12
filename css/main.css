@@ -158,6 +158,44 @@ th.sort-desc .sort-indicator::after {
   background-color: rgba(26, 48, 94, 0.05);
 }
 
+/* YouTube play button styling */
+#songlist-table .youtube a,
+#elvis-table .youtube a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+}
+
+/* Simple hover effect - just scale up the triangle */
+#songlist-table .youtube a:hover,
+#elvis-table .youtube a:hover {
+  transform: scale(1.4);
+}
+
+/* YouTube column width and centering */
+#songlist-table .youtube-header,
+#songlist-table .youtube,
+#elvis-table .youtube-header,
+#elvis-table .youtube {
+  width: 60px;
+  text-align: center;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+#songlist-table .youtube,
+#elvis-table .youtube {
+  vertical-align: middle;
+}
+
+/* Legacy support for old class name */
 #songlist-table .youtubeUrl a {
   display: inline-block;
   padding: 0.25rem 0.5rem;

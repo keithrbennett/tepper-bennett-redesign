@@ -7,7 +7,72 @@
     padding-left: 4px !important;
     padding-right: 4px !important;
   }
-  
+
+  /* Optimize tables for mobile - no horizontal scrolling needed */
+  #songlist-table,
+  #elvis-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  /* Make YouTube column very narrow - just enough for the play button */
+  #songlist-table .youtube-header,
+  #songlist-table .youtube,
+  #songlist-table td:first-child,
+  #elvis-table .youtube-header,
+  #elvis-table .youtube,
+  #elvis-table td:first-child {
+    width: 50px !important;
+    max-width: 50px !important;
+    padding: 0.5rem 0.25rem !important;
+    text-align: center;
+  }
+
+  /* Adjust other column widths for mobile (YouTube is now first column at 50px) */
+  #songlist-table th:nth-child(2),
+  #songlist-table td:nth-child(2),
+  #elvis-table th:nth-child(2),
+  #elvis-table td:nth-child(2) {
+    width: 35%; /* Title */
+  }
+
+  /* Performer column (only in songlist table) */
+  #songlist-table th:nth-child(3),
+  #songlist-table td:nth-child(3) {
+    width: 28%; /* Performer */
+  }
+
+  /* Rights Administrator column */
+  #songlist-table th:nth-child(4),
+  #songlist-table td:nth-child(4) {
+    width: calc(37% - 50px); /* Rights Administrator - songlist (more space now) */
+  }
+
+  #elvis-table th:nth-child(3),
+  #elvis-table td:nth-child(3) {
+    width: calc(65% - 50px); /* Rights Administrator - elvis (no performer column) */
+  }
+
+  /* Reduce font size and padding on mobile for better fit */
+  #songlist-table td,
+  #songlist-table th,
+  #elvis-table td,
+  #elvis-table th {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* Make play button slightly larger and more tappable on mobile */
+  #songlist-table td:first-child a,
+  #elvis-table td:first-child a {
+    display: inline-block;
+    font-size: 1.25rem;
+    padding: 0.25rem;
+    min-width: 36px;
+    min-height: 36px;
+    line-height: 1;
+  }
+
   /* Full-width content container */
   .songs-section-content {
     margin: 0;

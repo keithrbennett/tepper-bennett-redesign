@@ -434,17 +434,17 @@ document.addEventListener('DOMContentLoaded', function() {
       searchPlaceholder: 'Search songs, performers, and administrators, e.g.: elvis',
       tableId: 'songlist-table',
       tableHeaders: [
+        { text: '▶', sort: null },
         { text: 'Title', sort: 'title' },
         { text: 'Performer(s)', sort: 'performers' },
-        { text: 'Rights Administrator', sort: 'administrator' },
-        { text: 'YouTube', sort: null }
+        { text: 'Rights Administrator', sort: 'administrator' }
       ],
-      valueNames: ['title', 'performers', 'administrator', 'youtube'],
+      valueNames: ['youtube', 'title', 'performers', 'administrator'],
       itemTemplate: `<tr>
+                      <td class="youtube py-3 px-4 text-center"></td>
                       <td class="title py-3 px-4"></td>
                       <td class="performers py-3 px-4"></td>
                       <td class="administrator py-3 px-4"></td>
-                      <td class="youtube py-3 px-4 text-center"></td>
                     </tr>`,
       songData: songData,
       callUpdateUI: true,
@@ -644,15 +644,15 @@ document.addEventListener('DOMContentLoaded', function() {
       searchPlaceholder: 'Search Elvis songs',
       tableId: 'elvis-table',
       tableHeaders: [
+        { text: '▶', sort: null },
         { text: 'Title', sort: 'title' },
-        { text: 'Rights Administrator', sort: 'administrator' },
-        { text: 'YouTube', sort: null }
+        { text: 'Rights Administrator', sort: 'administrator' }
       ],
-      valueNames: ['title', 'administrator', 'youtube'],
+      valueNames: ['youtube', 'title', 'administrator'],
       itemTemplate: `<tr>
+                      <td class="youtube py-3 px-4 text-center"></td>
                       <td class="title py-3 px-4"></td>
                       <td class="administrator py-3 px-4"></td>
-                      <td class="youtube py-3 px-4 text-center"></td>
                     </tr>`,
       songData: elvisSongData,
       callUpdateUI: false, // Don't call updateUI for Elvis table

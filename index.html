@@ -13,11 +13,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS (compiled) -->
-    <link rel="stylesheet" href="/home.css">
+    <link rel="stylesheet" href="/home.css?v=202512120122">
     <!-- External stylesheets -->
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/mobile.css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/styles.css?v=202512120122">
+    <link rel="stylesheet" href="/css/mobile.css?v=202512120145">
+    <link rel="stylesheet" href="/css/main.css?v=202512120140">
     
     <!-- Initial state script to prevent content flash -->
     <script>
@@ -207,10 +207,10 @@
                     <table id="songlist-table" class="min-w-full bg-white list">
                         <thead class="bg-navy text-white">
                             <tr>
+                                <th class="py-3 px-4 text-center youtube-header">▶</th>
                                 <th class="py-3 px-4 text-left" data-sort="title">Title</th>
                                 <th class="py-3 px-4 text-left" data-sort="performers">Performer(s)</th>
                                 <th class="py-3 px-4 text-left" data-sort="administrator">Rights Administrator</th>
-                                <th class="py-3 px-4 text-center">YouTube</th>
                             </tr>
                         </thead>
                         <tbody class="list">
@@ -343,9 +343,9 @@
                         <table id="elvis-table" class="min-w-full bg-white list">
                             <thead class="bg-navy text-white">
                                 <tr>
+                                    <th class="py-3 px-4 text-center youtube-header">▶</th>
                                     <th class="py-3 px-4 text-left" data-sort="title">Title</th>
                                     <th class="py-3 px-4 text-left" data-sort="administrator">Rights Administrator</th>
-                                    <th class="py-3 px-4 text-center">YouTube</th>
                                 </tr>
                             </thead>
                             <tbody class="list">
@@ -558,7 +558,7 @@
         });
     </script>
     
-    <script src="/js/data-loader.js"></script>
+    <script src="/js/data-loader.js?v=202512120122"></script>
     <script>
       // Make sure sortable headers are reset after data loading
       document.addEventListener('DOMContentLoaded', function() {
