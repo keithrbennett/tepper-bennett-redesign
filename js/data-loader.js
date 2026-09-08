@@ -225,6 +225,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Process song data using the local utility function
     const songlistData = processTableData(songPlays, songlistMap, performersMap, orgsMap, songOrgMap);
 
+    // Sort alphabetically by title
+    songlistData.sort((a, b) =>
+      String(a.title).localeCompare(String(b.title), 'en', { sensitivity: 'base' }));
+
     console.log(`Song data processed: ${songlistData.length} songs`);
 
     // Filter for Elvis songs only
